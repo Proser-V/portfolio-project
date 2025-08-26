@@ -1,7 +1,11 @@
 package com.atelierlocal.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
+
 import java.util.UUID;
+
+import com.atelierlocal.controller.ArtisanController;
 
 @Entity
 public class SimpleAsking {
@@ -12,17 +16,18 @@ public class SimpleAsking {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(nullable = false)
+    @Size(max = 1000, message = "La demande ne peux excéder 1000 caractères.")
+    @Column(nullable = false, length = 1000)
     private String content;
 
     @Column(nullable = false)
-    private String artisanCategory;
+    private ArtisanCategory artisanCategory;
 
     // Getters and setters
 
     public String getContent() { return content; }
     public void setContent(String content) { this.content = content; }
 
-    public String getArtisanCategory() { return artisanCategory; }
-    public void setArtisanCategory(String artisanCategory) { this.artisanCategory = artisanCategory; }
+    public ArtisanCategory getArtisanCategory() { return artisanCategory; }
+    public void setArtisanCategory(ArtisanCategory artisanCategory) { this.artisanCategory = artisanCategory; }
 }

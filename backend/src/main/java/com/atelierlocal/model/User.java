@@ -1,6 +1,9 @@
 package com.atelierlocal.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
+
 import java.util.UUID;
 import java.util.List;
 
@@ -14,13 +17,17 @@ public class User {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(nullable = false)
+    @Size(max = 50, message = "Le prénom ne peut pas dépasser 50 caractères.")
+    @Column(nullable = false, length = 50)
     private String firstName;
 
-    @Column(nullable = false)
+    @Size(max = 50, message = "Le nom ne peut pas dépasser 50 caractères.")
+    @Column(nullable = false, length = 50)
     private String lastName;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 100)
+    @Email(message = "Format d'email invalide")
+    @Size(max = 100, message = "L'email ne peux dépasser 100 caractères.")
     private String email;
 
     @Column(name = "hashed_password", nullable = false)
@@ -40,6 +47,12 @@ public class User {
 
     @OneToMany(mappedBy = "client")
     private List<UploadedFile> uploadedFiles;
+
+    @OneToMany(mappedBy = "")
+    private List<SimpleAsking> simpleAskings;
+
+    @OneToMany(mappedBy = "")
+    private List<MultipleAsking> multipleAskings;
 
     // Getters and setters
 
@@ -69,4 +82,10 @@ public class User {
 
     public List<UploadedFile> getUploadedFile() { return uploadedFiles; }
     public void setUploadedFile(List<UploadedFile> uploadedFiles) { this.uploadedFiles = uploadedFiles;}
+
+    public List<SimpleAsking> getSimpleAskings() { return simpleAskings; }
+    public void setSimpleAskings(List<SimpleAsking> simpleAskings) { this.simpleAskings = simpleAskings;}
+
+    public List<MultipleAsking> getMultipleAskings() { return multipleAskings; }
+    public void setMultipleAskings(List<MultipleAsking> multipleAskings) { this.multipleAskings = multipleAskings;}
 }

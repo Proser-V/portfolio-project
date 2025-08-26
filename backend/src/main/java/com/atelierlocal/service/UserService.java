@@ -67,7 +67,7 @@ public class UserService {
         try {
             return userRepo.findByEmail(email)
                 .filter(User::getActive)
-                .map(user -> passwordService.verify(rawPassword, user.getHashedPassword()))
+                .map(user -> passwordService.verifyPassword(user.getHashedPassword(), rawPassword))
                 .orElse(false);
         } catch (Exception e) {
             System.err.println("Erreur de la tentative de login: " + e.getMessage());

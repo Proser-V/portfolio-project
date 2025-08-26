@@ -17,10 +17,11 @@ public class ArtisanService {
         this.artisanRepo = artisanRepo;
     }
 
-    public Artisan createArtisan(String name, String email, String rawPassword, Address address, String avatar) {
+    public Artisan createArtisan(String name, String email, String rawPassword, String bio, Address address, String avatar) {
         Artisan artisan = new Artisan();
         artisan.setName(name);
         artisan.setEmail(email);
+        artisan.setBio(bio);
         artisan.setAddress(address);
         artisan.setAvatar(avatar);
 

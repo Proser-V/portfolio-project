@@ -1,7 +1,8 @@
 package com.atelierlocal.config;
 
 import com.atelierlocal.security.JwtAuthenticationFilter;
-import com.atelierlocal.service.UserService;
+import com.atelierlocal.security.CustomUserDetailsService;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,7 +21,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public DaoAuthenticationProvider authProvider(UserService userDetailsService, Argon2PasswordEncoder encoder) {
+    public DaoAuthenticationProvider authProvider(CustomUserDetailsService userDetailsService, Argon2PasswordEncoder encoder) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsPasswordService(userDetailsService);
         authProvider.setPasswordEncoder(encoder);

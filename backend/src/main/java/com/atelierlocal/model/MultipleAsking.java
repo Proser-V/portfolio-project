@@ -1,6 +1,8 @@
 package com.atelierlocal.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
+
 import java.util.UUID;
 import java.util.List;
 
@@ -13,7 +15,8 @@ public class MultipleAsking {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(nullable = false)
+    @Size(max = 1000, message = "La demande ne peux excéder 1000 caractères.")
+    @Column(nullable = false, length = 1000)
     private String content;
 
     @Column(nullable = false)

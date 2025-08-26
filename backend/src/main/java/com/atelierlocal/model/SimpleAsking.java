@@ -8,6 +8,7 @@ import java.util.UUID;
 import com.atelierlocal.controller.ArtisanController;
 
 @Entity
+@Table(name = "simple_askings")
 public class SimpleAsking {
     // Atributes
 

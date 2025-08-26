@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
+@Table(name = "artisans")
 public class Artisan {
     // Atributes
 
@@ -32,14 +33,14 @@ public class Artisan {
     @Column(length = 500)
     private String bio;
 
-    @Column
+    @OneToOne
     private ArtisanCategory category;
 
     @Embedded
     private Address address;
 
-    @Column
-    private UploadedFile avatar;
+    @OneToOne(mappedBy = "artisan", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ArtisanAvatar avatar;
 
     @OneToMany(mappedBy = "creator")
     private List<UploadedFile> uploadedFiles;
@@ -64,8 +65,8 @@ public class Artisan {
     public Address getAddress() { return address; }
     public void setAddress(Address address) { this.address = address; }
 
-    public UploadedFile getAvatar() { return avatar; }
-    public void setAvatar(UploadedFile avatar) { this.avatar = avatar; }
+    public Avatar getAvatar() { return avatar; }
+    public void setAvatar(Avatar avatar) { this.avatar = avatar; }
 
     public List<UploadedFile> getUploadedFile() { return uploadedFiles; }
     public void setUploadedFile(List<UploadedFile> uploadedFiles) { this.uploadedFiles = uploadedFiles;}

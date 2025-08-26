@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 
 @Entity
+@Table(name = "event_categories")
 public class EventCategory {
     // Atributs
 

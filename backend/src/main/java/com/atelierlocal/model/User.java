@@ -36,8 +36,8 @@ public class User {
     @Embedded
     private Address address;
 
-    @Column
-    private String avatar;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private UserAvatar avatar;
 
     @Column(nullable = false)
     private Boolean isAdmin;
@@ -71,8 +71,8 @@ public class User {
     public Address getAddress() { return address; }
     public void setAddress(Address address) { this.address = address; }
 
-    public String getAvatar() { return avatar; }
-    public void setAvatar(String avatar) { this.avatar = avatar; }
+    public UserAvatar getAvatar() { return avatar; }
+    public void setAvatar(UserAvatar avatar) { this.avatar = avatar; }
 
     public Boolean getAdmin() { return isAdmin; }
     public void setAdmin(Boolean isAdmin) { this.isAdmin = isAdmin; }

@@ -7,6 +7,7 @@ import java.util.UUID;
 import java.util.List;
 
 @Entity
+@Table(name = "multiple_askings")
 public class MultipleAsking {
     // Atributes
 

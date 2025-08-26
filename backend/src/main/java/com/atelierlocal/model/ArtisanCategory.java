@@ -1,11 +1,13 @@
 package com.atelierlocal.model;
 
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 
 @Entity
+@Table(name = "artisan_categories")
 public class ArtisanCategory {
     // Attributs
 
@@ -21,6 +23,9 @@ public class ArtisanCategory {
     @Size(max = 200, message = "La description ne peut pas dépasser 200 caractères.")
     @Column(nullable = false, length = 200)
     private String description;
+
+    @OneToOne
+    private List<Artisan> artisan;
 
     // Getters et setters
 

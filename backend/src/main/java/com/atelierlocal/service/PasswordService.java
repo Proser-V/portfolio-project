@@ -10,11 +10,21 @@ public class PasswordService {
 
     private final Argon2 argon2 = Argon2Factory.create();
 
-    public String hashPassword(char[] plainPassword) {
-        return argon2.hash(2, 65536, 1, plainPassword);
+    public String hashPassword(String plainPassword) {
+        char [] passwordArray = plainPassword.toCharArray();
+        try {
+            return argon2.hash(2, 65536, 1, passwordArray);
+        } finally {
+            java.util.Arrays.fill(passwordArray, '\0');
+        }
     }
 
-    public boolean verifyPassword(String hash, char[] plainPassword) {
-        return argon2.verify(hash, plainPassword);
+    public boolean verifyPassword(String hash, String plainPassword) {
+        char[] passwordArray = plainPassword.toCharArray();
+        try {
+            return argon2.verify(hash, passwordArray);
+        } finally {
+            java.util.Arrays.fill(passwordArray, '\0');
+        }
     }
 }

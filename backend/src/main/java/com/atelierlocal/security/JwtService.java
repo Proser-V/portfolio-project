@@ -4,6 +4,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +16,14 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY = "i0DurgJ9f0G6B9Ny4FQSIDfNZcEC4BX2vTpc6RfD3U8=";
+    @Value("${jwt.secret}")
+    private String secretKey;
 
-    private Key getSingingKey() {
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+    @Value("${jwt.expiration-ms}")
+    private long expirationMs;
+
+    private Key getSigningKey() {
+        return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
     public String extractUsername(String token) {
@@ -36,7 +41,7 @@ public class JwtService {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(getSingingKey())
+                .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -55,8 +60,8 @@ public class JwtService {
         return Jwts.builder()
             .setSubject(userDetails.getUsername())
             .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
-            .signWith(getSingingKey(), SignatureAlgorithm.ES256)
+            .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
+            .signWith(getSigningKey(), SignatureAlgorithm.HS256)
             .compact();
     }
 }

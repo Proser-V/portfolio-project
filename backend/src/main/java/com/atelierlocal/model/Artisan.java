@@ -25,7 +25,7 @@ public class Artisan {
     private String hashedPwd;
 
     @Size(max = 500, message = "La bio ne peut pas dépasser 500 caractères.")
-    @Column(length = 255)
+    @Column(length = 500)
     private String bio;
 
     @Column

@@ -1,19 +1,30 @@
 package com.atelierlocal.service;
 
 import org.springframework.stereotype.Service;
-import com.password4j.Password;
+
+import de.mkammerer.argon2.Argon2;
+import de.mkammerer.argon2.Argon2Factory;
 
 @Service
 public class PasswordService {
 
-    public String hashPassword(String rawPassword) {
-        return Password.hash(rawPassword)
-                    .addRandomSalt()
-                    .withArgon2()
-                    .getResult();
+    private final Argon2 argon2 = Argon2Factory.create();
+
+    public String hashPassword(String plainPassword) {
+        char [] passwordArray = plainPassword.toCharArray();
+        try {
+            return argon2.hash(2, 65536, 1, passwordArray);
+        } finally {
+            java.util.Arrays.fill(passwordArray, '\0');
+        }
     }
-    
-    public boolean verify(String rawPassword, String hashed) {
-        return Password.check(rawPassword, hashed).withArgon2();
+
+    public boolean verifyPassword(String hash, String plainPassword) {
+        char[] passwordArray = plainPassword.toCharArray();
+        try {
+            return argon2.verify(hash, passwordArray);
+        } finally {
+            java.util.Arrays.fill(passwordArray, '\0');
+        }
     }
 }

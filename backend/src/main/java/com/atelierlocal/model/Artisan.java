@@ -1,6 +1,7 @@
 package com.atelierlocal.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,6 +23,10 @@ public class Artisan {
 
     @Column(name = "hashed_password", nullable = false)
     private String hashedPwd;
+
+    @Size(max = 500, message = "La bio ne peut pas dépasser 500 caractères.")
+    @Column(length = 255)
+    private String bio;
 
     @Column
     private String category;
@@ -45,6 +50,9 @@ public class Artisan {
 
     public String getHashedPassword() { return hashedPwd; }
     public void setHashedPassword(String hashedPwd) { this.hashedPwd = hashedPwd; }
+
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
 
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }

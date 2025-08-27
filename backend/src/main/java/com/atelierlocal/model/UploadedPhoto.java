@@ -1,8 +1,14 @@
 package com.atelierlocal.model;
 
-import jakarta.persistence.*;
-
 import java.util.UUID;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "uploaded_photos")
@@ -19,7 +25,7 @@ public class UploadedPhoto {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private Client user;
 
     @ManyToOne
     @JoinColumn(name = "artisan_id")
@@ -30,8 +36,8 @@ public class UploadedPhoto {
     public String getExtension() { return extension; }
     public void setExtension(String extension) { this.extension = extension; }
 
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
+    public Client getUser() { return user; }
+    public void setUser(Client user) { this.user = user; }
 
     public Artisan getArtisan() { return artisan; }
     public void setArtisan(Artisan artisan) { this.artisan = artisan; }

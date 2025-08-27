@@ -3,7 +3,7 @@ package com.atelierlocal.service;
 import org.springframework.stereotype.Service;
 
 import com.atelierlocal.repository.UserRepo;
-import com.atelierlocal.model.User;
+import com.atelierlocal.model.Client;
 import com.atelierlocal.model.Address;
 
 @Service
@@ -17,7 +17,7 @@ public class UserService {
         this.userRepo = userRepo;
     }
 
-    public User createUser(String firstName, String lastName, String email, Address address, String rawPassword, String avatar, Boolean isActive, Boolean isAdmin) {
+    public Client createUser(String firstName, String lastName, String email, Address address, String rawPassword, String avatar, Boolean isActive, Boolean isAdmin) {
         if (userRepo.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("Email already in use");
         }
@@ -25,7 +25,7 @@ public class UserService {
             throw new IllegalArgumentException("Password cannot be empty");
         }
 
-        User user = new User();
+        Client user = new Client();
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setEmail(email);
@@ -40,7 +40,7 @@ public class UserService {
         return userRepo.save(user);
     }
 
-    public User createAdmin(String firstName, String lastName, String email, Address address, String rawPassword, String avatar, Boolean isActive, Boolean isAdmin) {
+    public Client createAdmin(String firstName, String lastName, String email, Address address, String rawPassword, String avatar, Boolean isActive, Boolean isAdmin) {
         if (userRepo.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("Email already in use");
         }
@@ -48,7 +48,7 @@ public class UserService {
             throw new IllegalArgumentException("Password cannot be empty");
         }
 
-        User user = new User();
+        Client user = new Client();
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setEmail(email);
@@ -66,7 +66,7 @@ public class UserService {
     public boolean login(String email, String rawPassword) {
         try {
             return userRepo.findByEmail(email)
-                .filter(User::getActive)
+                .filter(Client::getActive)
                 .map(user -> passwordService.verifyPassword(user.getHashedPassword(), rawPassword))
                 .orElse(false);
         } catch (Exception e) {

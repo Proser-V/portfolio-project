@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import com.atelierlocal.repository.UploadedFileRepo;
 import com.atelierlocal.model.UploadedEstimation;
 import com.atelierlocal.model.Artisan;
-import com.atelierlocal.model.User;
+import com.atelierlocal.model.Client;
 
 import java.util.UUID;
 
@@ -20,7 +20,7 @@ public class UploadedFileService {
         this.uploadedFileRepo = uploadedFileRepo;
     }
 
-    public UploadedEstimation CreateUploadedFile(UUID id, String extension, Artisan creator, User client, String rawKey) {
+    public UploadedEstimation CreateUploadedFile(UUID id, String extension, Artisan creator, Client client, String rawKey) {
         UploadedEstimation uploadedFile = new UploadedEstimation();
         uploadedFile.setExtension(extension);
         uploadedFile.setClient(client);

@@ -1,8 +1,14 @@
 package com.atelierlocal.model;
 
-import jakarta.persistence.*;
-
 import java.util.UUID;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "uploaded_estimations")
@@ -23,7 +29,7 @@ public class UploadedEstimation {
 
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = false)
-    private User client;
+    private Client client;
 
     @Column(name = "opening_key")
     private String key;
@@ -36,8 +42,8 @@ public class UploadedEstimation {
     public Artisan getCreator() { return creator; }
     public void setCreator(Artisan creator) { this.creator = creator; }
 
-    public User getClient() { return client; }
-    public void setClient(User client) { this.client = client; }
+    public Client getClient() { return client; }
+    public void setClient(Client client) { this.client = client; }
 
     public String getKey() { return key; }
     public void setKey(String key) { this.key = key; }

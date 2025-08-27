@@ -1,6 +1,6 @@
 package com.atelierlocal.security;
 
-import com.atelierlocal.model.User;
+import com.atelierlocal.model.Client;
 import com.atelierlocal.repository.UserRepo;
 
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,7 +20,7 @@ public class CustomUserDetailsService implements UserDetailsService, UserDetails
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepo.findByEmail(email)
+        Client user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé : " + email));
 
         return org.springframework.security.core.userdetails.User
@@ -33,7 +33,7 @@ public class CustomUserDetailsService implements UserDetailsService, UserDetails
 
     @Override
     public UserDetails updatePassword(UserDetails user, String newPassword) {
-        User dbUser = userRepo.findByEmail(user.getUsername())
+        Client dbUser = userRepo.findByEmail(user.getUsername())
             .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé : " + user.getUsername()));
 
         dbUser.setHashedPassword(newPassword);

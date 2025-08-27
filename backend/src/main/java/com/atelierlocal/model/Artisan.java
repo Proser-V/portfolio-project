@@ -1,22 +1,21 @@
 package com.atelierlocal.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Pattern;
-
 import java.util.List;
-import java.util.UUID;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "artisans")
-public class Artisan {
+public class Artisan extends User {
     // Atributes
-
-    @Id
-    @GeneratedValue
-    @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
 
     @Size(max = 50, message = "Le nom ne peut pas dépasser 50 caractères.")
     @Column(nullable = false, length = 50)
@@ -26,11 +25,6 @@ public class Artisan {
     @Pattern(regexp = "^(|(\\+33|0)[1-9](\\d{2}){4}$", message = "Numéro invalide (format français attendu)")
     @Size(max = 12)
     private String phoneNumber;
-
-    @Column(nullable = false, unique = true, length = 100)
-    @Email(message = "Format d'email invalide")
-    @Size(max = 100, message = "L'email ne peux dépasser 100 caractères.")
-    private String email;
 
     @Column(name = "hashed_password", nullable = false, length = 255)
     private String hashedPwd;
@@ -55,9 +49,6 @@ public class Artisan {
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
 
     public String getPhoneNumber() { return phoneNumber; }
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }

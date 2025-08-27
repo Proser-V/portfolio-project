@@ -8,6 +8,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -33,6 +34,7 @@ public class Artisan extends User {
     private String bio;
 
     @OneToOne
+    @JoinColumn(name = "artisan_category_name")
     private ArtisanCategory category;
 
     @Column(length = 14)

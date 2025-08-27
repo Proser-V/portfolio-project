@@ -29,7 +29,7 @@ public class UploadedPhoto {
     private String description;
 
     @ManyToOne
-    @JoinColumn(name = "artisan_id")
+    @JoinColumn(name = "artisan_id", nullable = false)
     private Artisan artisan;
 
     // Getters et setters

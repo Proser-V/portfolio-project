@@ -1,5 +1,6 @@
 package com.atelierlocal.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,15 +21,27 @@ public class EventCategory {
     @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(nullable = false)
-    private List<String> artisanCatagories;
+    @ManyToMany
+    @JoinTable(
+        name = "event_artisan_category",
+        joinColumns = @JoinColumn(name = "event_category_id"),
+        inverseJoinColumns = @JoinColumn(name = "artisan_category_id")
+    )
+    private List<ArtisanCategory> artisanCatagoryList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "eventCategoryList", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Asking> askingsList = new ArrayList<>();
 
     // Getters et Setters
+
+    public UUID getId() { return id; }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public List<String> getArtisanCategories() { return artisanCatagories; }
-    public void setArtisanCategores(List<String> artisanCategories) { this.artisanCatagories = artisanCategories; }
+    public List<ArtisanCategory> getArtisanCategoryList() { return artisanCatagoryList; }
+    public void setArtisanCategoryList(List<ArtisanCategory> artisanCatagoryList) { this.artisanCatagoryList = artisanCatagoryList; }
 
+    public List<Asking> getAskingsList() { return askingsList; }
+    public void setAskingsList(List<Asking> askingsList) { this.askingsList = askingsList; }
 }

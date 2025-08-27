@@ -46,7 +46,7 @@ public class User {
     private Boolean isActive;
 
     @OneToMany(mappedBy = "client")
-    private List<UploadedFile> uploadedFiles;
+    private List<UploadedEstimation> uploadedFiles;
 
     @OneToMany(mappedBy = "")
     private List<SimpleAsking> simpleAskings;
@@ -80,8 +80,8 @@ public class User {
     public Boolean getActive() { return isActive; }
     public void setActive(Boolean isActive) { this.isActive = isActive; }
 
-    public List<UploadedFile> getUploadedFile() { return uploadedFiles; }
-    public void setUploadedFile(List<UploadedFile> uploadedFiles) { this.uploadedFiles = uploadedFiles;}
+    public List<UploadedEstimation> getUploadedFile() { return uploadedFiles; }
+    public void setUploadedFile(List<UploadedEstimation> uploadedFiles) { this.uploadedFiles = uploadedFiles;}
 
     public List<SimpleAsking> getSimpleAskings() { return simpleAskings; }
     public void setSimpleAskings(List<SimpleAsking> simpleAskings) { this.simpleAskings = simpleAskings;}

@@ -5,8 +5,8 @@ import jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "uploaded_files")
-public class UploadedFile {
+@Table(name = "uploaded_estimations")
+public class UploadedEstimation {
     // Atributes
 
     @Id

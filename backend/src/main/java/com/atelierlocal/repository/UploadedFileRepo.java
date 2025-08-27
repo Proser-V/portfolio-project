@@ -1,6 +1,6 @@
 package com.atelierlocal.repository;
 
-import com.atelierlocal.model.UploadedFile;
+import com.atelierlocal.model.UploadedEstimation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.UUID;
@@ -15,4 +15,4 @@ import java.util.UUID;
  */
 
 @Repository
-public interface UploadedFileRepo extends JpaRepository<UploadedFile, UUID> {}
+public interface UploadedFileRepo extends JpaRepository<UploadedEstimation, UUID> {}

@@ -3,6 +3,7 @@ package com.atelierlocal.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,6 +21,11 @@ public class Artisan {
     @Size(max = 50, message = "Le nom ne peut pas dépasser 50 caractères.")
     @Column(nullable = false, length = 50)
     private String name;
+
+    @Column(length = 12)
+    @Pattern(regexp = "^(|(\\+33|0)[1-9](\\d{2}){4}$", message = "Numéro invalide (format français attendu)")
+    @Size(max = 12)
+    private String phoneNumber;
 
     @Column(nullable = false, unique = true, length = 100)
     @Email(message = "Format d'email invalide")
@@ -43,7 +49,7 @@ public class Artisan {
     private ArtisanAvatar avatar;
 
     @OneToMany(mappedBy = "creator")
-    private List<UploadedFile> uploadedFiles;
+    private List<UploadedEstimation> uploadedFiles;
 
     // Getters and setters
 
@@ -52,6 +58,9 @@ public class Artisan {
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+
+    public String getPhoneNumber() { return phoneNumber; }
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 
     public String getHashedPassword() { return hashedPwd; }
     public void setHashedPassword(String hashedPwd) { this.hashedPwd = hashedPwd; }
@@ -68,6 +77,6 @@ public class Artisan {
     public Avatar getAvatar() { return avatar; }
     public void setAvatar(Avatar avatar) { this.avatar = avatar; }
 
-    public List<UploadedFile> getUploadedFile() { return uploadedFiles; }
-    public void setUploadedFile(List<UploadedFile> uploadedFiles) { this.uploadedFiles = uploadedFiles;}
+    public List<UploadedEstimation> getUploadedFile() { return uploadedFiles; }
+    public void setUploadedFile(List<UploadedEstimation> uploadedFiles) { this.uploadedFiles = uploadedFiles;}
 }

@@ -9,11 +9,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "uploaded_photos")
 public class UploadedPhoto {
-    // Atributes
+    // Atributs
 
     @Id
     @GeneratedValue
@@ -23,21 +24,23 @@ public class UploadedPhoto {
     @Column(nullable = false)
     private String extension;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private Client user;
+    @Size(max = 150, message = "La description ne peux excéder 150 caractères.")
+    @Column(nullable = false, length = 150)
+    private String description;
 
     @ManyToOne
     @JoinColumn(name = "artisan_id")
     private Artisan artisan;
 
-    // Getters and setters
+    // Getters et setters
+
+    public UUID getId() { return id; }
 
     public String getExtension() { return extension; }
     public void setExtension(String extension) { this.extension = extension; }
 
-    public Client getUser() { return user; }
-    public void setUser(Client user) { this.user = user; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
     public Artisan getArtisan() { return artisan; }
     public void setArtisan(Artisan artisan) { this.artisan = artisan; }

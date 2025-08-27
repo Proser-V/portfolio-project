@@ -1,6 +1,8 @@
 package com.atelierlocal.model;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -23,11 +25,8 @@ public class Artisan extends User {
 
     @Column(length = 12)
     @Pattern(regexp = "^(|(\\+33|0)[1-9](\\d{2}){4}$", message = "Numéro invalide (format français attendu)")
-    @Size(max = 12)
+    @Size(min = 10, max = 12)
     private String phoneNumber;
-
-    @Column(name = "hashed_password", nullable = false, length = 255)
-    private String hashedPwd;
 
     @Size(max = 500, message = "La bio ne peut pas dépasser 500 caractères.")
     @Column(length = 500)
@@ -36,14 +35,13 @@ public class Artisan extends User {
     @OneToOne
     private ArtisanCategory category;
 
-    @Embedded
-    private Address address;
+    @Column(length = 14)
+    @Pattern(regexp = "\\d+", message = "Le champ ne doit contenir que des chiffres") // Validation du format seulement
+    @Size(min = 14, max = 14)
+    private String siret;
 
-    @OneToOne(mappedBy = "artisan", cascade = CascadeType.ALL, orphanRemoval = true)
-    private ArtisanAvatar avatar;
-
-    @OneToMany(mappedBy = "creator")
-    private List<UploadedEstimation> uploadedFiles;
+    @OneToMany(mappedBy = "artisan", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UploadedPhoto> photoGallery = new ArrayList<>();
 
     // Getters and setters
 
@@ -53,21 +51,15 @@ public class Artisan extends User {
     public String getPhoneNumber() { return phoneNumber; }
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 
-    public String getHashedPassword() { return hashedPwd; }
-    public void setHashedPassword(String hashedPwd) { this.hashedPwd = hashedPwd; }
-
     public String getBio() { return bio; }
     public void setBio(String bio) { this.bio = bio; }
 
     public ArtisanCategory getCategory() { return category; }
     public void setCategory(ArtisanCategory category) { this.category = category; }
 
-    public Address getAddress() { return address; }
-    public void setAddress(Address address) { this.address = address; }
+    public String getSiret() { return siret; }
+    public void setSiret(String siret) { this.siret = siret; }
 
-    public Avatar getAvatar() { return avatar; }
-    public void setAvatar(Avatar avatar) { this.avatar = avatar; }
-
-    public List<UploadedEstimation> getUploadedFile() { return uploadedFiles; }
-    public void setUploadedFile(List<UploadedEstimation> uploadedFiles) { this.uploadedFiles = uploadedFiles;}
+    public List<UploadedPhoto> getPhotoGallery() { return photoGallery; }
+    public void setPhotoGallery(List<UploadedPhoto> photoGallery) { this.photoGallery = photoGallery; }
 }

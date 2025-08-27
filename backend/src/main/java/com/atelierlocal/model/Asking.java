@@ -8,7 +8,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "multiple_askings")
-public class MultipleAsking {
+public class Asking {
     // Atributes
 
     @Id

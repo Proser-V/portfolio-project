@@ -1,12 +1,9 @@
 package com.atelierlocal.repository;
 
-import java.util.Optional;
-import java.util.UUID;
-
+import com.atelierlocal.model.EventCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import com.atelierlocal.model.User;
+import java.util.UUID;
 
 /**
  * JpaRepository key inherited methods include:
@@ -18,6 +15,4 @@ import com.atelierlocal.model.User;
  */
 
 @Repository
-public interface UserRepo extends JpaRepository<User, UUID> {
-    Optional<User> findByEmail(String email);
-}
+public interface EventCategoryRepo extends JpaRepository<EventCategory, UUID> {}

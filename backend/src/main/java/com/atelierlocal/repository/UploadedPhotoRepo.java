@@ -1,6 +1,6 @@
 package com.atelierlocal.repository;
 
-import com.atelierlocal.model.SimpleAsking;
+import com.atelierlocal.model.UploadedPhoto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.UUID;
@@ -15,4 +15,4 @@ import java.util.UUID;
  */
 
 @Repository
-public interface SimpleAskingRepo extends JpaRepository<SimpleAsking, UUID> {}
+public interface UploadedPhotoRepo extends JpaRepository<UploadedPhoto, UUID> {}

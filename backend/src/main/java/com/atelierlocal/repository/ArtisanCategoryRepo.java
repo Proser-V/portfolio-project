@@ -1,6 +1,6 @@
 package com.atelierlocal.repository;
 
-import com.atelierlocal.model.MultipleAsking;
+import com.atelierlocal.model.ArtisanCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.UUID;
@@ -15,4 +15,4 @@ import java.util.UUID;
  */
 
 @Repository
-public interface MultipleAskingRepo extends JpaRepository<MultipleAsking, UUID> {}
+public interface ArtisanCategoryRepo extends JpaRepository<ArtisanCategory, UUID> {}

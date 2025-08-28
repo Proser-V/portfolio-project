@@ -22,9 +22,6 @@ public class Client extends User {
     @Column(nullable = false, length = 50)
     private String lastName;
 
-    @Embedded
-    private Address address;
-
     @Column
     private List<Asking> askingsList;
 
@@ -35,9 +32,6 @@ public class Client extends User {
 
     public String getLastName() { return lastName; }
     public void setLastName(String lastName) { this.lastName = lastName; }
-
-    public Address getAddress() { return address; }
-    public void setAddress(Address address) { this.address = address; }
 
     public List<Asking> getAsking() { return askingsList; }
     public void setAsking(List<Asking> askingsList) { this.askingsList = askingsList; }

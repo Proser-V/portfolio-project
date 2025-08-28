@@ -25,6 +25,8 @@ public class Avatar {
 
     // Getters and setters
 
+    public UUID getId() { return id; }
+
     public String getExtension() { return extension; }
     public void setExtension(String extension) { this.extension = extension; }
 

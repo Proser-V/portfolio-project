@@ -23,6 +23,9 @@ public class Avatar {
     @JoinColumn(name = "user", nullable = false, unique = true)
     private User user;
 
+    @Column
+    private String url;
+
     // Getters and setters
 
     public UUID getId() { return id; }
@@ -32,4 +35,7 @@ public class Avatar {
 
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
+
+    public String getUrl() { return url; }
+    public void setUrl(String url) { this.url = url; }
 }

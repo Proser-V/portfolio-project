@@ -8,20 +8,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.http.ResponseEntity;
 import com.atelierlocal.dto.LoginRequest;
 
-import com.atelierlocal.service.ClientService;
+import com.atelierlocal.service.LoginService;
 
 @RestController
 @RequestMapping("/api/users")
-public class UserController {
-    private final ClientService userService;
+public class LoginController {
+    private final LoginService loginService;
 
-    public UserController(ClientService userService) {
-        this.userService = userService;
+    public LoginController(LoginService loginService) {
+        this.loginService = loginService;
     }
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest request) {
-        boolean success = userService.login(request.getEmail(), request.getPassword());
+        boolean success = loginService.login(request.getEmail(), request.getPassword());
         if (success) {
             return ResponseEntity
                         .status(HttpStatus.OK)

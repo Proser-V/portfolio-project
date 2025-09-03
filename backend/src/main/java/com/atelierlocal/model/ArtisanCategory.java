@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.hibernate.mapping.Join;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 

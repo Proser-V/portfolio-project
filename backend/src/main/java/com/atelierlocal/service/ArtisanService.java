@@ -3,6 +3,7 @@ package com.atelierlocal.service;
 import org.springframework.stereotype.Service;
 
 import com.atelierlocal.repository.ArtisanRepo;
+import com.atelierlocal.repository.AvatarRepo;
 import com.atelierlocal.model.Artisan;
 import com.atelierlocal.model.ArtisanCategory;
 import com.atelierlocal.model.Avatar;
@@ -18,11 +19,20 @@ public class ArtisanService {
 
     private final PasswordService passwordService;
     private final ArtisanRepo artisanRepo;
+    private final AvatarService avatarService;
+    private final AvatarRepo avatarRepo;
     
     // Constructeur
-    public ArtisanService(PasswordService passwordService, ArtisanRepo artisanRepo) {
+    public ArtisanService(
+                PasswordService passwordService,
+                ArtisanRepo artisanRepo,
+                AvatarService avatarService,
+                AvatarRepo avatarRepo
+                ) {
         this.passwordService = passwordService;
         this.artisanRepo = artisanRepo;
+        this.avatarService = avatarService;
+        this.avatarRepo = avatarRepo;
     }
 
     public Artisan createArtisan(
@@ -95,7 +105,7 @@ public class ArtisanService {
         artisanRepo.delete(artisan);
     }
 
-    public Artisan updateArtisan(UUID artisanId, UpdateArtisanRequest request){
+    public Artisan updateArtisan(UUID artisanId, UpdateArtisanRequest request) {
         Artisan artisan = artisanRepo.findById(artisanId)
             .orElseThrow(() -> new RuntimeException("Professionnel non trouvé."));
 
@@ -111,17 +121,19 @@ public class ArtisanService {
         if (request.getPhoneNumber() != null) { artisan.setPhoneNumber(request.getPhoneNumber()); }
         if (request.getSiret() != null) { artisan.setSiret(request.getSiret()); }
         if (request.getAvatar() != null) {
-            // Upload de l'image sur Firebase + récupère l'URL publique
-            String avatarUrl = firebaseService.uploadFile(request.getAvatar()), "/avatars" + artisanId;
+            // Upload de l'image sur AWS S3
+            String avatarUrl = avatarService.uploadAvatar(request.getAvatar(), artisanId);
 
-            // Modification de l'entité avatar
-            Avatar avatar = artisan.getAvatar(); // Récupère l'avatar si il existe
+            // Modification de l'entité Avatar
+            Avatar avatar = artisan.getAvatar();
             if (avatar == null) {
-                avatar = new Avatar(); // Sinon créer l'objet avatar
-                avatar.setUser(artisan); // Lier le nouvel avatar à l'artisan
+                avatar = new Avatar();
+                avatar.setUser(artisan);
             }
-            avatar.setUrl(avatarUrl); // Met à jour l'URL avec celle récupérée sur Firebase
-            avatar.setExtension(getFileExtension(request.getAvatar())); // Stock l'extension du fichier
+            avatar.setUrl(avatarUrl);
+            avatar.setExtension(avatarService.getFileExtension(request.getAvatar()));
+
+            avatarRepo.save(avatar);
         }
 
         return artisanRepo.save(artisan);

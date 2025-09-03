@@ -1,5 +1,6 @@
 package com.atelierlocal.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.Column;
@@ -22,7 +23,7 @@ public class Client extends User {
     private String lastName;
 
     @Column
-    private List<Asking> askingsList;
+    private List<Asking> askingsList = new ArrayList<>();
 
     // Getters et setters
 

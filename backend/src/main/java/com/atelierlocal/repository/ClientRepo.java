@@ -1,5 +1,6 @@
 package com.atelierlocal.repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,4 +18,6 @@ import com.atelierlocal.model.Client;
  */
 
 @Repository
-public interface ClientRepo extends JpaRepository<Client, UUID> {}
+public interface ClientRepo extends JpaRepository<Client, UUID> {
+    Optional<Client> findByEmail(String email);
+}

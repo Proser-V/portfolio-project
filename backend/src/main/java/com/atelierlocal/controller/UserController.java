@@ -8,14 +8,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.http.ResponseEntity;
 import com.atelierlocal.dto.LoginRequest;
 
-import com.atelierlocal.service.UserService;
+import com.atelierlocal.service.ClientService;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
-    private final UserService userService;
+    private final ClientService userService;
 
-    public UserController(UserService userService) {
+    public UserController(ClientService userService) {
         this.userService = userService;
     }
 

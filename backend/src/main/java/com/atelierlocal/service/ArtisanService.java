@@ -36,6 +36,12 @@ public class ArtisanService {
                     Avatar avatar,
                     ArtisanCategory category
                     ) {
+        if (artisanRepo.findByEmail(email).isPresent()) {
+            throw new IllegalArgumentException("Email already in use");
+        }
+        if (rawPassword == null || rawPassword.isBlank()) {
+            throw new IllegalArgumentException("Password cannot be empty");
+        }
         Artisan artisan = new Artisan();
         artisan.setName(name);
         artisan.setEmail(email);

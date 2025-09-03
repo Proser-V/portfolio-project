@@ -5,6 +5,9 @@ import org.springframework.stereotype.Service;
 import com.atelierlocal.repository.UserRepo;
 import com.atelierlocal.model.Client;
 import com.atelierlocal.model.Address;
+import com.atelierlocal.model.Avatar;
+import com.atelierlocal.model.UserRole;
+import com.atelierlocal.model.User;
 
 @Service
 public class UserService {
@@ -17,7 +20,7 @@ public class UserService {
         this.userRepo = userRepo;
     }
 
-    public Client createUser(String firstName, String lastName, String email, Address address, String rawPassword, String avatar, Boolean isActive, Boolean isAdmin) {
+    public Client createUser(String firstName, String lastName, String email, Address address, String rawPassword, Avatar avatar, Boolean isActive, UserRole userRole) {
         if (userRepo.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("Email already in use");
         }
@@ -25,22 +28,22 @@ public class UserService {
             throw new IllegalArgumentException("Password cannot be empty");
         }
 
-        Client user = new Client();
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setEmail(email);
-        user.setAddress(address);
-        user.setAvatar(avatar);
+        Client client = new Client();
+        client.setFirstName(firstName);
+        client.setLastName(lastName);
+        client.setEmail(email);
+        client.setAddress(address);
+        client.setAvatar(avatar);
 
         String hashed = passwordService.hashPassword(rawPassword);
-        user.setHashedPassword(hashed);
-        user.setAdmin(false);
-        user.setActive(true);
+        client.setHashedPassword(hashed);
+        client.setUserRole(userRole != null ? userRole : UserRole.CLIENT);
+        client.setActive(true);
 
-        return userRepo.save(user);
+        return userRepo.save(client);
     }
 
-    public Client createAdmin(String firstName, String lastName, String email, Address address, String rawPassword, String avatar, Boolean isActive, Boolean isAdmin) {
+    public Client createAdmin(String firstName, String lastName, String email, Address address, String rawPassword, Avatar avatar, Boolean isActive, UserRole userRole) {
         if (userRepo.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("Email already in use");
         }
@@ -57,7 +60,7 @@ public class UserService {
 
         String hashed = passwordService.hashPassword(rawPassword);
         user.setHashedPassword(hashed);
-        user.setAdmin(true);
+        user.setUserRole(userRole != null ? userRole : UserRole.CLIENT);
         user.setActive(true);
 
         return userRepo.save(user);
@@ -66,7 +69,7 @@ public class UserService {
     public boolean login(String email, String rawPassword) {
         try {
             return userRepo.findByEmail(email)
-                .filter(Client::getActive)
+                .filter(User::getActive)
                 .map(user -> passwordService.verifyPassword(user.getHashedPassword(), rawPassword))
                 .orElse(false);
         } catch (Exception e) {

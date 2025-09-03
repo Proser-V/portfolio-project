@@ -60,7 +60,7 @@ public class UserService {
 
         String hashed = passwordService.hashPassword(rawPassword);
         user.setHashedPassword(hashed);
-        user.setUserRole(userRole != null ? userRole : UserRole.CLIENT);
+        user.setUserRole(UserRole.ADMIN);
         user.setActive(true);
 
         return userRepo.save(user);

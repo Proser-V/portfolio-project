@@ -10,8 +10,6 @@ import com.atelierlocal.dto.LoginRequest;
 
 import com.atelierlocal.service.UserService;
 
-import jakarta.validation.Valid;
-
 @RestController
 @RequestMapping("/api/users")
 public class UserController {

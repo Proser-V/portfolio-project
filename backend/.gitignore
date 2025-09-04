@@ -27,3 +27,6 @@ replay_pid*
 # Environment
 atelier-local-57021-firebase-adminsdk-fbsvc-76688dcff7.json
 application.properties
+
+# Apple specifics
+.DS_Store

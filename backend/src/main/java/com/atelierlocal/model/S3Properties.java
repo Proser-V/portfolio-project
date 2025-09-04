@@ -13,8 +13,8 @@ public class S3Properties {
     private String secretKey;
 
     // Getters + Setters
-    public String getBucket() { return bucketName; }
-    public void setBucket(String bucketName) { this.bucketName = bucketName; }
+    public String getBucketName() { return bucketName; }
+    public void setBucketName(String bucketName) { this.bucketName = bucketName; }
 
     public String getRegion() { return region; }
     public void setRegion(String region) { this.region = region; }

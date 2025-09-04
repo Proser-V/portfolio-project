@@ -1,8 +1,11 @@
 package com.atelierlocal.service;
 
+import org.springframework.stereotype.Service;
+
 import com.atelierlocal.model.User;
 import com.atelierlocal.repository.UserRepo;
 
+@Service
 public class LoginService {
 
     private final PasswordService passwordService;

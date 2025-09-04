@@ -20,7 +20,7 @@ public class Avatar {
     private String extension;
 
     @OneToOne
-    @JoinColumn(name = "user", nullable = false, unique = true)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
     @Column

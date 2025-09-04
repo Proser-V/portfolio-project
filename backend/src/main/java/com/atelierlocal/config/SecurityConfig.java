@@ -23,6 +23,7 @@ public class SecurityConfig {
     @Bean
     public DaoAuthenticationProvider authProvider(CustomUserDetailsService userDetailsService, Argon2PasswordEncoder encoder) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
         authProvider.setUserDetailsPasswordService(userDetailsService);
         authProvider.setPasswordEncoder(encoder);
         return authProvider;

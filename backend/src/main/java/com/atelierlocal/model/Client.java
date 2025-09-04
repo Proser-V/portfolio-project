@@ -3,8 +3,10 @@ package com.atelierlocal.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 
@@ -22,7 +24,7 @@ public class Client extends User {
     @Column(nullable = false, length = 50)
     private String lastName;
 
-    @Column
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Asking> askingsList = new ArrayList<>();
 
     // Getters et setters

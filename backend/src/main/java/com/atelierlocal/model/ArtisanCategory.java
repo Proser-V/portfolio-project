@@ -25,10 +25,10 @@ public class ArtisanCategory {
     @Column(nullable = false, length = 200)
     private String description;
 
-    @OneToOne(mappedBy = "category")
+    @OneToMany(mappedBy = "category")
     private List<Artisan> artisanList = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "artisanCatagoryList")
+    @ManyToMany(mappedBy = "artisanCategoryList")
     private List<EventCategory> eventCategories = new ArrayList<>();
 
     @ManyToMany(mappedBy = "artisanCategoryList")

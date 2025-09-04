@@ -25,6 +25,10 @@ public class Asking {
     @JoinColumn(name = "event_category_id", nullable = true)
     private EventCategory eventCategory;
 
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    private Client client;
+
     @ManyToMany
     @JoinTable(
         name = "asking_artisan_category",
@@ -43,12 +47,15 @@ public class Asking {
     public String getContent() { return content; }
     public void setContent(String content) { this.content = content; }
 
-    public List<ArtisanCategory> getArtisanCategory() { return artisanCategoryList; }
-    public void setArtisanCategory(List<ArtisanCategory> artisanCategoryList) { this.artisanCategoryList = artisanCategoryList; }
+    public List<ArtisanCategory> getArtisanCategoryList() { return artisanCategoryList; }
+    public void setArtisanCategoryList(List<ArtisanCategory> artisanCategoryList) { this.artisanCategoryList = artisanCategoryList; }
 
     public EventCategory getEventCategory() { return eventCategory; }
     public void setEventCategory(EventCategory eventCategory) { this.eventCategory = eventCategory; }
 
     public AskingStatus getStatus() { return status; }
     public void setStatus(AskingStatus status) { this.status = status; }
+
+    public Client getClient() { return client; }
+    public void setClient(Client client) { this.client = client; }
 }

@@ -27,9 +27,9 @@ public class EventCategory {
         joinColumns = @JoinColumn(name = "event_category_id"),
         inverseJoinColumns = @JoinColumn(name = "artisan_category_id")
     )
-    private List<ArtisanCategory> artisanCatagoryList = new ArrayList<>();
+    private List<ArtisanCategory> artisanCategoryList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "eventCategoryList", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "eventCategory", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Asking> askingsList = new ArrayList<>();
 
     // Getters et Setters
@@ -39,8 +39,8 @@ public class EventCategory {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public List<ArtisanCategory> getArtisanCategoryList() { return artisanCatagoryList; }
-    public void setArtisanCategoryList(List<ArtisanCategory> artisanCatagoryList) { this.artisanCatagoryList = artisanCatagoryList; }
+    public List<ArtisanCategory> getArtisanCategoryList() { return artisanCategoryList; }
+    public void setArtisanCategoryList(List<ArtisanCategory> artisanCategoryList) { this.artisanCategoryList = artisanCategoryList; }
 
     public List<Asking> getAskingsList() { return askingsList; }
     public void setAskingsList(List<Asking> askingsList) { this.askingsList = askingsList; }

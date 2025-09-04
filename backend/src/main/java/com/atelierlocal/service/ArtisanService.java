@@ -12,6 +12,7 @@ import com.atelierlocal.model.UserRole;
 import com.atelierlocal.dto.UpdateArtisanRequest;
 import com.atelierlocal.model.Address;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -135,9 +136,23 @@ public class ArtisanService {
 
             avatarRepo.save(avatar);
         }
-
         return artisanRepo.save(artisan);
     }
+
+    public Artisan getArtisanById(UUID artisanId) {
+        Artisan artisan = artisanRepo.findById(artisanId)
+            .orElseThrow(() -> new RuntimeException("Professionnel non trouvé."));
+        return artisan;
+    }
+
+    public Artisan getArtisanByEmail(String email) {
+        Artisan artisan = artisanRepo.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Professionnel non trouvé."));
+        return artisan;
+    }
+
+    public List<Artisan> getAllArtisans() {
+        List<Artisan> artisanList = artisanRepo.findAll();
+        return artisanList;
+    }
 }
-
-

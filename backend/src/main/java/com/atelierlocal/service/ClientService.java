@@ -1,5 +1,6 @@
 package com.atelierlocal.service;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -100,5 +101,22 @@ public class ClientService {
         }
 
         return clientRepo.save(client);
+    }
+
+    public Client getClientById(UUID clientId) {
+        Client client = clientRepo.findById(clientId)
+            .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé."));
+        return client;
+    }
+
+    public Client getClientByEmail(String email) {
+        Client client = clientRepo.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé."));
+        return client;
+    }
+
+    public List<Client> getAllClients() {
+        List<Client> clientList = clientRepo.findAll();
+        return clientList;
     }
 }

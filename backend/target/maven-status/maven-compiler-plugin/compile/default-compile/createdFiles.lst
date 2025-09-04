@@ -1,6 +1,6 @@
-com/atelierlocal/config/DatabaseConfig.class
-com/atelierlocal/model/S3Properties.class
 com/atelierlocal/model/Asking.class
+com/atelierlocal/model/S3Properties.class
+com/atelierlocal/config/DatabaseConfig.class
 com/atelierlocal/model/EventCategory.class
 com/atelierlocal/model/Attachment.class
 com/atelierlocal/repository/MessageRepo.class
@@ -18,10 +18,10 @@ com/atelierlocal/model/Address.class
 com/atelierlocal/config/SecurityConfig.class
 com/atelierlocal/security/JwtService.class
 com/atelierlocal/controller/ArtisanController.class
-com/atelierlocal/security/CustomUserDetailsService.class
 com/atelierlocal/model/Avatar.class
-com/atelierlocal/dto/UpdateArtisanRequest.class
+com/atelierlocal/security/CustomUserDetailsService.class
 com/atelierlocal/service/AvatarService.class
+com/atelierlocal/dto/UpdateArtisanRequest.class
 com/atelierlocal/repository/EventCategoryRepo.class
 com/atelierlocal/repository/AvatarRepo.class
 com/atelierlocal/service/ClientService.class
@@ -30,8 +30,8 @@ com/atelierlocal/model/AskingStatus.class
 com/atelierlocal/repository/AskingRepo.class
 com/atelierlocal/dto/MessageDTO.class
 com/atelierlocal/controller/MessageController.class
-com/atelierlocal/dto/UpdateClientRequest.class
 com/atelierlocal/model/ArtisanCategory.class
+com/atelierlocal/dto/UpdateClientRequest.class
 com/atelierlocal/config/WebSocketConfig.class
 com/atelierlocal/BackendApplication.class
 com/atelierlocal/repository/ClientRepo.class
@@ -42,5 +42,5 @@ com/atelierlocal/service/MessageService.class
 com/atelierlocal/service/PasswordService.class
 com/atelierlocal/repository/ArtisanCategoryRepo.class
 com/atelierlocal/controller/LoginController.class
-com/atelierlocal/config/S3Config.class
 com/atelierlocal/model/Message.class
+com/atelierlocal/config/S3Config.class

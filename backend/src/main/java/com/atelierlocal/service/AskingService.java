@@ -1,9 +1,11 @@
 package com.atelierlocal.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.atelierlocal.dto.UpdateAskingRequest;
 import com.atelierlocal.model.ArtisanCategory;
 import com.atelierlocal.model.Asking;
 import com.atelierlocal.model.AskingStatus;
@@ -41,6 +43,55 @@ public class AskingService {
             asking.setEventCategory(eventCategory);
         }
         asking.setArtisanCategoryList(artisanCategoryList);
+
+        return askingRepo.save(asking);
+    }
+
+    public Asking closeAsking(UUID askingId) {
+        Asking asking = askingRepo.findById(askingId)
+            .orElseThrow(() -> new RuntimeException("Demande non trouvée."));
+        
+        if (asking.getStatus() == AskingStatus.PENDING) {
+            asking.setStatus(AskingStatus.DONE);
+        } else if (asking.getStatus() == AskingStatus.DONE) {
+            throw new RuntimeException("Demande déjà close.");
+        } else {
+            throw new RuntimeException("Demande déjà annulée");
+        }
+
+        return askingRepo.save(asking);
+    }
+
+    public Asking cancelAsking(UUID askingId) {
+        Asking asking = askingRepo.findById(askingId)
+            .orElseThrow(() -> new RuntimeException("Demande non trouvée."));
+        
+        if (asking.getStatus() == AskingStatus.PENDING) {
+            asking.setStatus(AskingStatus.CANCELLED);
+        } else if (asking.getStatus() == AskingStatus.DONE) {
+            throw new RuntimeException("Demande déjà close.");
+        } else {
+            throw new RuntimeException("Demande déjà annulée");
+        }
+
+        return askingRepo.save(asking);
+    }
+
+    public void deleteAsking(UUID askingId) {
+        Asking asking = askingRepo.findById(askingId)
+            .orElseThrow(() -> new RuntimeException("Demande non trouvée."));
+
+        askingRepo.delete(asking);
+    }
+
+    public Asking updateAsking(UUID askingId, UpdateAskingRequest request) {
+        Asking asking = askingRepo.findById(askingId)
+            .orElseThrow(() -> new RuntimeException("Demande non trouvée"));
+        
+        if (request.getContent() != null) { asking.setContent(request.getContent());}
+        if (request.getArtisanCategoryList() != asking.getArtisanCategoryList()) {
+            asking.setArtisanCategoryList(request.getArtisanCategoryList());
+        }
 
         return askingRepo.save(asking);
     }

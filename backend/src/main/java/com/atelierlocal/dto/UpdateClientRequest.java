@@ -13,6 +13,7 @@ public class UpdateClientRequest {
     private Address address;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String rawPassword;
+    private String phoneNumber;
 
 
     public String getEmail() { return email; }
@@ -32,4 +33,7 @@ public class UpdateClientRequest {
 
     public String getRawPassword() { return rawPassword; }
     public void setRawPassword(String rawPassword) { this.rawPassword = rawPassword; }
+
+    public String getPhoneNumber() { return phoneNumber; }
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 }

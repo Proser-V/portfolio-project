@@ -22,11 +22,6 @@ public class Artisan extends User {
     @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(length = 12)
-    @Pattern(regexp = "^(|(\\+33|0)[1-9](\\d{2}){4}$", message = "Numéro invalide (format français attendu)")
-    @Size(min = 10, max = 12)
-    private String phoneNumber;
-
     @Size(max = 500, message = "La bio ne peut pas dépasser 500 caractères.")
     @Column(length = 500)
     private String bio;
@@ -47,9 +42,6 @@ public class Artisan extends User {
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-
-    public String getPhoneNumber() { return phoneNumber; }
-    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 
     public String getBio() { return bio; }
     public void setBio(String bio) { this.bio = bio; }

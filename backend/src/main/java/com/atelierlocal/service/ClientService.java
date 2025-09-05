@@ -80,6 +80,7 @@ public class ClientService {
         if (request.getLastName() != null) { client.setLastName(request.getLastName()); }
         if (request.getAddress() != null) { client.setAddress(request.getAddress()); }
         if (request.getEmail() != null) { client.setEmail(request.getEmail()); }
+        if (request.getPhoneNumber() != null) { client.setPhoneNumber(request.getPhoneNumber()); }
         if (request.getRawPassword() != null) {
             String hashed = passwordService.hashPassword(request.getRawPassword());
             client.setHashedPassword(hashed);

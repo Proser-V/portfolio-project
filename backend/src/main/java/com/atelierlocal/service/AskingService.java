@@ -18,7 +18,7 @@ public class AskingService {
     
     private final AskingRepo askingRepo;
 
-    public AskingService(AskingRepo askingRepo, AskingStatus askingStatus) {
+    public AskingService(AskingRepo askingRepo) {
         this.askingRepo = askingRepo;
     }
 

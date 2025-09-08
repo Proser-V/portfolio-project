@@ -95,4 +95,9 @@ public class AskingService {
 
         return askingRepo.save(asking);
     }
+
+    public Asking getAskingById(UUID askingId) {
+        return askingRepo.findById(askingId)
+            .orElseThrow(() -> new RuntimeException("Demande non trouvée."));
+    }
 }

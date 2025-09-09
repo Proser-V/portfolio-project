@@ -1,3 +1,8 @@
+/*
+    Ce fichier a été créé pour faciliter l’évolution du code,
+    notamment si les actions administrateur se multiplient avec la scalabilité du système.
+*/
+
 package com.atelierlocal.service;
 
 import java.util.UUID;
@@ -21,6 +26,7 @@ public class AdminService {
     private final ArtisanService artisanService;
     private final AskingService askingService;
 
+    // Constructeur
     public AdminService(ClientService clientService,
                         ArtisanService artisanService,
                         AskingService askingService,

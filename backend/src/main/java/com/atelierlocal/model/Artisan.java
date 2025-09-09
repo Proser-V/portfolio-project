@@ -31,7 +31,7 @@ public class Artisan extends User {
     private ArtisanCategory category;
 
     @Column(length = 14)
-    @Pattern(regexp = "\\d+", message = "Le champ ne doit contenir que des chiffres") // Validation du format seulement
+    @Pattern(regexp = "\\d+", message = "Le champ ne doit contenir que des chiffres.") // Validation du format seulement
     @Size(min = 14, max = 14)
     private String siret;
 

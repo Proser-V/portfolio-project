@@ -30,7 +30,7 @@ public abstract class User {
     private UUID id;
 
     @Column(nullable = false, unique = true, length = 100)
-    @Email(message = "Format d'email invalide")
+    @Email(message = "Format d'email invalide.")
     @Size(max = 100, message = "L'email ne peux dépasser 100 caractères.")
     private String email;
 

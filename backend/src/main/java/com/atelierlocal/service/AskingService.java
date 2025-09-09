@@ -56,7 +56,7 @@ public class AskingService {
         } else if (asking.getStatus() == AskingStatus.DONE) {
             throw new RuntimeException("Demande déjà close.");
         } else {
-            throw new RuntimeException("Demande déjà annulée");
+            throw new RuntimeException("Demande déjà annulée.");
         }
 
         return askingRepo.save(asking);
@@ -71,7 +71,7 @@ public class AskingService {
         } else if (asking.getStatus() == AskingStatus.DONE) {
             throw new RuntimeException("Demande déjà close.");
         } else {
-            throw new RuntimeException("Demande déjà annulée");
+            throw new RuntimeException("Demande déjà annulée.");
         }
 
         return askingRepo.save(asking);
@@ -86,7 +86,7 @@ public class AskingService {
 
     public Asking updateAsking(UUID askingId, UpdateAskingRequest request) {
         Asking asking = askingRepo.findById(askingId)
-            .orElseThrow(() -> new RuntimeException("Demande non trouvée"));
+            .orElseThrow(() -> new RuntimeException("Demande non trouvée."));
         
         if (request.getContent() != null) { asking.setContent(request.getContent());}
         if (request.getArtisanCategoryList() != asking.getArtisanCategoryList()) {

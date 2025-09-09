@@ -2,8 +2,12 @@ package com.atelierlocal.service;
 
 import org.springframework.stereotype.Service;
 
+import com.atelierlocal.repository.ArtisanCategoryRepo;
 import com.atelierlocal.repository.ArtisanRepo;
 import com.atelierlocal.repository.AvatarRepo;
+
+import jakarta.persistence.EntityNotFoundException;
+
 import com.atelierlocal.model.Artisan;
 import com.atelierlocal.model.ArtisanCategory;
 import com.atelierlocal.model.Avatar;
@@ -22,18 +26,21 @@ public class ArtisanService {
     private final ArtisanRepo artisanRepo;
     private final AvatarService avatarService;
     private final AvatarRepo avatarRepo;
+    private final ArtisanCategoryRepo artisanCategoryRepo;
     
     // Constructeur
     public ArtisanService(
                 PasswordService passwordService,
                 ArtisanRepo artisanRepo,
                 AvatarService avatarService,
-                AvatarRepo avatarRepo
+                AvatarRepo avatarRepo,
+                ArtisanCategoryRepo artisanCategoryRepo
                 ) {
         this.passwordService = passwordService;
         this.artisanRepo = artisanRepo;
         this.avatarService = avatarService;
         this.avatarRepo = avatarRepo;
+        this.artisanCategoryRepo = artisanCategoryRepo;
     }
 
     public Artisan createArtisan(
@@ -48,10 +55,16 @@ public class ArtisanService {
                     ArtisanCategory category
                     ) {
         if (artisanRepo.findByEmail(email).isPresent()) {
-            throw new IllegalArgumentException("Email already in use");
+            throw new IllegalArgumentException("Email déjà utilisé..");
         }
         if (rawPassword == null || rawPassword.isBlank()) {
-            throw new IllegalArgumentException("Password cannot be empty");
+            throw new IllegalArgumentException("Le mot de passe ne peut être vide.");
+        }
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Le nom ne peut être vide.");
+        }
+        if (category == null) {
+            throw new IllegalArgumentException("La catégorie d'artisan ne peut être vide.");
         }
         Artisan artisan = new Artisan();
         artisan.setName(name);
@@ -73,7 +86,7 @@ public class ArtisanService {
     public Artisan addGalleryPhoto(UUID artisanId, UploadedPhoto photo) {
         // Cherche l'artisan
         Artisan artisan = artisanRepo.findById(artisanId)
-            .orElseThrow(() -> new RuntimeException("Professionnel non trouvé."));
+            .orElseThrow(() -> new EntityNotFoundException("Professionnel non trouvé."));
 
         photo.setArtisan(artisan); // Etabli le lien entre la photo et l'artisan
         artisan.getPhotoGallery().add(photo); // Ajoute la photo
@@ -84,13 +97,13 @@ public class ArtisanService {
     public Artisan removeGalleryPhoto(UUID artisanId, UUID photoId) {
         // Cherche l'artisan
         Artisan artisan = artisanRepo.findById(artisanId)
-            .orElseThrow(() -> new RuntimeException("Professionnel non trouvé."));
+            .orElseThrow(() -> new EntityNotFoundException("Professionnel non trouvé."));
 
         // Cherche la photo à supprimer
         UploadedPhoto photoToRemove = artisan.getPhotoGallery().stream() // Créer un objet Stream pour éviter boucle manuelle
             .filter(photo -> photo.getId().equals(photoId)) // Selectionne la photo dont l'ID correspond
             .findFirst() // Assure de prendre la première photo trouvé (sécurité meme si UUID unique), retourne un Optional
-            .orElseThrow(() -> new RuntimeException("Photo non trouvé.")); // Si Optional vide, lance une exception
+            .orElseThrow(() -> new EntityNotFoundException("Photo non trouvé.")); // Si Optional vide, lance une exception
 
         artisan.getPhotoGallery().remove(photoToRemove); // Supprime la photo
         photoToRemove.setArtisan(null); // casse la relation entre la photo et l'artisan
@@ -101,14 +114,14 @@ public class ArtisanService {
 
     public void deleteArtisan(UUID atisanId) {
         Artisan artisan = artisanRepo.findById(atisanId)
-            .orElseThrow(() -> new RuntimeException("Professionnel non trouvé."));
+            .orElseThrow(() -> new EntityNotFoundException("Professionnel non trouvé."));
 
         artisanRepo.delete(artisan);
     }
 
     public Artisan updateArtisan(UUID artisanId, UpdateArtisanRequest request) {
         Artisan artisan = artisanRepo.findById(artisanId)
-            .orElseThrow(() -> new RuntimeException("Professionnel non trouvé."));
+            .orElseThrow(() -> new EntityNotFoundException("Professionnel non trouvé."));
 
         if (request.getName() != null) { artisan.setName(request.getName()); }
         if (request.getBio() != null) { artisan.setBio(request.getBio()); }
@@ -141,18 +154,37 @@ public class ArtisanService {
 
     public Artisan getArtisanById(UUID artisanId) {
         Artisan artisan = artisanRepo.findById(artisanId)
-            .orElseThrow(() -> new RuntimeException("Professionnel non trouvé."));
+            .orElseThrow(() -> new EntityNotFoundException("Professionnel non trouvé."));
         return artisan;
     }
 
     public Artisan getArtisanByEmail(String email) {
         Artisan artisan = artisanRepo.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("Professionnel non trouvé."));
+            .orElseThrow(() -> new EntityNotFoundException("Professionnel non trouvé."));
         return artisan;
     }
 
     public List<Artisan> getAllArtisans() {
-        List<Artisan> artisanList = artisanRepo.findAll();
-        return artisanList;
+        List<Artisan> artisans = artisanRepo.findAll();
+        if (artisans.isEmpty()){
+            throw new EntityNotFoundException("Pas d'artisan trouvé.");
+        }
+        return artisans;
+    }
+
+    public List<Artisan> getAllArtisansByCategory(UUID categoryId) {
+        ArtisanCategory category = artisanCategoryRepo.findById(categoryId)
+            .orElseThrow(() -> new EntityNotFoundException("Categorie non trouvée."));
+
+        if (category == null) {
+            throw new IllegalArgumentException("La categorie ne doit pas être null.");
+        }
+
+        List<Artisan> artisans = artisanRepo.findAllByArtisanCategory(category);
+        if (artisans.isEmpty()){
+            throw new EntityNotFoundException("Pas d'artisan trouvé pour cette catégorie." + category.getName());
+        }
+
+        return artisans;
     }
 }

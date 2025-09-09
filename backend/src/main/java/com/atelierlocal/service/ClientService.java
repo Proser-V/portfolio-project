@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 
 import com.atelierlocal.repository.AvatarRepo;
 import com.atelierlocal.repository.ClientRepo;
+
+import jakarta.persistence.EntityNotFoundException;
+
 import com.atelierlocal.model.Client;
 import com.atelierlocal.dto.UpdateClientRequest;
 import com.atelierlocal.model.Address;
@@ -67,14 +70,14 @@ public class ClientService {
 
     public void deleteClient(UUID cientId) {
         Client client = clientRepo.findById(cientId)
-            .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé."));
+            .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé."));
 
         clientRepo.delete(client);
     }
 
     public Client updateClient(UUID clientId, UpdateClientRequest request) {
         Client client = clientRepo.findById(clientId)
-            .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé."));
+            .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé."));
         
         if (request.getFirstName() != null) { client.setFirstName(request.getFirstName()); }
         if (request.getLastName() != null) { client.setLastName(request.getLastName()); }
@@ -106,18 +109,21 @@ public class ClientService {
 
     public Client getClientById(UUID clientId) {
         Client client = clientRepo.findById(clientId)
-            .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé."));
+            .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé."));
         return client;
     }
 
     public Client getClientByEmail(String email) {
         Client client = clientRepo.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé."));
+            .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé."));
         return client;
     }
 
     public List<Client> getAllClients() {
         List<Client> clientList = clientRepo.findAll();
+        if (clientList.isEmpty()) {
+            throw new EntityNotFoundException("Aucun utilisateur trouvé.");
+        }
         return clientList;
     }
 }

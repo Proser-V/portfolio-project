@@ -1,6 +1,8 @@
 package com.atelierlocal.security;
 
 import java.security.Key;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.function.Function;
 
@@ -57,10 +59,14 @@ public class JwtService {
     }
 
     public String generateToken(UserDetails userDetails) {
+        Instant now = Instant.now();
+        long expirationMsLong = Long.parseLong(expirationMs);
+        Instant expiration = now.plus(expirationMsLong, ChronoUnit.MILLIS);
+
         return Jwts.builder()
             .setSubject(userDetails.getUsername())
-            .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
+            .setIssuedAt(Date.from(now))
+            .setExpiration(Date.from(expiration))
             .signWith(getSigningKey(), SignatureAlgorithm.HS256)
             .compact();
     }

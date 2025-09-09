@@ -47,10 +47,16 @@ public class ClientService {
                     UserRole userRole
                     ) {
         if (clientRepo.findByEmail(email).isPresent()) {
-            throw new IllegalArgumentException("Email already in use");
+            throw new IllegalArgumentException("Cet email est déjà enregistré");
         }
         if (rawPassword == null || rawPassword.isBlank()) {
-            throw new IllegalArgumentException("Password cannot be empty");
+            throw new IllegalArgumentException("Le mot de passe ne peut pas être vide");
+        }
+        if (firstName == null || firstName.isBlank()) {
+            throw new IllegalArgumentException("Veuillez entrer votre prénom");
+        }
+        if (lastName == null || lastName.isBlank()) {
+            throw new IllegalArgumentException("Veuillez entrer votre nom");
         }
 
         Client client = new Client();

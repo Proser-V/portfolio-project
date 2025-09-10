@@ -37,7 +37,7 @@ public SecurityFilterChain filterChain(HttpSecurity http,
         .csrf(csrf -> csrf.disable())
         .cors(cors -> {})
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/home", "/", "/api/users/login", "/api/clients/register").permitAll()
+            .requestMatchers("/home", "/", "/api/users/login", "/api/clients/register", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
             .anyRequest().authenticated()
         )
         .userDetailsService(userDetailsService)

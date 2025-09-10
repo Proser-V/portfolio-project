@@ -37,7 +37,7 @@ public SecurityFilterChain filterChain(HttpSecurity http,
         .csrf(csrf -> csrf.disable())
         .cors(cors -> {})
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/home", "/", "/api/users/login").permitAll()
+            .requestMatchers("/home", "/", "/api/users/login", "/api/clients/register").permitAll()
             .anyRequest().authenticated()
         )
         .userDetailsService(userDetailsService)

@@ -180,7 +180,7 @@ public class ArtisanService {
             throw new IllegalArgumentException("La categorie ne doit pas être null.");
         }
 
-        List<Artisan> artisans = artisanRepo.findAllByArtisanCategory(category);
+        List<Artisan> artisans = artisanRepo.findAllByCategory(category);
         if (artisans.isEmpty()){
             throw new EntityNotFoundException("Pas d'artisan trouvé pour cette catégorie." + category.getName());
         }

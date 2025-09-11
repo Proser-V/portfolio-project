@@ -1,41 +1,45 @@
 package com.atelierlocal.controller;
 
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.atelierlocal.dto.LoginRequest;
+import com.atelierlocal.security.CustomUserDetailsService;
+import com.atelierlocal.security.JwtService;
 import com.atelierlocal.service.LoginService;
 
 @RestController
 @RequestMapping("/api/users")
 public class LoginController {
     private final LoginService loginService;
+    private final JwtService jwtService;
+    private final CustomUserDetailsService userDetailsService;
 
-    public LoginController(LoginService loginService) {
+    public LoginController(LoginService loginService, JwtService jwtService, CustomUserDetailsService userDetailsService) {
         this.loginService = loginService;
+        this.jwtService = jwtService;
+        this.userDetailsService = userDetailsService;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         boolean success = loginService.login(request.getEmail(), request.getPassword());
-        if (success) {
-            return ResponseEntity
-                        .status(HttpStatus.OK)
-                        .body("Login successful");
-        } else {
-            return ResponseEntity
-                        .status(HttpStatus.UNAUTHORIZED)
-                        .body("Invalid credentials");
+        if (!success) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Email ou mot de passe incorrect");
         }
-    }
 
-    @GetMapping("/login")
-    public String loginTest() {
-        return "Tarte atteint";
+        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
+
+        String token = jwtService.generateToken(userDetails);
+
+        return ResponseEntity.ok(Map.of("token", token));
     }
 }

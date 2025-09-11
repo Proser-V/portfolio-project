@@ -6,15 +6,13 @@ public class ClientDto {
         private UUID id;
         private String email;
         private String avatarUrl;
-        private String phoneNumber;
         private String firstName;
         private String lastName;
 
-        public ClientDto(UUID id, String email, String avatarUrl, String phoneNumber, String firstName, String lastName) {
+        public ClientDto(UUID id, String email, String avatarUrl, String firstName, String lastName) {
             this.id = id;
             this.email = email;
             this.avatarUrl = avatarUrl;
-            this.phoneNumber = phoneNumber;
             this.firstName = firstName;
             this.lastName = lastName;
         }
@@ -29,9 +27,6 @@ public class ClientDto {
     
         public String getAvatarUrl() { return avatarUrl; }
         public void setAvatar(String avatarUrl) { this.avatarUrl = avatarUrl; }
-    
-        public String getPhoneNumber() { return phoneNumber; }
-        public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 
         public String getFirstName() { return firstName; }
         public void setFirstName(String firstName) { this.firstName = firstName; } 

@@ -68,7 +68,6 @@ public class ClientController {
             clientDetails.getId(),
             clientDetails.getEmail(),
             avatarUrl,
-            clientDetails.getPhoneNumber(),
             clientDetails.getFirstName(),
             clientDetails.getLastName()
         );

@@ -27,6 +27,9 @@ public class Client extends User {
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Asking> askingsList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "client")
+    private List<Recommendation> recommendations = new ArrayList<>();
+
     // Getters et setters
 
     public String getFirstName() { return firstName; }

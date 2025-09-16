@@ -1,5 +1,6 @@
 package com.atelierlocal.model;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +39,11 @@ public class Artisan extends User {
     @OneToMany(mappedBy = "artisan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UploadedPhoto> photoGallery = new ArrayList<>();
 
+    private LocalDate activityStartDate;
+
+    @OneToMany(mappedBy = "artisan")
+    private List<Recommendation> recommendations = new ArrayList<>();
+
     // Getters and setters
 
     public String getName() { return name; }
@@ -54,4 +60,7 @@ public class Artisan extends User {
 
     public List<UploadedPhoto> getPhotoGallery() { return photoGallery; }
     public void setPhotoGallery(List<UploadedPhoto> photoGallery) { this.photoGallery = photoGallery; }
+
+    public LocalDate getActivityStartDate() { return activityStartDate; }
+    public void setActivityStartDate(LocalDate activityStartDate) { this.activityStartDate = activityStartDate; }
 }

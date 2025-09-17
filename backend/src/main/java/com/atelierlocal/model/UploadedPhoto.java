@@ -1,6 +1,10 @@
 package com.atelierlocal.model;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,6 +36,13 @@ public class UploadedPhoto {
     @JoinColumn(name = "artisan_id", nullable = false)
     private Artisan artisan;
 
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
     // Getters et setters
 
     public UUID getId() { return id; }
@@ -44,4 +55,9 @@ public class UploadedPhoto {
 
     public Artisan getArtisan() { return artisan; }
     public void setArtisan(Artisan artisan) { this.artisan = artisan; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }

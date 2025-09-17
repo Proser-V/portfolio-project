@@ -3,7 +3,11 @@ package com.atelierlocal.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "users_avatar")
@@ -26,6 +30,13 @@ public class Avatar {
     @Column
     private String url;
 
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
     // Getters and setters
 
     public UUID getId() { return id; }
@@ -38,4 +49,9 @@ public class Avatar {
 
     public String getUrl() { return url; }
     public void setUrl(String url) { this.url = url; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }

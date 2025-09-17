@@ -1,8 +1,12 @@
 package com.atelierlocal.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -32,6 +36,13 @@ public class EventCategory {
     @OneToMany(mappedBy = "eventCategory", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Asking> askingsList = new ArrayList<>();
 
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
     // Getters et Setters
 
     public UUID getId() { return id; }
@@ -44,4 +55,9 @@ public class EventCategory {
 
     public List<Asking> getAskingsList() { return askingsList; }
     public void setAskingsList(List<Asking> askingsList) { this.askingsList = askingsList; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }

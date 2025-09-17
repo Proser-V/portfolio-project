@@ -1,10 +1,13 @@
 package com.atelierlocal.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.atelierlocal.dto.ArtisanDto;
 import com.atelierlocal.dto.ArtisanRegistrationRequest;
 import com.atelierlocal.model.Address;
 import com.atelierlocal.model.Artisan;
@@ -75,5 +78,21 @@ public class ArtisanController {
         );
 
         return ResponseEntity.status(201).body(artisan);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<ArtisanDto> getCurrentUser(@AuthenticationPrincipal Artisan artisanDetails) {
+        String avatarUrl = artisanDetails.getAvatar() != null
+        ? artisanDetails.getAvatar().getUrl()
+        : null;
+        ArtisanDto artisanDto = new ArtisanDto(
+            artisanDetails.getId(),
+            artisanDetails.getEmail(),
+            avatarUrl,
+            artisanDetails.getName(),
+            artisanDetails.getActivityStartDate()
+        );
+
+        return ResponseEntity.ok(artisanDto);
     }
 }

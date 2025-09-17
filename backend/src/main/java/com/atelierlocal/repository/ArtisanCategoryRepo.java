@@ -2,6 +2,8 @@ package com.atelierlocal.repository;
 
 import com.atelierlocal.model.ArtisanCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -18,5 +20,6 @@ import java.util.UUID;
 
 @Repository
 public interface ArtisanCategoryRepo extends JpaRepository<ArtisanCategory, UUID> {
-    Optional<ArtisanCategory> findByName(String name);
+    @Query("SELECT c FROM ArtisanCategory c WHERE LOWER(TRIM(c.name)) = LOWER(TRIM(:name))")
+    Optional<ArtisanCategory> findByNameIgnoreCase(@Param("name") String name);
 }

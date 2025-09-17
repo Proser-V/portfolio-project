@@ -29,7 +29,7 @@ public class SecurityConfig {
         }
 
     @Bean
-public SecurityFilterChain filterChain(HttpSecurity http, 
+    public SecurityFilterChain filterChain(HttpSecurity http, 
                                      JwtAuthenticationFilter jwtFilter,
                                      CustomUserDetailsService userDetailsService,
                                      Argon2PasswordEncoder passwordEncoder) throws Exception {
@@ -37,7 +37,9 @@ public SecurityFilterChain filterChain(HttpSecurity http,
         .csrf(csrf -> csrf.disable())
         .cors(cors -> {})
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/home", "/", "/api/users/login", "/api/clients/register", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
+            .requestMatchers("/home", "/", "/api/users/login",
+            "/api/clients/register", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**",
+            "/api/artisans/register", "/api/artisans/debug/categories").permitAll()
             .anyRequest().authenticated()
         )
         .userDetailsService(userDetailsService)

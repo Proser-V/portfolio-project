@@ -1,11 +1,15 @@
 package com.atelierlocal.controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.security.core.Authentication;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.atelierlocal.dto.ArtisanDto;
 import com.atelierlocal.dto.ArtisanRegistrationRequest;
@@ -18,7 +22,6 @@ import com.atelierlocal.service.ArtisanService;
 import com.atelierlocal.service.AvatarService;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -47,6 +50,8 @@ public class ArtisanController {
     })
     public ResponseEntity<Artisan> registerArtisan(@Valid @RequestBody ArtisanRegistrationRequest request) {
 
+        System.out.println("request.categoryName = '" + request.getCategoryName() + "'");
+
         Address address = null;
         if (request.getAddress() != null) {
             address = new Address(
@@ -57,13 +62,20 @@ public class ArtisanController {
             );
         }
 
-        ArtisanCategory category = artisanCategoryRepo.findByName(request.getCategoryName())
+        System.out.println("Input categoryName: '" + request.getCategoryName() + "'");
+        artisanCategoryRepo.findAll().forEach(c -> System.out.println("DB category: '" + c.getName() + "'"));
+
+        ArtisanCategory category = artisanCategoryRepo.findByNameIgnoreCase(request.getCategoryName())
             .orElseThrow(() -> new IllegalArgumentException("Catégorie invalide"));
 
-        String avatarUrl = avatarService.uploadAvatar(request.getAvatar(), null);
-        Avatar avatar = new Avatar();
-        avatar.setExtension(avatarService.getFileExtension(request.getAvatar()));
-        avatar.setUrl(avatarUrl);
+        String avatarUrl = null;
+        Avatar avatar = null;
+        if (request.getAvatar() != null) {
+            avatarUrl = avatarService.uploadAvatar(request.getAvatar(), null);
+            avatar = new Avatar();
+            avatar.setExtension(avatarService.getFileExtension(request.getAvatar()));
+            avatar.setUrl(avatarUrl);
+        }
 
         Artisan artisan = artisanService.createArtisan(
             request.getName(),
@@ -80,19 +92,28 @@ public class ArtisanController {
         return ResponseEntity.status(201).body(artisan);
     }
 
+    @GetMapping("/debug/categories")
+    public List<String> debugCat() {
+        return artisanCategoryRepo.findAll().stream()
+            .map(ArtisanCategory::getName)
+            .collect(Collectors.toList());
+    }
+
     @GetMapping("/me")
-    public ResponseEntity<ArtisanDto> getCurrentUser(@AuthenticationPrincipal Artisan artisanDetails) {
-        String avatarUrl = artisanDetails.getAvatar() != null
-        ? artisanDetails.getAvatar().getUrl()
-        : null;
+    public ResponseEntity<ArtisanDto> getCurrentUser(Authentication authentication) {
+        String email = authentication.getName();
+        Artisan artisan = artisanService.getArtisanByEmail(email);
+
+        String avatarUrl = artisan.getAvatar() != null ? artisan.getAvatar().getUrl() : null;
+
         ArtisanDto artisanDto = new ArtisanDto(
-            artisanDetails.getId(),
-            artisanDetails.getEmail(),
+            artisan.getId(),
+            artisan.getEmail(),
             avatarUrl,
-            artisanDetails.getName(),
-            artisanDetails.getActivityStartDate()
+            artisan.getName(),
+            artisan.getActivityStartDate()
         );
 
-        return ResponseEntity.ok(artisanDto);
+    return ResponseEntity.ok(artisanDto);
     }
 }

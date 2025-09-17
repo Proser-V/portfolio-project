@@ -76,6 +76,7 @@ public class ArtisanService {
         artisan.setAvatar(avatar);
         artisan.setCategory(category);
         artisan.setUserRole(UserRole.ARTISAN);
+        artisan.setActive(true);
 
         String hashed = passwordService.hashPassword(rawPassword);
         artisan.setHashedPassword(hashed);

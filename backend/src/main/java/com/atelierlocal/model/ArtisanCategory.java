@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 
@@ -26,6 +28,7 @@ public class ArtisanCategory {
     private String description;
 
     @OneToMany(mappedBy = "category")
+    @JsonIgnore
     private List<Artisan> artisanList = new ArrayList<>();
 
     @ManyToMany(mappedBy = "artisanCategoryList")

@@ -75,7 +75,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
         return path.equals("/api/clients/register")
-            || path.equals("api/users/login")
+            || path.equals("/api/artisans/register")
+            || path.equals("/api/users/login")
+            || path.equals("/api/artisans/debug/categories")
             || path.startsWith("/swagger-ui")
             || path.startsWith("v3/api/docs");
     }

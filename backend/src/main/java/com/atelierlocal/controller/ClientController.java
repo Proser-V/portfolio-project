@@ -2,7 +2,7 @@ package com.atelierlocal.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,18 +60,20 @@ public class ClientController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<ClientDto> getCurrentUser(@AuthenticationPrincipal Client clientDetails) {
-        String avatarUrl = clientDetails.getAvatar() != null
-        ? clientDetails.getAvatar().getUrl()
-        : null;
-        ClientDto userDto = new ClientDto(
-            clientDetails.getId(),
-            clientDetails.getEmail(),
-            avatarUrl,
-            clientDetails.getFirstName(),
-            clientDetails.getLastName()
-        );
+    public ResponseEntity<ClientDto> getCurrentUser(Authentication authentication) {
+        String email = authentication.getName();
+        Client client = clientService.getClientByEmail(email);
 
-        return ResponseEntity.ok(userDto);
+        String avatarUrl = client.getAvatar() != null ? client.getAvatar().getUrl() : null;
+
+        ClientDto clientDto = new ClientDto(
+            client.getId(),
+            client.getEmail(),
+            avatarUrl,
+            client.getFirstName(),
+            client.getLastName()
+            );
+
+        return ResponseEntity.ok(clientDto);
     }
 }

@@ -1,8 +1,12 @@
 package com.atelierlocal.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -37,6 +41,13 @@ public class ArtisanCategory {
     @ManyToMany(mappedBy = "artisanCategoryList")
     private List<Asking> askingsList = new ArrayList<>();
 
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
     // Getters et setters
 
     public UUID getId() { return id; }
@@ -45,7 +56,7 @@ public class ArtisanCategory {
     public void setName(String name) { this.name = name; }
 
     public String getDescription() { return description; }
-    public void setdescription(String description) { this.description = description; }
+    public void setDescription(String description) { this.description = description; }
 
     public List<Artisan> getArtisanList() { return artisanList; }
     public void setArtisanList(List<Artisan> artisanList) { this.artisanList = artisanList; }
@@ -55,4 +66,9 @@ public class ArtisanCategory {
 
     public List<Asking> getAskingsList() { return this.askingsList; }
     public void setAskingsList(List<Asking> askingsList) { this.askingsList = askingsList; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }

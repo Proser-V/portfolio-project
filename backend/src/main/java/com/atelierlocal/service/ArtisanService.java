@@ -145,7 +145,7 @@ public class ArtisanService {
                 avatar = new Avatar();
                 avatar.setUser(artisan);
             }
-            avatar.setUrl(avatarUrl);
+            avatar.setAvatarUrl(avatarUrl);
             avatar.setExtension(avatarService.getFileExtension(request.getAvatar()));
 
             avatarRepo.save(avatar);

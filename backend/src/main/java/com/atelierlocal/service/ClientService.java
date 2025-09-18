@@ -104,7 +104,7 @@ public class ClientService {
                 avatar = new Avatar();
                 avatar.setUser(client);
             }
-            avatar.setUrl(avatarUrl);
+            avatar.setAvatarUrl(avatarUrl);
             avatar.setExtension(avatarService.getFileExtension(request.getAvatar()));
 
             avatarRepo.save(avatar);

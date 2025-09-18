@@ -74,7 +74,7 @@ public class ArtisanController {
             avatarUrl = avatarService.uploadAvatar(request.getAvatar(), null);
             avatar = new Avatar();
             avatar.setExtension(avatarService.getFileExtension(request.getAvatar()));
-            avatar.setUrl(avatarUrl);
+            avatar.setAvatarUrl(avatarUrl);
         }
 
         Artisan artisan = artisanService.createArtisan(
@@ -104,7 +104,7 @@ public class ArtisanController {
         String email = authentication.getName();
         Artisan artisan = artisanService.getArtisanByEmail(email);
 
-        String avatarUrl = artisan.getAvatar() != null ? artisan.getAvatar().getUrl() : null;
+        String avatarUrl = artisan.getAvatar() != null ? artisan.getAvatar().getAvatarUrl() : null;
 
         ArtisanDto artisanDto = new ArtisanDto(
             artisan.getId(),

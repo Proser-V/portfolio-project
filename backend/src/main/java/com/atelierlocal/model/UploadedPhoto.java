@@ -32,6 +32,9 @@ public class UploadedPhoto {
     @Column(nullable = false, length = 150)
     private String description;
 
+    @Column
+    private String uploadedPhotoUrl;
+
     @ManyToOne
     @JoinColumn(name = "artisan_id", nullable = false)
     private Artisan artisan;
@@ -49,6 +52,9 @@ public class UploadedPhoto {
 
     public String getExtension() { return extension; }
     public void setExtension(String extension) { this.extension = extension; }
+
+    public String getUploadedPhotoUrl() { return uploadedPhotoUrl; }
+    public void setUploadedPhotoUrl(String uploadedPhotoUrl) { this.uploadedPhotoUrl = uploadedPhotoUrl; }
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }

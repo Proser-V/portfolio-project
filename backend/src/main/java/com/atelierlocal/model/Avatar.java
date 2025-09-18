@@ -28,7 +28,7 @@ public class Avatar {
     private User user;
 
     @Column
-    private String url;
+    private String avatarUrl;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -47,8 +47,8 @@ public class Avatar {
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
 
-    public String getUrl() { return url; }
-    public void setUrl(String url) { this.url = url; }
+    public String getAvatarUrl() { return avatarUrl; }
+    public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
 

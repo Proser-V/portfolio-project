@@ -64,7 +64,7 @@ public class ClientController {
         String email = authentication.getName();
         Client client = clientService.getClientByEmail(email);
 
-        String avatarUrl = client.getAvatar() != null ? client.getAvatar().getUrl() : null;
+        String avatarUrl = client.getAvatar() != null ? client.getAvatar().getAvatarUrl() : null;
 
         ClientDto clientDto = new ClientDto(
             client.getId(),

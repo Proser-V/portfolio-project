@@ -16,9 +16,11 @@ import com.atelierlocal.repository.MessageRepo;
 public class MessageService {
 
     private final MessageRepo messageRepo;
+    private final AttachmentService attachmentService;
 
-    public MessageService(MessageRepo messageRepo, AttachmentRepo attachmentRepo) {
+    public MessageService(MessageRepo messageRepo, AttachmentRepo attachmentRepo, AttachmentService attachmentService) {
         this.messageRepo = messageRepo;
+        this.attachmentService = attachmentService;
     }
 
     public Message sendMessage(User sender, User receiver, String content, List<MultipartFile> files) {
@@ -38,7 +40,7 @@ public class MessageService {
                 attachment.setFileType(file.getContentType());
                 attachment.setFileSize(file.getSize());
 
-                message.addAttachment(attachment);
+                attachmentService.linkToMessage(attachment, message);
             }
         }
 

@@ -78,15 +78,4 @@ public class Message {
 
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
-
-    // Méthodes
-    public void addAttachment(Attachment attachment) {
-        attachments.add(attachment);
-        attachment.setMessage(this);
-    }
-
-    public void removeAttachment(Attachment attachment) {
-        attachments.remove(attachment);
-        attachment.setMessage(null);
-    }
 }

@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.atelierlocal.model.Artisan;
 
+
 public class ArtisanResponseDTO {
     private UUID id;
     private String name;
@@ -12,9 +13,11 @@ public class ArtisanResponseDTO {
     private String bio;
     private String phoneNumber;
     private String siret;
-    private String avatarUrl;
+    private AvatarDTO avatar;
     private AddressDTO address;
     private String categoryName;
+    private LocalDate activityStartDate;
+    private int recommendationsCount;
 
     public ArtisanResponseDTO(Artisan artisan) {
         this.id = artisan.getId();
@@ -23,24 +26,44 @@ public class ArtisanResponseDTO {
         this.bio = artisan.getBio();
         this.phoneNumber = artisan.getPhoneNumber();
         this.siret = artisan.getSiret();
-        this.avatarUrl = artisan.getAvatarUrl();
+        this.avatar = artisan.getAvatar() != null ? new AvatarDTO(artisan.getAvatar()) : null;
         this.address = artisan.getAddress() != null ? new AddressDTO(artisan.getAddress()) : null;
-        this.categoryName = artisan.getCategory().getName();
+        this.categoryName = artisan.getCategory() != null ? artisan.getCategory().getName() : null;
+        this.activityStartDate = artisan.getActivityStartDate();
+        this.recommendationsCount = artisan.getRecommendations() != null ? artisan.getRecommendations().size() : 0;
     }
 
     // Getters et setters
 
     public UUID getId() { return id; }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
-    public String getAvatarUrl() { return avatarUrl; }
-    public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
-
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
+
+    public String getPhoneNumber() { return phoneNumber; }
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+
+    public String getSiret() { return siret; }
+    public void setSiret(String siret) { this.siret = siret; }
+
+    public AvatarDTO getAvatar() { return avatar; }
+    public void setAvatar(AvatarDTO avatar) { this.avatar = avatar; }
+
+    public AddressDTO getAddress() { return address; }
+    public void setAddress(AddressDTO address) { this.address = address; }
+
+    public String getCategoryName() { return categoryName; }
+    public void setCategoryName(String categoryName) { this.categoryName = categoryName; }
+
     public LocalDate getActivityStartDate() { return activityStartDate; }
     public void setActivityStartDate(LocalDate activityStartDate) { this.activityStartDate = activityStartDate; }
+
+    public int getRecommendations() { return recommendationsCount; }
+    public void setRecommendations(int recommendationsCount) { this.recommendationsCount = recommendationsCount; }
 }

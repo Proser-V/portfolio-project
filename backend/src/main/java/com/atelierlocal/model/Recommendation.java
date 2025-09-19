@@ -3,6 +3,9 @@ package com.atelierlocal.model;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -22,9 +25,8 @@ public class Recommendation {
     @ManyToOne
     private Artisan artisan;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
     // Getters et setters
 
@@ -37,7 +39,4 @@ public class Recommendation {
     public void setArtisan(Artisan artisan) { this.artisan = artisan; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
-
-    public LocalDateTime getupdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }

@@ -63,4 +63,7 @@ public class Artisan extends User {
 
     public LocalDate getActivityStartDate() { return activityStartDate; }
     public void setActivityStartDate(LocalDate activityStartDate) { this.activityStartDate = activityStartDate; }
+
+    public List<Recommendation> getRecommendations() { return recommendations; }
+    public void setRecommendations(List<Recommendation> recommendations) { this.recommendations = recommendations; }
 }

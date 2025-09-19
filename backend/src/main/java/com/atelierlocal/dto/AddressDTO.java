@@ -1,5 +1,7 @@
 package com.atelierlocal.dto;
 
+import com.atelierlocal.model.Address;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -20,6 +22,13 @@ public class AddressDTO {
     @NotBlank
     @Size(max = 50)
     private String city;
+
+    public AddressDTO(Address address) {
+        this.number = address.getNumber();
+        this.street = address.getStreet();
+        this.postalCode = address.getPostalCode();
+        this.city = address.getCity();
+    }
 
     public String getNumber() { return number; }
     public void setNumber(String number) { this.number = number; }

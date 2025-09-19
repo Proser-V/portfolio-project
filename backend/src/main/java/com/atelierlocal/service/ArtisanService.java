@@ -14,6 +14,7 @@ import com.atelierlocal.model.Avatar;
 import com.atelierlocal.model.UploadedPhoto;
 import com.atelierlocal.model.UserRole;
 import com.atelierlocal.dto.ArtisanRequestDTO;
+import com.atelierlocal.dto.ArtisanResponseDTO;
 import com.atelierlocal.model.Address;
 
 import java.util.List;
@@ -43,45 +44,52 @@ public class ArtisanService {
         this.artisanCategoryRepo = artisanCategoryRepo;
     }
 
-    public Artisan createArtisan(
-                    String name,
-                    String email,
-                    String rawPassword,
-                    String bio,
-                    String phoneNumber,
-                    String siret,
-                    Address address,
-                    Avatar avatar,
-                    ArtisanCategory category
-                    ) {
-        if (artisanRepo.findByEmail(email).isPresent()) {
+    public ArtisanResponseDTO createArtisan(ArtisanRequestDTO dto) {
+        if (artisanRepo.findByEmail(dto.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Email déjà utilisé..");
         }
-        if (rawPassword == null || rawPassword.isBlank()) {
+        if (dto.getPassword() == null || dto.getPassword().isBlank()) {
             throw new IllegalArgumentException("Le mot de passe ne peut être vide.");
         }
-        if (name == null || name.isBlank()) {
+        if (dto.getName() == null || dto.getName().isBlank()) {
             throw new IllegalArgumentException("Le nom ne peut être vide.");
         }
-        if (category == null) {
+        if (dto.getCategoryName() == null) {
             throw new IllegalArgumentException("La catégorie d'artisan ne peut être vide.");
         }
+        Address address = dto.getAddress() != null
+            ? new Address(dto.getAddress().getNumber(),
+                        dto.getAddress().getStreet(),
+                        dto.getAddress().getPostalCode(),
+                        dto.getAddress().getCity())
+            : null;
+        Avatar avatar = null;
+        if (dto.getAvatar() != null) {
+            String avatarUrl = avatarService.uploadAvatar(dto.getAvatar(), null);
+            avatar = new Avatar();
+            avatar.setAvatarUrl(avatarUrl);
+            avatar.setExtension(avatarService.getFileExtension(dto.getAvatar()));
+        }
+        ArtisanCategory category = artisanCategoryRepo.findByNameIgnoreCase(dto.getCategoryName())
+            .orElseThrow(() -> new IllegalArgumentException("Catégorie invalide"));
+
         Artisan artisan = new Artisan();
-        artisan.setName(name);
-        artisan.setEmail(email);
-        artisan.setBio(bio);
-        artisan.setPhoneNumber(phoneNumber);
+        artisan.setName(dto.getName());
+        artisan.setEmail(dto.getEmail());
+        artisan.setBio(dto.getBio());
+        artisan.setPhoneNumber(dto.getPhoneNumber());
         artisan.setAddress(address);
-        artisan.setSiret(siret);
+        artisan.setSiret(dto.getSiret());
         artisan.setAvatar(avatar);
         artisan.setCategory(category);
         artisan.setUserRole(UserRole.ARTISAN);
         artisan.setActive(true);
 
-        String hashed = passwordService.hashPassword(rawPassword);
+        String hashed = passwordService.hashPassword(dto.getPassword());
         artisan.setHashedPassword(hashed);
 
-        return artisanRepo.save(artisan);
+        Artisan savedArtisan = artisanRepo.save(artisan);
+        return new ArtisanResponseDTO(savedArtisan);
     }
 
     public Artisan addGalleryPhoto(UUID artisanId, UploadedPhoto photo) {
@@ -124,13 +132,25 @@ public class ArtisanService {
         Artisan artisan = artisanRepo.findById(artisanId)
             .orElseThrow(() -> new EntityNotFoundException("Professionnel non trouvé."));
 
+        if (request.getAddress() != null) {
+            Address addr = new Address(
+                request.getAddress().getNumber(),
+                request.getAddress().getStreet(),
+                request.getAddress().getPostalCode(),
+                request.getAddress().getCity()
+            );
+            artisan.setAddress(addr);
+        }
+        if (request.getCategoryName() != null) {
+            ArtisanCategory category = artisanCategoryRepo.findByNameIgnoreCase(request.getCategoryName())
+                .orElseThrow(() -> new IllegalArgumentException("Catégorie invalide"));
+            artisan.setCategory(category);
+        }
         if (request.getName() != null) { artisan.setName(request.getName()); }
         if (request.getBio() != null) { artisan.setBio(request.getBio()); }
-        if (request.getAddress() != null) { artisan.setAddress(request.getAddress()); }
-        if (request.getCategory() != null) { artisan.setCategory(request.getCategory()); }
         if (request.getEmail() != null) { artisan.setEmail(request.getEmail()); }
-        if (request.getRawPassword() != null) {
-            String hashed = passwordService.hashPassword(request.getRawPassword());
+        if (request.getPassword() != null && !request.getPassword().isBlank()) {
+            String hashed = passwordService.hashPassword(request.getPassword());
             artisan.setHashedPassword(hashed);
         }
         if (request.getPhoneNumber() != null) { artisan.setPhoneNumber(request.getPhoneNumber()); }

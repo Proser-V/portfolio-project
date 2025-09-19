@@ -1,6 +1,7 @@
 package com.atelierlocal.service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -20,6 +21,22 @@ public class AvatarService {
     }
 
     public String uploadAvatar(MultipartFile file, UUID userId) {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("Aucun fichier fourni");
+        }
+
+        // Vérification du type
+        List<String> allowedTypes = List.of("image/png", "image/jpeg");
+        if (!allowedTypes.contains(file.getContentType())) {
+            throw new IllegalArgumentException("Type de fichier non autorisé. Seuls PNG et JPEG sont acceptés.");
+        }
+
+        // Vérification de la taille (max 5 Mo)
+        long maxSize = 5 * 1024 * 1024;
+        if (file.getSize() > maxSize) {
+            throw new IllegalArgumentException("Fichier trop volumineux. Maximum autorisé : 5 Mo");
+        }
+
         try {
             // Nom du ficher dans S3
             String key = "avatars/" + userId + "/" + file.getOriginalFilename();

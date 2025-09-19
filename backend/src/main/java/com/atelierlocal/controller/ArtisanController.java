@@ -50,48 +50,9 @@ public class ArtisanController {
         @ApiResponse(responseCode = "400", description = "Requête invalide (données manquantes ou incorrectes)"),
         @ApiResponse(responseCode = "409", description = "Email déjà utilisé")
     })
-    public ResponseEntity<Artisan> registerArtisan(@Valid @ModelAttribute ArtisanRequestDTO request) {
-
-        System.out.println("request.categoryName = '" + request.getCategoryName() + "'");
-
-        Address address = null;
-        if (request.getAddress() != null) {
-            address = new Address(
-                request.getAddress().getNumber(),
-                request.getAddress().getStreet(),
-                request.getAddress().getPostalCode(),
-                request.getAddress().getCity()
-            );
-        }
-
-        System.out.println("Input categoryName: '" + request.getCategoryName() + "'");
-        artisanCategoryRepo.findAll().forEach(c -> System.out.println("DB category: '" + c.getName() + "'"));
-
-        ArtisanCategory category = artisanCategoryRepo.findByNameIgnoreCase(request.getCategoryName())
-            .orElseThrow(() -> new IllegalArgumentException("Catégorie invalide"));
-
-        String avatarUrl = null;
-        Avatar avatar = null;
-        if (request.getAvatar() != null) {
-            avatarUrl = avatarService.uploadAvatar(request.getAvatar(), null);
-            avatar = new Avatar();
-            avatar.setExtension(avatarService.getFileExtension(request.getAvatar()));
-            avatar.setAvatarUrl(avatarUrl);
-        }
-
-        Artisan artisan = artisanService.createArtisan(
-            request.getName(),
-            request.getEmail(),
-            request.getPassword(),
-            request.getBio(),
-            request.getPhoneNumber(),
-            request.getSiret(),
-            address,
-            avatar,
-            category
-        );
-
-        return ResponseEntity.status(201).body(new ArtisanResponseDTO(artisan));
+    public ResponseEntity<ArtisanResponseDTO> registerArtisan(@Valid @ModelAttribute ArtisanRequestDTO request) {
+        ArtisanResponseDTO artisanDto = artisanService.createArtisan(request);
+        return ResponseEntity.status(201).body(artisanDto);
     }
 
     @GetMapping("/debug/categories")
@@ -106,15 +67,7 @@ public class ArtisanController {
         String email = authentication.getName();
         Artisan artisan = artisanService.getArtisanByEmail(email);
 
-        String avatarUrl = artisan.getAvatar() != null ? artisan.getAvatar().getAvatarUrl() : null;
-
-        ArtisanResponseDTO artisanDto = new ArtisanResponseDTO(
-            artisan.getId(),
-            artisan.getEmail(),
-            avatarUrl,
-            artisan.getName(),
-            artisan.getActivityStartDate()
-        );
+        ArtisanResponseDTO artisanDto = new ArtisanResponseDTO(artisan);
 
     return ResponseEntity.ok(artisanDto);
     }

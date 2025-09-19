@@ -8,7 +8,6 @@ com/atelierlocal/model/Address.class
 com/atelierlocal/security/JwtService.class
 com/atelierlocal/security/CustomUserDetailsService.class
 com/atelierlocal/service/AvatarService.class
-com/atelierlocal/dto/UpdateArtisanRequest.class
 com/atelierlocal/repository/AvatarRepo.class
 com/atelierlocal/service/ClientService.class
 com/atelierlocal/model/AskingStatus.class

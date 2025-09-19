@@ -3,19 +3,29 @@ package com.atelierlocal.dto;
 import java.time.LocalDate;
 import java.util.UUID;
 
-public class ArtisanDto {
-    private UUID id;
-    private String email;
-    private String avatarUrl;
-    private String name;
-    private LocalDate activityStartDate;
+import com.atelierlocal.model.Artisan;
 
-    public ArtisanDto(UUID id, String email, String avatarUrl, String name, LocalDate activityStartDate) {
-        this.id = id;
-        this.email = email;
-        this.avatarUrl = avatarUrl;
-        this.name = name;
-        this.activityStartDate = activityStartDate;
+public class ArtisanResponseDTO {
+    private UUID id;
+    private String name;
+    private String email;
+    private String bio;
+    private String phoneNumber;
+    private String siret;
+    private String avatarUrl;
+    private AddressDTO address;
+    private String categoryName;
+
+    public ArtisanResponseDTO(Artisan artisan) {
+        this.id = artisan.getId();
+        this.name = artisan.getName();
+        this.email = artisan.getEmail();
+        this.bio = artisan.getBio();
+        this.phoneNumber = artisan.getPhoneNumber();
+        this.siret = artisan.getSiret();
+        this.avatarUrl = artisan.getAvatarUrl();
+        this.address = artisan.getAddress() != null ? new AddressDTO(artisan.getAddress()) : null;
+        this.categoryName = artisan.getCategory().getName();
     }
 
     // Getters et setters

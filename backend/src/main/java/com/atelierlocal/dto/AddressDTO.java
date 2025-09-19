@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public class AddressDto {
+public class AddressDTO {
 
     @Size(max = 10)
     private String number;

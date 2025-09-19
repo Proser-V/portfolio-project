@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public class ArtisanRegistrationRequest {
+public class ArtisanRequestDTO {
 
     // Attributs
     @NotBlank(message = "L'email est obligatoire")
@@ -33,7 +33,7 @@ public class ArtisanRegistrationRequest {
     @Size(min = 14, max = 14, message = "Le SIRET doit contenir 14 chiffres.")
     private String siret;
 
-    private AddressDto address;
+    private AddressDTO address;
 
     @Pattern(regexp = "(|(\\+33|0)[1-9](\\d{2}){4})$", message = "Numéro invalide (format français requis)")
     private String phoneNumber;
@@ -65,8 +65,8 @@ public class ArtisanRegistrationRequest {
     public String getPhoneNumber() { return phoneNumber; }
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 
-    public AddressDto getAddress() { return address; }
-    public void setAddress(AddressDto address) { this.address = address; }
+    public AddressDTO getAddress() { return address; }
+    public void setAddress(AddressDTO address) { this.address = address; }
 
     public String getBio() { return bio; }
     public void setBio(String bio) { this.bio = bio; }

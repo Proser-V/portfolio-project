@@ -8,7 +8,7 @@ package com.atelierlocal.service;
 import java.util.UUID;
 
 import com.atelierlocal.model.Client;
-import com.atelierlocal.dto.UpdateArtisanRequest;
+import com.atelierlocal.dto.ArtisanRequestDTO;
 import com.atelierlocal.dto.UpdateAskingRequest;
 import com.atelierlocal.dto.UpdateClientRequest;
 import com.atelierlocal.model.Artisan;
@@ -65,7 +65,7 @@ public class AdminService {
         return clientService.updateClient(clientId, request);
     }
 
-    public Artisan updateArtisan(UUID artisanId, UpdateArtisanRequest request) {
+    public Artisan updateArtisan(UUID artisanId, ArtisanRequestDTO request) {
         return artisanService.updateArtisan(artisanId, request);
     }
 

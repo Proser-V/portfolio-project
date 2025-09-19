@@ -5,14 +5,16 @@ import java.util.stream.Collectors;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.atelierlocal.dto.ArtisanDto;
-import com.atelierlocal.dto.ArtisanRegistrationRequest;
+import com.atelierlocal.dto.ArtisanResponseDTO;
+import com.atelierlocal.dto.ArtisanRequestDTO;
 import com.atelierlocal.model.Address;
 import com.atelierlocal.model.Artisan;
 import com.atelierlocal.model.ArtisanCategory;
@@ -41,14 +43,14 @@ public class ArtisanController {
         this.artisanCategoryRepo = artisanCategoryRepo;
     }
 
-    @PostMapping("/register")
+    @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Enregistrement d'un nouvel artisan", description = "Création d'un nouvel artisan via les données entrées")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Artisan créé avec succès"),
         @ApiResponse(responseCode = "400", description = "Requête invalide (données manquantes ou incorrectes)"),
         @ApiResponse(responseCode = "409", description = "Email déjà utilisé")
     })
-    public ResponseEntity<Artisan> registerArtisan(@Valid @RequestBody ArtisanRegistrationRequest request) {
+    public ResponseEntity<Artisan> registerArtisan(@Valid @ModelAttribute ArtisanRequestDTO request) {
 
         System.out.println("request.categoryName = '" + request.getCategoryName() + "'");
 
@@ -89,7 +91,7 @@ public class ArtisanController {
             category
         );
 
-        return ResponseEntity.status(201).body(artisan);
+        return ResponseEntity.status(201).body(new ArtisanResponseDTO(artisan));
     }
 
     @GetMapping("/debug/categories")
@@ -100,13 +102,13 @@ public class ArtisanController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<ArtisanDto> getCurrentUser(Authentication authentication) {
+    public ResponseEntity<ArtisanResponseDTO> getCurrentUser(Authentication authentication) {
         String email = authentication.getName();
         Artisan artisan = artisanService.getArtisanByEmail(email);
 
         String avatarUrl = artisan.getAvatar() != null ? artisan.getAvatar().getAvatarUrl() : null;
 
-        ArtisanDto artisanDto = new ArtisanDto(
+        ArtisanResponseDTO artisanDto = new ArtisanResponseDTO(
             artisan.getId(),
             artisan.getEmail(),
             avatarUrl,

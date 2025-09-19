@@ -13,7 +13,7 @@ import com.atelierlocal.model.ArtisanCategory;
 import com.atelierlocal.model.Avatar;
 import com.atelierlocal.model.UploadedPhoto;
 import com.atelierlocal.model.UserRole;
-import com.atelierlocal.dto.UpdateArtisanRequest;
+import com.atelierlocal.dto.ArtisanRequestDTO;
 import com.atelierlocal.model.Address;
 
 import java.util.List;
@@ -120,7 +120,7 @@ public class ArtisanService {
         artisanRepo.delete(artisan);
     }
 
-    public Artisan updateArtisan(UUID artisanId, UpdateArtisanRequest request) {
+    public Artisan updateArtisan(UUID artisanId, ArtisanRequestDTO request) {
         Artisan artisan = artisanRepo.findById(artisanId)
             .orElseThrow(() -> new EntityNotFoundException("Professionnel non trouvé."));
 

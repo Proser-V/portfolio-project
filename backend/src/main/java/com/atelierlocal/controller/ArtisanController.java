@@ -11,17 +11,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.atelierlocal.dto.ArtisanResponseDTO;
 import com.atelierlocal.dto.ArtisanRequestDTO;
-import com.atelierlocal.model.Address;
 import com.atelierlocal.model.Artisan;
 import com.atelierlocal.model.ArtisanCategory;
-import com.atelierlocal.model.Avatar;
 import com.atelierlocal.repository.ArtisanCategoryRepo;
 import com.atelierlocal.service.ArtisanService;
-import com.atelierlocal.service.AvatarService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -34,12 +30,10 @@ import jakarta.validation.Valid;
 @Tag(name = "Artisans", description = "Définition du controlleur des artisans")
 public class ArtisanController {
     private final ArtisanService artisanService;
-    private final AvatarService avatarService;
     private final ArtisanCategoryRepo artisanCategoryRepo;
 
-    public ArtisanController(ArtisanService artisanService, AvatarService avatarService, ArtisanCategoryRepo artisanCategoryRepo) {
+    public ArtisanController(ArtisanService artisanService, ArtisanCategoryRepo artisanCategoryRepo) {
         this.artisanService = artisanService;
-        this.avatarService = avatarService;
         this.artisanCategoryRepo = artisanCategoryRepo;
     }
 

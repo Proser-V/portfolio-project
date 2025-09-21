@@ -40,4 +40,7 @@ public class Client extends User {
 
     public List<Asking> getAsking() { return askingsList; }
     public void setAsking(List<Asking> askingsList) { this.askingsList = askingsList; }
+
+    public List<Recommendation> getRecommendations() { return recommendations; }
+    public void setRecommendations(List<Recommendation> recommendations) { this.recommendations = recommendations; }
 }

@@ -4,15 +4,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.atelierlocal.dto.ClientRegistrationRequest;
+import com.atelierlocal.dto.ClientRequestDTO;
 import com.atelierlocal.model.Client;
 import com.atelierlocal.service.ClientService;
-import com.atelierlocal.dto.ClientDto;
+import com.atelierlocal.dto.ClientResponseDTO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -38,20 +40,9 @@ public class ClientController {
         @ApiResponse(responseCode = "400", description = "Requête invalide (données manquantes ou incorrectes)"),
         @ApiResponse(responseCode = "409", description = "Email déjà utilisé")
     })
-    public ResponseEntity<Client> registerClient(@Valid @RequestBody ClientRegistrationRequest request) {
-        Client client = clientService.createClient(
-            request.getFirstName(),
-            request.getLastName(),
-            request.getEmail(),
-            request.getAddress(),
-            request.getPassword(),
-            request.getAvatar(),
-            true,
-            null
-            );
-            return ResponseEntity.status(HttpStatus.CREATED)
-                .header("Location", "/api/clients" + client.getId())
-                .body(client);
+    public ResponseEntity<ClientResponseDTO> registerClient(@Valid @ModelAttribute ClientRequestDTO request) {
+        ClientResponseDTO clientDto = clientService.createClient(request);
+            return ResponseEntity.status(201).body(clientDto);
     }
 
     @GetMapping("/register")
@@ -60,20 +51,12 @@ public class ClientController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<ClientDto> getCurrentUser(Authentication authentication) {
+    public ResponseEntity<ClientResponseDTO> getCurrentUser(Authentication authentication) {
         String email = authentication.getName();
         Client client = clientService.getClientByEmail(email);
 
-        String avatarUrl = client.getAvatar() != null ? client.getAvatar().getAvatarUrl() : null;
+        ClientResponseDTO clientDTO = new ClientResponseDTO(client);
 
-        ClientDto clientDto = new ClientDto(
-            client.getId(),
-            client.getEmail(),
-            avatarUrl,
-            client.getFirstName(),
-            client.getLastName()
-            );
-
-        return ResponseEntity.ok(clientDto);
+        return ResponseEntity.ok(clientDTO);
     }
 }

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.atelierlocal.dto.ArtisanResponseDTO;
 import com.atelierlocal.dto.ArtisanRequestDTO;
-import com.atelierlocal.model.Artisan;
 import com.atelierlocal.model.ArtisanCategory;
 import com.atelierlocal.repository.ArtisanCategoryRepo;
 import com.atelierlocal.service.ArtisanService;
@@ -59,10 +58,7 @@ public class ArtisanController {
     @GetMapping("/me")
     public ResponseEntity<ArtisanResponseDTO> getCurrentUser(Authentication authentication) {
         String email = authentication.getName();
-        Artisan artisan = artisanService.getArtisanByEmail(email);
-
-        ArtisanResponseDTO artisanDto = new ArtisanResponseDTO(artisan);
-
-    return ResponseEntity.ok(artisanDto);
+        ArtisanResponseDTO artisanDTO = artisanService.getArtisanByEmail(email);
+        return ResponseEntity.ok(artisanDTO);
     }
 }

@@ -2,6 +2,7 @@ package com.atelierlocal.service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -11,7 +12,8 @@ import com.atelierlocal.repository.ClientRepo;
 import jakarta.persistence.EntityNotFoundException;
 
 import com.atelierlocal.model.Client;
-import com.atelierlocal.dto.UpdateClientRequest;
+import com.atelierlocal.dto.ClientRequestDTO;
+import com.atelierlocal.dto.ClientResponseDTO;
 import com.atelierlocal.model.Address;
 import com.atelierlocal.model.Avatar;
 import com.atelierlocal.model.UserRole;
@@ -36,42 +38,46 @@ public class ClientService {
         this.avatarRepo = avatarRepo;
     }
 
-    public Client createClient(
-                    String firstName,
-                    String lastName,
-                    String email,
-                    Address address,
-                    String rawPassword,
-                    Avatar avatar,
-                    Boolean isActive,
-                    UserRole userRole
-                    ) {
-        if (clientRepo.findByEmail(email).isPresent()) {
+    public ClientResponseDTO createClient(ClientRequestDTO dto) {
+        if (clientRepo.findByEmail(dto.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Cet email est déjà enregistré.");
         }
-        if (rawPassword == null || rawPassword.isBlank()) {
+        if (dto.getPassword() == null || dto.getPassword().isBlank()) {
             throw new IllegalArgumentException("Veuillez saisir un mot de passe.");
         }
-        if (firstName == null || firstName.isBlank()) {
+        if (dto.getFirstName() == null || dto.getFirstName().isBlank()) {
             throw new IllegalArgumentException("Veuillez entrer votre prénom.");
         }
-        if (lastName == null || lastName.isBlank()) {
+        if (dto.getLastName() == null || dto.getLastName().isBlank()) {
             throw new IllegalArgumentException("Veuillez entrer votre nom.");
         }
 
         Client client = new Client();
-        client.setFirstName(firstName);
-        client.setLastName(lastName);
-        client.setEmail(email);
+        client.setFirstName(dto.getFirstName());
+        client.setLastName(dto.getLastName());
+        client.setEmail(dto.getEmail());
+        Address address = dto.getAddress() != null
+            ? new Address(dto.getAddress().getNumber(),
+                        dto.getAddress().getStreet(),
+                        dto.getAddress().getPostalCode(),
+                        dto.getAddress().getCity())
+            : null;
         client.setAddress(address);
+        Avatar avatar = null;
+        if (dto.getAvatar() != null) {
+            String avatarUrl = avatarService.uploadAvatar(dto.getAvatar(), null);
+            avatar = new Avatar();
+            avatar.setAvatarUrl(avatarUrl);
+            avatar.setExtension(avatarService.getFileExtension(dto.getAvatar()));
+        }
         client.setAvatar(avatar);
-
-        String hashed = passwordService.hashPassword(rawPassword);
+        String hashed = passwordService.hashPassword(dto.getPassword());
         client.setHashedPassword(hashed);
-        client.setUserRole(userRole != null ? userRole : UserRole.CLIENT); // Possibilité de créer un admin en passant le bon role
+        client.setUserRole(dto.getRole() != null ? dto.getRole() : UserRole.CLIENT); // Possibilité de créer un admin en passant le bon role
         client.setActive(true);
 
-        return clientRepo.save(client);
+        Client savedClient = clientRepo.save(client);
+        return new ClientResponseDTO(savedClient);
     }
 
     public void deleteClient(UUID cientId) {
@@ -81,17 +87,25 @@ public class ClientService {
         clientRepo.delete(client);
     }
 
-    public Client updateClient(UUID clientId, UpdateClientRequest request) {
+    public ClientResponseDTO updateClient(UUID clientId, ClientRequestDTO request) {
         Client client = clientRepo.findById(clientId)
             .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé."));
         
         if (request.getFirstName() != null) { client.setFirstName(request.getFirstName()); }
         if (request.getLastName() != null) { client.setLastName(request.getLastName()); }
-        if (request.getAddress() != null) { client.setAddress(request.getAddress()); }
+
+        Address address = request.getAddress() != null
+            ? new Address(request.getAddress().getNumber(),
+                        request.getAddress().getStreet(),
+                        request.getAddress().getPostalCode(),
+                        request.getAddress().getCity())
+            : null;
+        client.setAddress(address);
+
         if (request.getEmail() != null) { client.setEmail(request.getEmail()); }
         if (request.getPhoneNumber() != null) { client.setPhoneNumber(request.getPhoneNumber()); }
-        if (request.getRawPassword() != null) {
-            String hashed = passwordService.hashPassword(request.getRawPassword());
+        if (request.getPassword() != null) {
+            String hashed = passwordService.hashPassword(request.getPassword());
             client.setHashedPassword(hashed);
         }
         if (request.getAvatar() != null) {
@@ -110,26 +124,32 @@ public class ClientService {
             avatarRepo.save(avatar);
         }
 
-        return clientRepo.save(client);
+        Client updatedClient = clientRepo.save(client);
+        return new ClientResponseDTO(updatedClient);
     }
 
-    public Client getClientById(UUID clientId) {
+    public ClientResponseDTO getClientById(UUID clientId) {
         Client client = clientRepo.findById(clientId)
             .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé."));
-        return client;
+        return new ClientResponseDTO(client);
     }
 
-    public Client getClientByEmail(String email) {
+    public ClientResponseDTO getClientByEmail(String email) {
         Client client = clientRepo.findByEmail(email)
             .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé."));
-        return client;
+        return new ClientResponseDTO(client);
     }
 
-    public List<Client> getAllClients() {
-        List<Client> clientList = clientRepo.findAll();
-        if (clientList.isEmpty()) {
-            throw new EntityNotFoundException("Aucun utilisateur trouvé.");
-        }
-        return clientList;
+    public List<ClientResponseDTO> getAllClients() {
+        return clientRepo.findAll().stream()
+                                .map(ClientResponseDTO::new)
+                                .collect(Collectors.toList());
+    }
+
+    public void banClient(UUID clientId) {
+        Client client = clientRepo.findById(clientId)
+            .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé."));
+        client.setActive(false);
+        clientRepo.save(client);
     }
 }

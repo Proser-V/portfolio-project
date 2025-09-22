@@ -1,6 +1,5 @@
 package com.atelierlocal.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,11 +7,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import com.atelierlocal.dto.ClientRegistrationRequest;
 import com.atelierlocal.dto.ClientRequestDTO;
-import com.atelierlocal.model.Client;
 import com.atelierlocal.service.ClientService;
 import com.atelierlocal.dto.ClientResponseDTO;
 
@@ -53,10 +49,7 @@ public class ClientController {
     @GetMapping("/me")
     public ResponseEntity<ClientResponseDTO> getCurrentUser(Authentication authentication) {
         String email = authentication.getName();
-        Client client = clientService.getClientByEmail(email);
-
-        ClientResponseDTO clientDTO = new ClientResponseDTO(client);
-
+        ClientResponseDTO clientDTO = clientService.getClientByEmail(email);
         return ResponseEntity.ok(clientDTO);
     }
 }

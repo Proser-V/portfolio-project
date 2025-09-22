@@ -7,20 +7,17 @@ package com.atelierlocal.service;
 
 import java.util.UUID;
 
-import com.atelierlocal.model.Client;
 import com.atelierlocal.dto.ArtisanRequestDTO;
+import com.atelierlocal.dto.ArtisanResponseDTO;
+import com.atelierlocal.dto.ClientRequestDTO;
+import com.atelierlocal.dto.ClientResponseDTO;
 import com.atelierlocal.dto.UpdateAskingRequest;
-import com.atelierlocal.dto.UpdateClientRequest;
-import com.atelierlocal.model.Artisan;
 import com.atelierlocal.model.Asking;
 
 import com.atelierlocal.repository.ArtisanRepo;
 import com.atelierlocal.repository.ClientRepo;
 
 public class AdminService {
-
-    private final ClientRepo clientRepo;
-    private final ArtisanRepo artisanRepo;
 
     private final ClientService clientService;
     private final ArtisanService artisanService;
@@ -35,22 +32,16 @@ public class AdminService {
         this.clientService = clientService;
         this.artisanService = artisanService;
         this.askingService = askingService;
-        this.clientRepo = clientRepo;
-        this.artisanRepo = artisanRepo;
     }
 
     // Système de gestion des utilisateurs
 
     public void banClient(UUID clientId) {
-        Client client = clientService.getClientById(clientId);
-        client.setActive(false);
-        clientRepo.save(client);
+        clientService.banClient(clientId);
     }
 
     public void banArtisan(UUID artisanId) {
-        Artisan artisan = artisanService.getArtisanById(artisanId);
-        artisan.setActive(false);
-        artisanRepo.save(artisan);
+        artisanService.banArtisan(artisanId);
     }
 
     public void deleteClient(UUID clientId) {
@@ -61,11 +52,11 @@ public class AdminService {
         artisanService.deleteArtisan(artisanId);
     }
 
-    public Client updateClient(UUID clientId, UpdateClientRequest request) {
+    public ClientResponseDTO updateClient(UUID clientId, ClientRequestDTO request) {
         return clientService.updateClient(clientId, request);
     }
 
-    public Artisan updateArtisan(UUID artisanId, ArtisanRequestDTO request) {
+    public ArtisanResponseDTO updateArtisan(UUID artisanId, ArtisanRequestDTO request) {
         return artisanService.updateArtisan(artisanId, request);
     }
 

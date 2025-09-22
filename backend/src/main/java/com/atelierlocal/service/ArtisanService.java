@@ -19,6 +19,7 @@ import com.atelierlocal.model.Address;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ArtisanService {
@@ -128,7 +129,7 @@ public class ArtisanService {
         artisanRepo.delete(artisan);
     }
 
-    public Artisan updateArtisan(UUID artisanId, ArtisanRequestDTO request) {
+    public ArtisanResponseDTO updateArtisan(UUID artisanId, ArtisanRequestDTO request) {
         Artisan artisan = artisanRepo.findById(artisanId)
             .orElseThrow(() -> new EntityNotFoundException("Professionnel non trouvé."));
 
@@ -170,42 +171,41 @@ public class ArtisanService {
 
             avatarRepo.save(avatar);
         }
-        return artisanRepo.save(artisan);
+        Artisan updatedArtisan = artisanRepo.save(artisan);
+        return new ArtisanResponseDTO(updatedArtisan);
     }
 
-    public Artisan getArtisanById(UUID artisanId) {
+    public ArtisanResponseDTO getArtisanById(UUID artisanId) {
         Artisan artisan = artisanRepo.findById(artisanId)
             .orElseThrow(() -> new EntityNotFoundException("Professionnel non trouvé."));
-        return artisan;
+        return new ArtisanResponseDTO(artisan);
     }
 
-    public Artisan getArtisanByEmail(String email) {
+    public ArtisanResponseDTO getArtisanByEmail(String email) {
         Artisan artisan = artisanRepo.findByEmail(email)
             .orElseThrow(() -> new EntityNotFoundException("Professionnel non trouvé."));
-        return artisan;
+        return new ArtisanResponseDTO(artisan);
     }
 
-    public List<Artisan> getAllArtisans() {
-        List<Artisan> artisans = artisanRepo.findAll();
-        if (artisans.isEmpty()){
-            throw new EntityNotFoundException("Pas d'artisan trouvé.");
-        }
-        return artisans;
+    public List<ArtisanResponseDTO> getAllArtisans() {
+        return artisanRepo.findAll().stream()
+                                .map(ArtisanResponseDTO::new)
+                                .collect(Collectors.toList());
     }
 
-    public List<Artisan> getAllArtisansByCategory(UUID categoryId) {
+    public List<ArtisanResponseDTO> getAllArtisansByCategory(UUID categoryId) {
         ArtisanCategory category = artisanCategoryRepo.findById(categoryId)
             .orElseThrow(() -> new EntityNotFoundException("Categorie non trouvée."));
 
-        if (category == null) {
-            throw new IllegalArgumentException("La categorie ne doit pas être null.");
-        }
+        return artisanRepo.findAllByCategory(category).stream()
+                                                    .map(ArtisanResponseDTO::new)
+                                                    .collect(Collectors.toList());
+    }
 
-        List<Artisan> artisans = artisanRepo.findAllByCategory(category);
-        if (artisans.isEmpty()){
-            throw new EntityNotFoundException("Pas d'artisan trouvé pour cette catégorie." + category.getName());
-        }
-
-        return artisans;
+    public void banArtisan(UUID artisanId) {
+        Artisan artisan = artisanRepo.findById(artisanId)
+            .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé."));
+        artisan.setActive(false);
+        artisanRepo.save(artisan);
     }
 }

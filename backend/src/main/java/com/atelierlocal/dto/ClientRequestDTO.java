@@ -2,6 +2,8 @@ package com.atelierlocal.dto;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.atelierlocal.model.UserRole;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -31,6 +33,8 @@ public class ClientRequestDTO {
 
     private MultipartFile avatar;
 
+    private UserRole userRole;
+
     // Getters et setters
 
     public String getFirstName() { return firstName; }
@@ -53,4 +57,7 @@ public class ClientRequestDTO {
 
     public MultipartFile getAvatar() { return avatar; }
     public void setAvatar(MultipartFile avatar) { this.avatar = avatar; }
+
+    public UserRole getRole() { return userRole; }
+    public void setRole(UserRole userRole) { this.userRole = userRole; }
 }

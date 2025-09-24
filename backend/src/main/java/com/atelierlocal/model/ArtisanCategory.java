@@ -24,7 +24,7 @@ public class ArtisanCategory {
     private UUID id;
 
     @Size(max = 50, message = "La catégorie ne peut pas dépasser 50 caractères.")
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 50, unique = true)
     private String name;
 
     @Size(max = 200, message = "La description ne peut pas dépasser 200 caractères.")
@@ -38,7 +38,7 @@ public class ArtisanCategory {
     @ManyToMany(mappedBy = "artisanCategoryList")
     private List<EventCategory> eventCategories = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "artisanCategoryList")
+    @OneToMany(mappedBy = "artisanCategory")
     private List<Asking> askingsList = new ArrayList<>();
 
     @CreationTimestamp

@@ -18,11 +18,9 @@ import jakarta.persistence.EntityNotFoundException;
 public class ArtisanCategoryService {
 
     private final ArtisanCategoryRepo artisanCategoryRepo;
-    private final EventCategoryRepo eventCategoryRepo;
 
     public ArtisanCategoryService(ArtisanCategoryRepo artisanCategoryRepo, EventCategoryRepo eventCategoryRepo) {
         this.artisanCategoryRepo = artisanCategoryRepo;
-        this.eventCategoryRepo = eventCategoryRepo;
     }
 
     public ArtisanCategoryResponseDTO createArtisanCategory(
@@ -38,14 +36,6 @@ public class ArtisanCategoryService {
         ArtisanCategory artisanCategory = new ArtisanCategory();
         artisanCategory.setName(dto.getName());
         artisanCategory.setDescription(dto.getDescription());
-
-        if (dto.getEventCategoryIds() != null) {
-            List<EventCategory> events = eventCategoryRepo.findAllById(dto.getEventCategoryIds());
-            artisanCategory.setEventCategories(events);
-            for (EventCategory eventCategory : events) {
-                eventCategory.getArtisanCategoryList().add(artisanCategory);
-            }
-        }
 
         ArtisanCategory savedCategory = artisanCategoryRepo.save(artisanCategory);
         return new ArtisanCategoryResponseDTO(
@@ -68,13 +58,6 @@ public class ArtisanCategoryService {
 
         if (dto.getName() != null) { artisanCategory.setName(dto.getName()); }
         if (dto.getDescription() != null) { artisanCategory.setDescription(dto.getDescription()); }
-        if (dto.getEventCategoryIds() != null) {
-            List<EventCategory> events = eventCategoryRepo.findAllById(dto.getEventCategoryIds());
-            artisanCategory.setEventCategories(events);
-            for (EventCategory eventCategory : events) {
-                eventCategory.getArtisanCategoryList().add(artisanCategory);
-            }
-        }
         ArtisanCategory savedCategory = artisanCategoryRepo.save(artisanCategory);
 
         return new ArtisanCategoryResponseDTO(

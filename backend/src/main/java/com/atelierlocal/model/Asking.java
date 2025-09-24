@@ -9,11 +9,10 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+
 
 @Entity
-@Table(name = "multiple_askings")
+@Table(name = "askings")
 public class Asking {
     // Atributs
 
@@ -26,21 +25,24 @@ public class Asking {
     @Column(nullable = false, length = 1000)
     private String content;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_category_id", nullable = true)
     private EventCategory eventCategory;
 
-    @ManyToOne
+    @Size(max = 100, message = "Le nom de la ville ne peut excéder 100 caractères.")
+    @Column(length = 100)
+    private String eventLocalisation;
+
+    @Column
+    private LocalDateTime eventDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id")
     private Client client;
 
-    @ManyToMany
-    @JoinTable(
-        name = "asking_artisan_category",
-        joinColumns = @JoinColumn(name = "asking_id"),
-        inverseJoinColumns = @JoinColumn(name = "artisan_category_id")
-    )
-    private List<ArtisanCategory> artisanCategoryList = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "artisan_category_id", nullable = false)
+    private ArtisanCategory artisanCategory;
 
     @Enumerated(EnumType.STRING)
     private AskingStatus status;
@@ -59,11 +61,17 @@ public class Asking {
     public String getContent() { return content; }
     public void setContent(String content) { this.content = content; }
 
-    public List<ArtisanCategory> getArtisanCategoryList() { return artisanCategoryList; }
-    public void setArtisanCategoryList(List<ArtisanCategory> artisanCategoryList) { this.artisanCategoryList = artisanCategoryList; }
+    public ArtisanCategory getArtisanCategory() { return artisanCategory; }
+    public void setArtisanCategory(ArtisanCategory artisanCategory) { this.artisanCategory = artisanCategory; }
 
     public EventCategory getEventCategory() { return eventCategory; }
     public void setEventCategory(EventCategory eventCategory) { this.eventCategory = eventCategory; }
+
+    public LocalDateTime getEventDate() { return eventDate; }
+    public void setEventDate(LocalDateTime eventDate) { this.eventDate = eventDate; }
+
+    public String getEventLocalisation() { return eventLocalisation; }
+    public void setEventLocalisation(String eventLocalisation) { this.eventLocalisation = eventLocalisation; }
 
     public AskingStatus getStatus() { return status; }
     public void setStatus(AskingStatus status) { this.status = status; }

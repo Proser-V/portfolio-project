@@ -13,7 +13,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "uploaded_photos")
@@ -27,10 +26,6 @@ public class UploadedPhoto {
 
     @Column(nullable = false)
     private String extension;
-
-    @Size(max = 150, message = "La description ne peux excéder 150 caractères.")
-    @Column(nullable = false, length = 150)
-    private String description;
 
     @Column
     private String uploadedPhotoUrl;
@@ -55,9 +50,6 @@ public class UploadedPhoto {
 
     public String getUploadedPhotoUrl() { return uploadedPhotoUrl; }
     public void setUploadedPhotoUrl(String uploadedPhotoUrl) { this.uploadedPhotoUrl = uploadedPhotoUrl; }
-
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
 
     public Artisan getArtisan() { return artisan; }
     public void setArtisan(Artisan artisan) { this.artisan = artisan; }

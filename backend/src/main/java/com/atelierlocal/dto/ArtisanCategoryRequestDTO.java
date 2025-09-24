@@ -15,12 +15,9 @@ public class ArtisanCategoryRequestDTO {
     @Size(max = 50, message = "Le nom ne doit pas dépasser 50 caractères.")
     private String description;
 
-    private List<UUID> eventCategoryIds;
-
     public ArtisanCategoryRequestDTO(String name, String description, List<UUID> eventCategoryIds) {
         this.name = name;
         this.description = description;
-        this.eventCategoryIds = eventCategoryIds;
     }
 
     public String getName() { return name; }
@@ -28,7 +25,4 @@ public class ArtisanCategoryRequestDTO {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
-
-    public List<UUID> getEventCategoryIds() { return eventCategoryIds; }
-    public void setEventCategoryIds(List<UUID> eventCategoryIds) { this.eventCategoryIds = eventCategoryIds; }
 }

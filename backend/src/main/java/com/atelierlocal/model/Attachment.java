@@ -32,9 +32,6 @@ public class Attachment {
     @Column(nullable = false)
     private String fileType;
 
-    @Column(nullable = false)
-    private long fileSize;
-
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -53,9 +50,6 @@ public class Attachment {
 
     public String getFileType() { return fileType; }
     public void setFileType(String fileType) { this.fileType = fileType; }
-
-    public long getFileSize() { return fileSize; }
-    public void setFileSize(long fileSize) { this.fileSize = fileSize; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
 

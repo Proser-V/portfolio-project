@@ -11,6 +11,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -46,6 +48,11 @@ public class Message {
     @Column(nullable = false)
     private boolean isRead = false;
 
+    private String messageError;
+
+    @Enumerated(EnumType.STRING)
+    private MessageStatus messageStatus;
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -73,6 +80,12 @@ public class Message {
 
     public List<Attachment> getAttachments() { return attachments; }
     public void setAttachments(List<Attachment> attachments) { this.attachments = attachments; }
+
+    public String getMessageError() { return messageError; }
+    public void setMessageError(String messageError) { this.messageError = messageError; }
+
+    public MessageStatus getMessageStatus() { return messageStatus; }
+    public void setMessageStatus(MessageStatus messageStatus) { this.messageStatus = messageStatus; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
 

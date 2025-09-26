@@ -61,4 +61,4 @@ public class ArtisanController {
         ArtisanResponseDTO artisanDTO = artisanService.getArtisanByEmail(email);
         return ResponseEntity.ok(artisanDTO);
     }
-}
+} 

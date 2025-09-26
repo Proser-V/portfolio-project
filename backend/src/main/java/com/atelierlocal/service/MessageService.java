@@ -38,7 +38,6 @@ public class MessageService {
                 Attachment attachment = new Attachment();
                 attachment.setFileUrl(fileUrl);
                 attachment.setFileType(file.getContentType());
-                attachment.setFileSize(file.getSize());
 
                 attachmentService.linkToMessage(attachment, message);
             }

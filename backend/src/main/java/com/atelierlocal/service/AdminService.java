@@ -9,9 +9,9 @@ import java.util.UUID;
 
 import com.atelierlocal.dto.ArtisanRequestDTO;
 import com.atelierlocal.dto.ArtisanResponseDTO;
+import com.atelierlocal.dto.AskingRequestDTO;
 import com.atelierlocal.dto.ClientRequestDTO;
 import com.atelierlocal.dto.ClientResponseDTO;
-import com.atelierlocal.dto.UpdateAskingRequest;
 import com.atelierlocal.model.Asking;
 
 import com.atelierlocal.repository.ArtisanRepo;
@@ -66,7 +66,7 @@ public class AdminService {
         askingService.deleteAsking(askingId);
     }
 
-    public Asking updateAsking(UUID askingId, UpdateAskingRequest request) {
+    public Asking updateAsking(UUID askingId, AskingRequestDTO request) {
         return askingService.updateAsking(askingId, request);
     }
 }

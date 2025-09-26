@@ -1,13 +1,16 @@
 package com.atelierlocal.controller;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +26,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+
 
 @RestController
 @RequestMapping("/api/artisans")
@@ -61,4 +69,28 @@ public class ArtisanController {
         ArtisanResponseDTO artisanDTO = artisanService.getArtisanByEmail(email);
         return ResponseEntity.ok(artisanDTO);
     }
-} 
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ArtisanResponseDTO> getArtisanById(@PathVariable UUID id) {
+        ArtisanResponseDTO artisanDto = artisanService.getArtisanById(id);
+        return ResponseEntity.ok(artisanDto);
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<List<ArtisanResponseDTO>> getAllArtisans() {
+        List<ArtisanResponseDTO> allArtisans = artisanService.getAllArtisans();
+        return ResponseEntity.ok();
+    }
+    
+    @PutMapping("/{id}/update")
+    public ResponseEntity<ArtisanResponseDTO> updateArtisans(@PathVariable UUID id, @RequestBody ArtisanRequestDTO request) {
+        ArtisanResponseDTO artisanDto = artisanService.updateArtisan(id, request);
+        return ResponseEntity.ok(artisanDto);
+    }
+
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<void> deleteArtisan(@PathVariable UUID id) {
+        artisanService.deleteArtisan(id);
+        return ResponseEntity.noContent().build();
+    }
+}

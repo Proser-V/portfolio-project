@@ -23,8 +23,8 @@ import java.util.UUID;
 
 @Repository
 public interface AskingRepo extends JpaRepository<Asking, UUID> {
-    List<Asking> findAllByArtisanCategoryListContains(ArtisanCategory artisanCategoryList);
-    List<Asking> findAllByArtisanCategoryListIn(Collection<ArtisanCategory> categories);
+    List<Asking> findAllByArtisanCategory(ArtisanCategory artisanCategory);
+    List<Asking> findAllByArtisanCategoryIn(Collection<ArtisanCategory> categories);
     List<Asking> findAllByEventCategory(EventCategory eventCategory);
     List<Asking> findAllByClient(Client client);
 }

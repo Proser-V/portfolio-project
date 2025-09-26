@@ -4,6 +4,8 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
+import com.atelierlocal.dto.MessageRequestDTO;
+
 
 @Controller
 public class MessageController {
@@ -15,7 +17,7 @@ public class MessageController {
     }
 
     @MessageMapping("/chat")
-    public void processMessage(MessageDTO message) {
+    public void processMessage(MessageRequestDTO message) {
         messagingTemplate.convertAndSendToUser(
             message.getReceiverId().toString(),
             "/queue/messages",

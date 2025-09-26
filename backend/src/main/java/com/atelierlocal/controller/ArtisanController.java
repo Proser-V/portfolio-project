@@ -26,7 +26,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -79,7 +78,7 @@ public class ArtisanController {
     @GetMapping("/")
     public ResponseEntity<List<ArtisanResponseDTO>> getAllArtisans() {
         List<ArtisanResponseDTO> allArtisans = artisanService.getAllArtisans();
-        return ResponseEntity.ok();
+        return ResponseEntity.ok(allArtisans);
     }
     
     @PutMapping("/{id}/update")
@@ -89,7 +88,7 @@ public class ArtisanController {
     }
 
     @DeleteMapping("/{id}/delete")
-    public ResponseEntity<void> deleteArtisan(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteArtisan(@PathVariable UUID id) {
         artisanService.deleteArtisan(id);
         return ResponseEntity.noContent().build();
     }

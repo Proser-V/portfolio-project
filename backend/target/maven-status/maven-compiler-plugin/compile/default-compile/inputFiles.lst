@@ -14,15 +14,15 @@
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/ArtisanCategoryResponseDTO.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/ArtisanRequestDTO.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/ArtisanResponseDTO.java
+/home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/AskingRequestDTO.java
+/home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/AskingResponseDTO.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/AvatarDTO.java
-/home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/ClientRegistrationRequest.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/ClientRequestDTO.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/ClientResponseDTO.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/LoginRequest.java
-/home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/MessageDTO.java
+/home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/MessageRequestDTO.java
+/home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/MessageResponseDTO.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/RecommendationDTO.java
-/home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/UpdateAskingRequest.java
-/home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/UpdateClientRequest.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/exception/ResourceNotFoundException.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/model/Address.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/model/Artisan.java
@@ -34,6 +34,7 @@
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/model/Client.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/model/EventCategory.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/model/Message.java
+/home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/model/MessageStatus.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/model/Recommendation.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/model/S3Properties.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/model/UploadedPhoto.java

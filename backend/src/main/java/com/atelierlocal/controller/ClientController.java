@@ -65,7 +65,7 @@ public class ClientController {
         List<ClientResponseDTO> allClients = clientService.getAllClients();
         return ResponseEntity.ok(allClients);
     }
-    
+
     @GetMapping("/{id}")
     public ResponseEntity<ClientResponseDTO> getClientByID(@PathVariable UUID id) {
         ClientResponseDTO client = clientService.getClientById(id);
@@ -77,7 +77,7 @@ public class ClientController {
         List<AskingResponseDTO> askingsByClient = askingService.getAskingsByClient(id);
         return ResponseEntity.ok(askingsByClient);
     }
-    
+
 
     @PutMapping("/{id}/update")
     public ResponseEntity<ClientResponseDTO> updateClient(@PathVariable UUID id, @RequestBody ClientRequestDTO requestDTO) {

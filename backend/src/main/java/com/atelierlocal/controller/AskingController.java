@@ -34,7 +34,7 @@ public class AskingController {
     }
 
     @PostMapping("/creation")
-    public ResponseEntity<AskingResponseDTO> createAsking(AskingRequestDTO request) {
+    public ResponseEntity<AskingResponseDTO> createAsking(@RequestBody AskingRequestDTO request) {
         AskingResponseDTO newAsking = askingService.createAsking(request);
         return ResponseEntity.ok(newAsking);
     }
@@ -46,19 +46,19 @@ public class AskingController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AskingResponseDTO> getAskingById(UUID id) {
+    public ResponseEntity<AskingResponseDTO> getAskingById(@PathVariable UUID id) {
         AskingResponseDTO asking = askingService.getAskingById(id);
         return ResponseEntity.ok(asking);
     }
 
     @PutMapping("/{id}/update")
-    public ResponseEntity<AskingResponseDTO> updateAsking(UUID id, AskingRequestDTO request) {
+    public ResponseEntity<AskingResponseDTO> updateAsking(@PathVariable UUID id, @RequestBody AskingRequestDTO request) {
         AskingResponseDTO updatedAsking = askingService.updateAsking(id, request);
         return ResponseEntity.ok(updatedAsking);
     }
 
     @DeleteMapping("/{id}/delete")
-    public ResponseEntity<Void> deleteAsking(UUID id) {
+    public ResponseEntity<Void> deleteAsking(@PathVariable UUID id) {
         askingService.deleteAsking(id);
         return ResponseEntity.noContent().build();
     }

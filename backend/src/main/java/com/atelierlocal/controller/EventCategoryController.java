@@ -28,7 +28,7 @@ public class EventCategoryController {
     }
 
     @PostMapping("/creation")
-    public ResponseEntity<EventCategoryResponseDTO> createEventCategory(EventCategoryRequestDTO request) {
+    public ResponseEntity<EventCategoryResponseDTO> createEventCategory(@RequestBody EventCategoryRequestDTO request) {
         EventCategoryResponseDTO newEventCategory = eventCategoryService.createEventCategory(request);
         return ResponseEntity.ok(newEventCategory);
     }
@@ -40,25 +40,25 @@ public class EventCategoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EventCategoryResponseDTO> getEventCategoryById(UUID id) {
+    public ResponseEntity<EventCategoryResponseDTO> getEventCategoryById(@PathVariable UUID id) {
         EventCategoryResponseDTO eventCategory = eventCategoryService.getEventCategoryById();
         return ResponseEntity.ok(eventCategory);
     }
     
     @GetMapping("{id}/artisan-categories")
-    public ResponseEntity<List<ArtisanCategoryResponseDTO>> getArtisanCategoriesByEvent(UUID id) {
+    public ResponseEntity<List<ArtisanCategoryResponseDTO>> getArtisanCategoriesByEvent(@PathVariable UUID id) {
         List<ArtisanCategoryResponseDTO> artisanCategoriesByEvent = eventCategoryService.getArtisanCategoriesByEvent(id);
         return ResponseEntity.ok(artisanCategoriesByEvent);
     }
 
     @PutMapping("/{id}/update")
-    public ResponseEntity<EventCategoryResponseDTO> updateEventCategory(UUID id, EventCategoryRequestDTO request) {
+    public ResponseEntity<EventCategoryResponseDTO> updateEventCategory(@PathVariable UUID id, @RequestBody EventCategoryRequestDTO request) {
         EventCategoryResponseDTO updatedEventCategory = eventCategoryService.updateEventCategory(id, request);
         return ResponseEntity.ok(updatedEventCategory);
     }
 
     @DeleteMapping("/{id}/delete")
-    public ResponseEntity<Void> deleteEventCategory(UUID id) {
+    public ResponseEntity<Void> deleteEventCategory(@PathVariable UUID id) {
         eventCategoryService.deleteEventCategory(id);
         return ResponseEntity.noContent().build();
     }

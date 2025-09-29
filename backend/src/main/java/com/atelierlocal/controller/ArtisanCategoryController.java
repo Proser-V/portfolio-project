@@ -18,7 +18,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
@@ -34,7 +36,7 @@ public class ArtisanCategoryController {
     }
 
     @PostMapping("/creation")
-    public ResponseEntity<ArtisanCategoryResponseDTO> createArtisanCategory(ArtisanCategoryRequestDTO request) {
+    public ResponseEntity<ArtisanCategoryResponseDTO> createArtisanCategory(@RequestBody ArtisanCategoryRequestDTO request) {
         ArtisanCategoryResponseDTO newArtisanCategory = artisanCategoryService.createArtisanCategory(request);
         return ResponseEntity.ok(newArtisanCategory);
     }
@@ -46,26 +48,26 @@ public class ArtisanCategoryController {
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<ArtisanCategoryResponseDTO> getArtisanCategoryById(UUID id) {
+    public ResponseEntity<ArtisanCategoryResponseDTO> getArtisanCategoryById(@PathVariable UUID id) {
         ArtisanCategoryResponseDTO artisanCategory = artisanCategoryService.getArtisanCategoryById(id);
         return ResponseEntity.ok(artisanCategory);
     }
 
     @GetMapping("/{id}/artisans")
-    public ResponseEntity<List<ArtisanResponseDTO>> getArtisansByCategory(UUID id) {
+    public ResponseEntity<List<ArtisanResponseDTO>> getArtisansByCategory(@PathVariable UUID id) {
         List<ArtisanResponseDTO> artisansByCategory = artisanService.getAllArtisansByCategory(id);
         return ResponseEntity.ok(artisansByCategory);
     }
     
 
     @PutMapping("/{id}/update")
-    public ResponseEntity<ArtisanCategoryResponseDTO> updateArtisanCategory(UUID id, ArtisanCategoryRequestDTO request) {
+    public ResponseEntity<ArtisanCategoryResponseDTO> updateArtisanCategory(@PathVariable UUID id, @RequestBody ArtisanCategoryRequestDTO request) {
         ArtisanCategoryResponseDTO updatedArtisanCategory = artisanCategoryService.updateArtisanCategory(id, request);
         return ResponseEntity.ok(updatedArtisanCategory);
     }
 
     @DeleteMapping("/{id}/delete")
-    public ResponseEntity<Void> deleteArtisanCategory(UUID id) {
+    public ResponseEntity<Void> deleteArtisanCategory(@PathVariable UUID id) {
         artisanCategoryService.deleteArtisanCategory(id);
         return ResponseEntity.noContent().build();
     }

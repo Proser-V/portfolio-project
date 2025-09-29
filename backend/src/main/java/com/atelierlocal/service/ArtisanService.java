@@ -15,7 +15,6 @@ import com.atelierlocal.model.UploadedPhoto;
 import com.atelierlocal.model.UserRole;
 import com.atelierlocal.dto.ArtisanRequestDTO;
 import com.atelierlocal.dto.ArtisanResponseDTO;
-import com.atelierlocal.model.Address;
 
 import java.util.List;
 import java.util.UUID;
@@ -58,12 +57,12 @@ public class ArtisanService {
         if (dto.getCategoryName() == null) {
             throw new IllegalArgumentException("La catégorie d'artisan ne peut être vide.");
         }
-        Address address = dto.getAddress() != null
-            ? new Address(dto.getAddress().getNumber(),
-                        dto.getAddress().getStreet(),
-                        dto.getAddress().getPostalCode(),
-                        dto.getAddress().getCity())
-            : null;
+        if (dto.getLatitude() == null) {
+            throw new IllegalArgumentException("La latitude ne peut être vide.");
+        }
+        if (dto.getLongitude() == null) {
+            throw new IllegalArgumentException("La longitude ne peut être vide.");
+        }
         Avatar avatar = null;
         if (dto.getAvatar() != null) {
             String avatarUrl = avatarService.uploadAvatar(dto.getAvatar(), null);
@@ -79,7 +78,8 @@ public class ArtisanService {
         artisan.setEmail(dto.getEmail());
         artisan.setBio(dto.getBio());
         artisan.setPhoneNumber(dto.getPhoneNumber());
-        artisan.setAddress(address);
+        artisan.setLatitude(dto.getLatitude());
+        artisan.setLongitude(dto.getLongitude());
         artisan.setSiret(dto.getSiret());
         artisan.setAvatar(avatar);
         artisan.setCategory(category);
@@ -133,15 +133,8 @@ public class ArtisanService {
         Artisan artisan = artisanRepo.findById(artisanId)
             .orElseThrow(() -> new EntityNotFoundException("Professionnel non trouvé."));
 
-        if (request.getAddress() != null) {
-            Address addr = new Address(
-                request.getAddress().getNumber(),
-                request.getAddress().getStreet(),
-                request.getAddress().getPostalCode(),
-                request.getAddress().getCity()
-            );
-            artisan.setAddress(addr);
-        }
+        if (request.getLatitude() != null) { artisan.setLatitude(request.getLatitude()); }
+        if (request.getLongitude() != null) { artisan.setLongitude(request.getLongitude()); }
         if (request.getCategoryName() != null) {
             ArtisanCategory category = artisanCategoryRepo.findByNameIgnoreCase(request.getCategoryName())
                 .orElseThrow(() -> new IllegalArgumentException("Catégorie invalide"));

@@ -56,13 +56,14 @@ public class ClientService {
         client.setFirstName(dto.getFirstName());
         client.setLastName(dto.getLastName());
         client.setEmail(dto.getEmail());
-        Address address = dto.getAddress() != null
-            ? new Address(dto.getAddress().getNumber(),
-                        dto.getAddress().getStreet(),
-                        dto.getAddress().getPostalCode(),
-                        dto.getAddress().getCity())
-            : null;
-        client.setAddress(address);
+        if (dto.getLatitude() == null) {
+            throw new IllegalArgumentException("La latitude ne peut être vide.");
+        }
+        if (dto.getLongitude() == null) {
+            throw new IllegalArgumentException("La longitude ne peut être vide.");
+        }
+        client.setLatitude(dto.getLatitude());
+        client.setLongitude(dto.getLongitude());
         Avatar avatar = null;
         if (dto.getAvatar() != null) {
             String avatarUrl = avatarService.uploadAvatar(dto.getAvatar(), null);
@@ -94,13 +95,8 @@ public class ClientService {
         if (request.getFirstName() != null) { client.setFirstName(request.getFirstName()); }
         if (request.getLastName() != null) { client.setLastName(request.getLastName()); }
 
-        Address address = request.getAddress() != null
-            ? new Address(request.getAddress().getNumber(),
-                        request.getAddress().getStreet(),
-                        request.getAddress().getPostalCode(),
-                        request.getAddress().getCity())
-            : null;
-        client.setAddress(address);
+        if (request.getLatitude() != null) { client.setLatitude(request.getLatitude()); }
+        if (request.getLongitude() != null) { client.setLongitude(request.getLongitude()); }
 
         if (request.getEmail() != null) { client.setEmail(request.getEmail()); }
         if (request.getPhoneNumber() != null) { client.setPhoneNumber(request.getPhoneNumber()); }

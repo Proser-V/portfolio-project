@@ -10,7 +10,8 @@ public class ClientResponseDTO {
     private String firstName;
     private String lastName;
     private AvatarDTO avatar;
-    private AddressDTO address;
+    private Double latitude;
+    private Double longitude;
     private String phoneNumber;
     private int recommendationsCount;
 
@@ -19,7 +20,8 @@ public class ClientResponseDTO {
         this.email = client.getEmail();
         this.firstName = client.getFirstName();
         this.lastName = client.getLastName();
-        this.address = client.getAddress() != null ? new AddressDTO(client.getAddress()) : null;
+        this.latitude = client.getLatitude();
+        this.longitude = client.getLongitude();
         this.avatar = client.getAvatar() != null ? new AvatarDTO(client.getAvatar()) : null;
         this.phoneNumber = client.getPhoneNumber();
         this.recommendationsCount = client.getRecommendations() != null ? client.getRecommendations().size() : 0;
@@ -35,8 +37,11 @@ public class ClientResponseDTO {
     public AvatarDTO getAvatar() { return avatar; }
     public void setAvatar(AvatarDTO avatar) { this.avatar = avatar; }
 
-    public AddressDTO getAddress() { return address; }
-    public void setAddress(AddressDTO address) { this.address = address; }
+    public Double getLatitude() { return latitude; }
+    public void setLatitude(Double latitude) { this.latitude = latitude; }
+
+    public Double getLongitude() { return longitude; }
+    public void setLongitude(Double longitude) { this.longitude = longitude; }
 
     public String getFirstName() { return firstName; }
     public void setFirstName(String firstName) { this.firstName = firstName; } 

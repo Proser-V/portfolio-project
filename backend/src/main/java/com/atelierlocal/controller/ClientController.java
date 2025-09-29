@@ -34,9 +34,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 @Tag(name = "Clients", description = "API pour la création des clients")
 public class ClientController {
     private final ClientService clientService;
+    private final AskingService askingService;
 
-    public ClientController(ClientService clientService) {
+    public ClientController(ClientService clientService, AskingService askingService) {
         this.clientService = clientService;
+        this.askingService = askingService;
     }
 
     @PostMapping("/register")
@@ -63,7 +65,7 @@ public class ClientController {
         List<ClientResponseDTO> allClients = clientService.getAllClients();
         return ResponseEntity.ok(allClients);
     }
-    
+
     @GetMapping("/{id}")
     public ResponseEntity<ClientResponseDTO> getClientByID(@PathVariable UUID id) {
         ClientResponseDTO client = clientService.getClientById(id);
@@ -72,10 +74,10 @@ public class ClientController {
 
     @GetMapping("/{id}/askings")
     public ResponseEntity<List<AskingResponseDTO>> getAskingsByClient(@PathVariable UUID id) {
-        List<AskingResponseDTO> askingsByClient = clientService.getAskingsByClient(id);
+        List<AskingResponseDTO> askingsByClient = askingService.getAskingsByClient(id);
         return ResponseEntity.ok(askingsByClient);
     }
-    
+
 
     @PutMapping("/{id}/update")
     public ResponseEntity<ClientResponseDTO> updateClient(@PathVariable UUID id, @RequestBody ClientRequestDTO requestDTO) {

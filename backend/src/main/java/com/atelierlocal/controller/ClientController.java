@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.atelierlocal.dto.AskingResponseDTO;
 import com.atelierlocal.dto.ClientRequestDTO;
 import com.atelierlocal.service.ClientService;
 import com.atelierlocal.dto.ClientResponseDTO;
@@ -24,6 +25,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
@@ -66,6 +69,13 @@ public class ClientController {
         ClientResponseDTO client = clientService.getClientById(id);
         return ResponseEntity.ok(client);
     }
+
+    @GetMapping("/{id}/askings")
+    public ResponseEntity<List<AskingResponseDTO>> getAskingsByClient(@PathVariable UUID id) {
+        List<AskingResponseDTO> askingsByClient = clientService.getAskingsByClient(id);
+        return ResponseEntity.ok(askingsByClient);
+    }
+    
 
     @PutMapping("/{id}/update")
     public ResponseEntity<ClientResponseDTO> updateClient(@PathVariable UUID id, @RequestBody ClientRequestDTO requestDTO) {

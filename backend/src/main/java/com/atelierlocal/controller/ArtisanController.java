@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.atelierlocal.dto.ArtisanResponseDTO;
+import com.atelierlocal.dto.RecommendationDTO;
 import com.atelierlocal.dto.ArtisanRequestDTO;
 import com.atelierlocal.model.ArtisanCategory;
+import com.atelierlocal.model.Recommendation;
 import com.atelierlocal.repository.ArtisanCategoryRepo;
 import com.atelierlocal.service.ArtisanService;
 
@@ -36,11 +38,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Tag(name = "Artisans", description = "Définition du controlleur des artisans")
 public class ArtisanController {
     private final ArtisanService artisanService;
-    private final ArtisanCategoryRepo artisanCategoryRepo;
+    private final RecommendationService recommendationService;
 
-    public ArtisanController(ArtisanService artisanService, ArtisanCategoryRepo artisanCategoryRepo) {
+    public ArtisanController(ArtisanService artisanService, RecommendationService recommendationService) {
         this.artisanService = artisanService;
-        this.artisanCategoryRepo = artisanCategoryRepo;
+        this.recommendationService = recommendationService;
     }
 
     @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -53,13 +55,6 @@ public class ArtisanController {
     public ResponseEntity<ArtisanResponseDTO> registerArtisan(@Valid @ModelAttribute ArtisanRequestDTO request) {
         ArtisanResponseDTO artisanDto = artisanService.createArtisan(request);
         return ResponseEntity.status(201).body(artisanDto);
-    }
-
-    @GetMapping("/debug/categories")
-    public List<String> debugCat() {
-        return artisanCategoryRepo.findAll().stream()
-            .map(ArtisanCategory::getName)
-            .collect(Collectors.toList());
     }
 
     @GetMapping("/me")
@@ -92,4 +87,11 @@ public class ArtisanController {
         artisanService.deleteArtisan(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{id}/recommandation")
+    public ResponseEntity<RecommendationResponseDTO> newRecommendation(UUID id, RecommendationRequestDTO request) {
+        RecommendationResponseDTO newRecommendation = recommendationService.createRecommandation(id, request);
+        return ResponseEntity.ok(newRecommendation);
+    }
+    
 }

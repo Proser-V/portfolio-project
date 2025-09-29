@@ -133,9 +133,10 @@ public class AskingService {
         return new AskingResponseDTO(updatedAsking);
     }
 
-    public Asking getAskingById(UUID askingId) {
-        return askingRepo.findById(askingId)
-            .orElseThrow(() -> new RuntimeException("Demande non trouvée."));
+    public AskingResponseDTO getAskingById(UUID askingId) {
+        Asking asking = askingRepo.findById(askingId)
+            .orElseThrow(() -> new IllegalArgumentException("Demande non trouvée."));
+        return new AskingResponseDTO(asking);
     }
 
     public List<AskingResponseDTO> getAskingsByClient(UUID clientId) {
@@ -145,6 +146,14 @@ public class AskingService {
         List<Asking> askings = askingRepo.findAllByClient(client);
 
         return askings.stream()
+            .map(AskingResponseDTO::new)
+            .collect(Collectors.toList());
+    }
+
+    public List<AskingResponseDTO> getAllAskings() {
+        List<Asking> allAskings = askingRepo.findAll();
+
+        return allAskings.stream()
             .map(AskingResponseDTO::new)
             .collect(Collectors.toList());
     }

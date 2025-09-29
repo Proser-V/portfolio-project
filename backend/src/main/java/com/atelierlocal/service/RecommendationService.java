@@ -28,7 +28,7 @@ public class RecommendationService {
         return recommendationRepo.save(recommendation);
     }
 
-    public void deleteRecomnnedation(UUID recommendationId) {
+    public void deleteRecommendation(UUID recommendationId) {
         if (!recommendationRepo.existsById(recommendationId)) {
             throw new IllegalArgumentException("Recommendation non trouvée dans la base");
         }

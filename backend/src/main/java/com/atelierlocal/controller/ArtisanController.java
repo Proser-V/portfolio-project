@@ -22,6 +22,7 @@ import com.atelierlocal.model.ArtisanCategory;
 import com.atelierlocal.model.Recommendation;
 import com.atelierlocal.repository.ArtisanCategoryRepo;
 import com.atelierlocal.service.ArtisanService;
+import com.atelierlocal.service.RecommendationService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

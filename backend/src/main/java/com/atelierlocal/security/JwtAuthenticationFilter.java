@@ -46,6 +46,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         jwt = authHeader.substring(7); // Retire le "Bearer"
+        if (jwtService.isTokenBlacklisted(jwt)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\": \"Token invalide ou expiré\"}");
+            return;
+        }
         username = jwtService.extractUsername(jwt);
 
         // Vérifier si l'utilisateur est déjà connecté

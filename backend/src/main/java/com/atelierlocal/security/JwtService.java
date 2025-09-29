@@ -4,6 +4,8 @@ import java.security.Key;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +19,7 @@ import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
+    private final Set<String> blacklistedTokens = ConcurrentHashMap.newKeySet();
 
     @Value("${jwt.secret}")
     private String secretKey;
@@ -69,5 +72,13 @@ public class JwtService {
             .setExpiration(Date.from(expiration))
             .signWith(getSigningKey(), SignatureAlgorithm.HS256)
             .compact();
+    }
+
+    public void blacklistToken(String token) {
+        blacklistedTokens.add(token);
+    }
+
+    public boolean isTokenBlacklisted(String token) {
+        return blacklistedTokens.contains(token);
     }
 }

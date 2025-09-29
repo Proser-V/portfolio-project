@@ -1,7 +1,6 @@
 package com.atelierlocal.service;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -26,5 +25,4 @@ public class EventCategoryService {
         return eventCategoryRepo.save(eventCategory);
     }
 
-    public 
 }

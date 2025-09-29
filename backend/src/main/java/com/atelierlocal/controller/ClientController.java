@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.atelierlocal.dto.AskingResponseDTO;
 import com.atelierlocal.dto.ClientRequestDTO;
+import com.atelierlocal.service.AskingService;
 import com.atelierlocal.service.ClientService;
 import com.atelierlocal.dto.ClientResponseDTO;
 
@@ -25,7 +26,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 
@@ -34,9 +34,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Tag(name = "Clients", description = "API pour la création des clients")
 public class ClientController {
     private final ClientService clientService;
+    private final AskingService askingService;
 
-    public ClientController(ClientService clientService) {
+    public ClientController(ClientService clientService, AskingService askingService) {
         this.clientService = clientService;
+        this.askingService = askingService;
     }
 
     @PostMapping("/register")
@@ -72,7 +74,7 @@ public class ClientController {
 
     @GetMapping("/{id}/askings")
     public ResponseEntity<List<AskingResponseDTO>> getAskingsByClient(@PathVariable UUID id) {
-        List<AskingResponseDTO> askingsByClient = clientService.getAskingsByClient(id);
+        List<AskingResponseDTO> askingsByClient = askingService.getAskingsByClient(id);
         return ResponseEntity.ok(askingsByClient);
     }
     

@@ -9,6 +9,7 @@ import com.atelierlocal.model.AskingStatus;
 public class AskingResponseDTO {
     private UUID id;
     private UUID clientId;
+    private String title;
     private String content;
     private UUID artisanCategoryId;
     private UUID eventCategoryId;
@@ -19,6 +20,7 @@ public class AskingResponseDTO {
     public AskingResponseDTO(Asking asking) {
         this.id = asking.getId();
         this.clientId = asking.getClient().getId();
+        this.title = asking.getTitle();
         this.content = asking.getContent();
         this.artisanCategoryId = asking.getArtisanCategory().getId();
         this.eventCategoryId = asking.getEventCategory() != null ? asking.getEventCategory().getId() : null;
@@ -31,6 +33,9 @@ public class AskingResponseDTO {
 
     public UUID getClientId() { return clientId; }
     public void setClientId(UUID clientId) { this.clientId = clientId; }
+
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
 
     public String getContent() { return content; }
     public void setContent(String content) { this.content = content; }

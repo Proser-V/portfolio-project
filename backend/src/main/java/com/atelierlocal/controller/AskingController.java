@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.atelierlocal.dto.ArtisanResponseDTO;
 import com.atelierlocal.dto.AskingRequestDTO;
 import com.atelierlocal.dto.AskingResponseDTO;
+import com.atelierlocal.model.AskingStatus;
 import com.atelierlocal.service.AskingService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,9 +15,13 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.config.annotation.authentication.configurers.provisioning.UserDetailsManagerConfigurer.UserDetailsBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -61,6 +66,13 @@ public class AskingController {
     public ResponseEntity<Void> deleteAsking(@PathVariable UUID id) {
         askingService.deleteAsking(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<AskingResponseDTO> updateStatus(@PathVariable UUID id, @RequestParam AskingStatus status, Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        AskingResponseDTO updated = askingService.patchAskingStatus(id, status, userDetails);
+        return ResponseEntity.ok(updated);
     }
 }
 

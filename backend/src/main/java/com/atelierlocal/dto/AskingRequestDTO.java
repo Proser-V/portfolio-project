@@ -4,12 +4,17 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class AskingRequestDTO {
     // Attributs
-    @NotBlank(message = "L'ID du client créateur est obligatoire.")
+    @NotNull(message = "L'ID du client créateur est obligatoire.")
     private UUID clientId;
+
+    @NotBlank(message = "Titre obligatoire.")
+    @Size(max = 50, message = "Le titre ne peut excèder 50 caractères.")
+    private String title;
 
     @NotBlank(message = "Objet de la demande obligatoire.")
     @Size(max = 1000, message = "La demande ne peut pas dépasser 1000 caractères.")
@@ -28,6 +33,9 @@ public class AskingRequestDTO {
 
     public UUID getClientId() { return clientId; }
     public void setClientId(UUID clientId) { this.clientId = clientId; }
+
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
 
     public String getContent() { return content; }
     public void setContent(String content) { this.content = content; }

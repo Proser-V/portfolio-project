@@ -47,7 +47,7 @@ public class LoginController {
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader("Authorization") String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Token manquant"))
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Token manquant"));
         }
         String token = authHeader.substring(7);
         jwtService.blacklistToken(token);

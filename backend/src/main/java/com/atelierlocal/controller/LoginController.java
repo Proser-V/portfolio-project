@@ -16,8 +16,11 @@ import com.atelierlocal.security.CustomUserDetailsService;
 import com.atelierlocal.security.JwtService;
 import com.atelierlocal.service.LoginService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/users")
+@Tag(name = "Login", description = "API pour le login.")
 public class LoginController {
     private final LoginService loginService;
     private final JwtService jwtService;

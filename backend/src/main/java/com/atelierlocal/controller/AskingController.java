@@ -3,7 +3,6 @@ package com.atelierlocal.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.atelierlocal.dto.ArtisanResponseDTO;
 import com.atelierlocal.dto.AskingRequestDTO;
 import com.atelierlocal.dto.AskingResponseDTO;
 import com.atelierlocal.model.AskingStatus;

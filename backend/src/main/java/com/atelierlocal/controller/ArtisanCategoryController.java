@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/artisan-category")
-@Tag(name = "Artisan categories", description = "Définition du controlleur des catégories d'artisans")
+@Tag(name = "Artisan Categories", description = "Définition du controlleur des catégories d'artisans")
 public class ArtisanCategoryController {
     private ArtisanCategoryService artisanCategoryService;
     private ArtisanService artisanService;

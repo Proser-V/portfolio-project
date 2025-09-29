@@ -18,9 +18,12 @@ import com.atelierlocal.dto.EventCategoryRequestDTO;
 import com.atelierlocal.dto.EventCategoryResponseDTO;
 import com.atelierlocal.service.EventCategoryService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 
 @RestController
 @RequestMapping("/api/event-categories")
+@Tag(name = "Event Categories", description = "API pour la création des évènements.")
 public class EventCategoryController {
     private final EventCategoryService eventCategoryService;
 

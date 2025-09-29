@@ -12,6 +12,7 @@
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/controller/EventCategoryController.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/controller/LoginController.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/controller/MessageController.java
+/home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/controller/RecommendationController.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/AddressDTO.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/ArtisanCategoryRequestDTO.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/ArtisanCategoryResponseDTO.java

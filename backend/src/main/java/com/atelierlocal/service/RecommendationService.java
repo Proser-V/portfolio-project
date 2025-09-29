@@ -74,8 +74,7 @@ public class RecommendationService {
         return new RecommendationResponseDTO(
             recommendation.getId(),
             recommendation.getClient().getId(),
-            recommendation.getArtisan().getId(),
-            recommendation.getCreatedAt()
+            recommendation.getArtisan().getId()
         );
     }
 }

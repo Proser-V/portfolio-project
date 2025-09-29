@@ -1,27 +1,28 @@
 package com.atelierlocal.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.atelierlocal.dto.ArtisanCategoryResponseDTO;
-
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.atelierlocal.dto.ArtisanCategoryResponseDTO;
+import com.atelierlocal.dto.EventCategoryRequestDTO;
+import com.atelierlocal.dto.EventCategoryResponseDTO;
+import com.atelierlocal.service.EventCategoryService;
 
 
 @RestController
 @RequestMapping("/api/event-categories")
 public class EventCategoryController {
-    private EventCategoryService eventCategoryService;
+    private final EventCategoryService eventCategoryService;
 
     public EventCategoryController(EventCategoryService eventCategoryService) {
         this.eventCategoryService = eventCategoryService;
@@ -35,13 +36,13 @@ public class EventCategoryController {
     
     @GetMapping("/")
     public ResponseEntity<List<EventCategoryResponseDTO>> getAllEventCateogries() {
-        List<EventCategoryResponseDTO> allEventCategories = eventCategoryService.getAllEventCateogries();
+        List<EventCategoryResponseDTO> allEventCategories = eventCategoryService.getAllEventCategories();
         return ResponseEntity.ok(allEventCategories);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<EventCategoryResponseDTO> getEventCategoryById(@PathVariable UUID id) {
-        EventCategoryResponseDTO eventCategory = eventCategoryService.getEventCategoryById();
+        EventCategoryResponseDTO eventCategory = eventCategoryService.getEventCategoryById(id);
         return ResponseEntity.ok(eventCategory);
     }
     

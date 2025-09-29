@@ -34,11 +34,12 @@ public class RecommendationService {
         this.artisanRepo = artisanRepo;
     }
 
-    public RecommendationResponseDTO createRecommendation(RecommendationRequestDTO request) {
+    public RecommendationResponseDTO createRecommendation(UUID artisanId, RecommendationRequestDTO request) {
         Client client = clientRepo.findById(request.getClientId())
-            .orElseThrow(() -> new IllegalArgumentException("Client not found: " + request.getClientId()));
-        Artisan artisan = artisanRepo.findById(request.getArtisanId())
-            .orElseThrow(() -> new IllegalArgumentException("Artisan not found: " + request.getArtisanId()));
+            .orElseThrow(() -> new IllegalArgumentException("Client non trouvé : " + request.getClientId()));
+
+        Artisan artisan = artisanRepo.findById(artisanId)
+            .orElseThrow(() -> new IllegalArgumentException("Artisan non trouvé : " + artisanId));
 
         Recommendation recommendation = new Recommendation();
         recommendation.setClient(client);
@@ -51,7 +52,7 @@ public class RecommendationService {
 
     public void deleteRecommendation(UUID recommendationId) {
         if (!recommendationRepo.existsById(recommendationId)) {
-            throw new IllegalArgumentException("Recommendation not found: " + recommendationId);
+            throw new IllegalArgumentException("Recommendation non trouvée : " + recommendationId);
         }
         recommendationRepo.deleteById(recommendationId);
     }
@@ -68,6 +69,7 @@ public class RecommendationService {
             .collect(Collectors.toList());
     }
 
+    // Utilitaires
     private RecommendationResponseDTO toResponseDTO(Recommendation recommendation) {
         return new RecommendationResponseDTO(
             recommendation.getId(),

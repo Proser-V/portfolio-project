@@ -2,35 +2,32 @@ package com.atelierlocal.controller;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.atelierlocal.dto.ArtisanResponseDTO;
-import com.atelierlocal.dto.RecommendationDTO;
 import com.atelierlocal.dto.ArtisanRequestDTO;
-import com.atelierlocal.model.ArtisanCategory;
-import com.atelierlocal.model.Recommendation;
-import com.atelierlocal.repository.ArtisanCategoryRepo;
+import com.atelierlocal.dto.ArtisanResponseDTO;
+import com.atelierlocal.dto.RecommendationRequestDTO;
+import com.atelierlocal.dto.RecommendationResponseDTO;
 import com.atelierlocal.service.ArtisanService;
 import com.atelierlocal.service.RecommendationService;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 
 
@@ -91,7 +88,7 @@ public class ArtisanController {
 
     @PostMapping("/{id}/recommandation")
     public ResponseEntity<RecommendationResponseDTO> newRecommendation(UUID id, RecommendationRequestDTO request) {
-        RecommendationResponseDTO newRecommendation = recommendationService.createRecommandation(id, request);
+        RecommendationResponseDTO newRecommendation = recommendationService.createRecommendation(id, request);
         return ResponseEntity.ok(newRecommendation);
     }
     

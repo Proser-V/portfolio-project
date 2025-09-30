@@ -43,7 +43,6 @@ public class ClientController {
     }
 
     @PostMapping("/register")
-    @PreAuthorize("hasRole('CLIENT') or hasRole('ADMIN')")
     @Operation(summary = "Enregistrement d'un nouveau client", description = "Création d'un nouveau client via les données entrées")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Client créé avec succès"),
@@ -56,7 +55,6 @@ public class ClientController {
     }
 
     @GetMapping("/me")
-    @PreAuthorize("hasRole('CLIENT') or hasRole('ADMIN')")
     public ResponseEntity<ClientResponseDTO> getCurrentUser(Authentication authentication) {
         String email = authentication.getName();
         ClientResponseDTO clientDTO = clientService.getClientByEmail(email);
@@ -64,6 +62,7 @@ public class ClientController {
     }
 
     @GetMapping("/")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ClientResponseDTO>> getAllClients() {
         List<ClientResponseDTO> allClients = clientService.getAllClients();
         return ResponseEntity.ok(allClients);
@@ -76,7 +75,6 @@ public class ClientController {
     }
 
     @GetMapping("/{id}/askings")
-    @PreAuthorize("hasRole('CLIENT') or hasRole('ADMIN')")
     public ResponseEntity<List<AskingResponseDTO>> getAskingsByClient(@PathVariable UUID id) {
         List<AskingResponseDTO> askingsByClient = askingService.getAskingsByClient(id);
         return ResponseEntity.ok(askingsByClient);
@@ -84,14 +82,13 @@ public class ClientController {
 
 
     @PutMapping("/{id}/update")
-    @PreAuthorize("hasRole('CLIENT') or hasRole('ADMIN')")
     public ResponseEntity<ClientResponseDTO> updateClient(@PathVariable UUID id, @RequestBody ClientRequestDTO requestDTO) {
         ClientResponseDTO updatedClient = clientService.updateClient(id, requestDTO);
         return ResponseEntity.ok(updatedClient);
     }
 
     @DeleteMapping("/{id}/delete")
-    @PreAuthorize("hasRole('CLIENT') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteClient(@PathVariable UUID id) {
         clientService.deleteClient(id);
         return ResponseEntity.noContent().build();

@@ -5,16 +5,24 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.atelierlocal.dto.AskingRequestDTO;
 import com.atelierlocal.dto.AskingResponseDTO;
+import com.atelierlocal.model.Asking;
 import com.atelierlocal.model.AskingStatus;
+import com.atelierlocal.model.Client;
+import com.atelierlocal.model.User;
+import com.atelierlocal.model.UserRole;
+import com.atelierlocal.repository.AskingRepo;
 import com.atelierlocal.service.AskingService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,15 +33,19 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import jakarta.persistence.EntityNotFoundException;
+
 
 @RestController
 @RequestMapping("/api/askings")
 @Tag(name = "Askings", description = "Définition du controlleur des askings")
 public class AskingController {
     private final AskingService askingService;
+    private final AskingRepo askingRepo;
     
-    public AskingController(AskingService askingService) {
+    public AskingController(AskingService askingService, AskingRepo askingRepo) {
         this.askingService = askingService;
+        this.askingRepo = askingRepo;
     }
 
     @PostMapping("/creation")
@@ -55,19 +67,35 @@ public class AskingController {
     }
 
     @PutMapping("/{id}/update")
-    public ResponseEntity<AskingResponseDTO> updateAsking(@PathVariable UUID id, @RequestBody AskingRequestDTO request) {
+    public ResponseEntity<AskingResponseDTO> updateAsking(
+                                                @PathVariable UUID id,
+                                                @RequestBody AskingRequestDTO request,
+                                                @AuthenticationPrincipal User currentUser
+                                                ) throws AccessDeniedException {
+        Asking asking = askingRepo.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Demande non trouvée."));
+
+        if (!asking.getClient().getId().equals(currentUser.getId()) || currentUser.getUserRole() != UserRole.ADMIN) {
+            throw new AccessDeniedException("Vous ne pouvez pas modifier cette demande.");
+        }
+
         AskingResponseDTO updatedAsking = askingService.updateAsking(id, request);
         return ResponseEntity.ok(updatedAsking);
     }
 
     @DeleteMapping("/{id}/delete")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteAsking(@PathVariable UUID id) {
         askingService.deleteAsking(id);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<AskingResponseDTO> updateStatus(@PathVariable UUID id, @RequestParam AskingStatus status, Authentication authentication) {
+    public ResponseEntity<AskingResponseDTO> updateStatus(
+                                                @PathVariable UUID id,
+                                                @RequestParam AskingStatus status,
+                                                @AuthenticationPrincipal Client current
+                                                ) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         AskingResponseDTO updated = askingService.patchAskingStatus(id, status, userDetails);
         return ResponseEntity.ok(updated);

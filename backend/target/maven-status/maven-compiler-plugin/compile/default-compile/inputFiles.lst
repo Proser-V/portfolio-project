@@ -13,7 +13,6 @@
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/controller/LoginController.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/controller/MessageController.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/controller/RecommendationController.java
-/home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/AddressDTO.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/ArtisanCategoryRequestDTO.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/ArtisanCategoryResponseDTO.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/ArtisanRequestDTO.java
@@ -32,7 +31,6 @@
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/RecommendationRequestDTO.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/RecommendationResponseDTO.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/exception/ResourceNotFoundException.java
-/home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/model/Address.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/model/Artisan.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/model/ArtisanCategory.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/model/Asking.java

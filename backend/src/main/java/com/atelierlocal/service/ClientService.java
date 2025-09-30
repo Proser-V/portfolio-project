@@ -75,6 +75,7 @@ public class ClientService {
         client.setHashedPassword(hashed);
         client.setUserRole(dto.getRole() != null ? dto.getRole() : UserRole.CLIENT); // Possibilité de créer un admin en passant le bon role
         client.setActive(true);
+        client.setPhoneNumber(dto.getPhoneNumber());
 
         Client savedClient = clientRepo.save(client);
         return new ClientResponseDTO(savedClient);

@@ -15,6 +15,8 @@ import com.atelierlocal.model.Asking;
 import com.atelierlocal.model.AskingStatus;
 import com.atelierlocal.model.Client;
 import com.atelierlocal.model.EventCategory;
+import com.atelierlocal.model.User;
+import com.atelierlocal.model.UserRole;
 import com.atelierlocal.repository.AskingRepo;
 import com.atelierlocal.repository.ClientRepo;
 import com.atelierlocal.repository.EventCategoryRepo;
@@ -81,15 +83,14 @@ public class AskingService {
         return new AskingResponseDTO(newAsking);
     }
 
-    public AskingResponseDTO patchAskingStatus(UUID askingId, AskingStatus newStatus, UserDetails currentUser) {
+    public AskingResponseDTO patchAskingStatus(UUID askingId, AskingStatus newStatus, Client currentClient) {
         Asking asking = askingRepo.findById(askingId)
             .orElseThrow(() -> new IllegalArgumentException("Demande non trouvée."));
 
-        boolean isAdmin = currentUser.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-        boolean isOwner = asking.getClient().getEmail().equals(currentUser.getUsername());
+        boolean isAdmin = currentClient.getUserRole() == UserRole.ADMIN;
+        boolean isOwner = currentClient.getId().equals(asking.getClient().getId());
 
-        if (!isAdmin || !isOwner) {
+        if (!isAdmin && !isOwner) {
             throw new AccessDeniedException("Vous n'êtes pas autorisé à modifier cette demande.");
         }
 

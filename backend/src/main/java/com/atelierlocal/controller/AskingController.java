@@ -21,9 +21,7 @@ import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -67,15 +65,16 @@ public class AskingController {
     }
 
     @PutMapping("/{id}/update")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
     public ResponseEntity<AskingResponseDTO> updateAsking(
                                                 @PathVariable UUID id,
                                                 @RequestBody AskingRequestDTO request,
-                                                @AuthenticationPrincipal User currentUser
+                                                @AuthenticationPrincipal Client currentClient
                                                 ) throws AccessDeniedException {
         Asking asking = askingRepo.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Demande non trouvée."));
 
-        if (!asking.getClient().getId().equals(currentUser.getId()) || currentUser.getUserRole() != UserRole.ADMIN) {
+        if (!asking.getClient().getId().equals(currentClient.getId()) || currentClient.getUserRole() != UserRole.ADMIN) {
             throw new AccessDeniedException("Vous ne pouvez pas modifier cette demande.");
         }
 
@@ -91,13 +90,13 @@ public class AskingController {
     }
 
     @PatchMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
     public ResponseEntity<AskingResponseDTO> updateStatus(
                                                 @PathVariable UUID id,
                                                 @RequestParam AskingStatus status,
-                                                @AuthenticationPrincipal Client current
+                                                @AuthenticationPrincipal Client currentClient
                                                 ) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        AskingResponseDTO updated = askingService.patchAskingStatus(id, status, userDetails);
+        AskingResponseDTO updated = askingService.patchAskingStatus(id, status, currentClient);
         return ResponseEntity.ok(updated);
     }
 }

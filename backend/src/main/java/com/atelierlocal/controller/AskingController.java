@@ -47,12 +47,14 @@ public class AskingController {
     }
 
     @PostMapping("/creation")
+    @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<AskingResponseDTO> createAsking(@RequestBody AskingRequestDTO request) {
         AskingResponseDTO newAsking = askingService.createAsking(request);
         return ResponseEntity.ok(newAsking);
     }
 
     @GetMapping("/")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<AskingResponseDTO>> getAllAskings() {
         List<AskingResponseDTO> allAskings = askingService.getAllAskings();
         return ResponseEntity.ok(allAskings);
@@ -74,7 +76,10 @@ public class AskingController {
         Asking asking = askingRepo.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Demande non trouvée."));
 
-        if (!asking.getClient().getId().equals(currentClient.getId()) || currentClient.getUserRole() != UserRole.ADMIN) {
+        boolean isAdmin = currentClient.getUserRole() == UserRole.ADMIN;
+        boolean isOwner = asking.getClient().getId().equals(currentClient.getId());
+
+        if (!isAdmin && !isOwner) {
             throw new AccessDeniedException("Vous ne pouvez pas modifier cette demande.");
         }
 

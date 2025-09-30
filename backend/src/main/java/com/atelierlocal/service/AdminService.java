@@ -13,7 +13,6 @@ import com.atelierlocal.dto.AskingRequestDTO;
 import com.atelierlocal.dto.AskingResponseDTO;
 import com.atelierlocal.dto.ClientRequestDTO;
 import com.atelierlocal.dto.ClientResponseDTO;
-import com.atelierlocal.model.Asking;
 
 import com.atelierlocal.repository.ArtisanRepo;
 import com.atelierlocal.repository.ClientRepo;

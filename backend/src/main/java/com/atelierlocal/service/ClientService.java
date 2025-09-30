@@ -14,7 +14,6 @@ import jakarta.persistence.EntityNotFoundException;
 import com.atelierlocal.model.Client;
 import com.atelierlocal.dto.ClientRequestDTO;
 import com.atelierlocal.dto.ClientResponseDTO;
-import com.atelierlocal.model.Address;
 import com.atelierlocal.model.Avatar;
 import com.atelierlocal.model.UserRole;
 

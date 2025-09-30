@@ -1,7 +1,11 @@
 package com.atelierlocal.security;
 
 import java.security.Key;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -15,12 +19,13 @@ import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
+    private final Set<String> blacklistedTokens = ConcurrentHashMap.newKeySet();
 
     @Value("${jwt.secret}")
     private String secretKey;
 
     @Value("${jwt.expiration-ms}")
-    private long expirationMs;
+    private String expirationMs;
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes());
@@ -57,11 +62,23 @@ public class JwtService {
     }
 
     public String generateToken(UserDetails userDetails) {
+        Instant now = Instant.now();
+        long expirationMsLong = Long.parseLong(expirationMs);
+        Instant expiration = now.plus(expirationMsLong, ChronoUnit.MILLIS);
+
         return Jwts.builder()
             .setSubject(userDetails.getUsername())
-            .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
+            .setIssuedAt(Date.from(now))
+            .setExpiration(Date.from(expiration))
             .signWith(getSigningKey(), SignatureAlgorithm.HS256)
             .compact();
+    }
+
+    public void blacklistToken(String token) {
+        blacklistedTokens.add(token);
+    }
+
+    public boolean isTokenBlacklisted(String token) {
+        return blacklistedTokens.contains(token);
     }
 }

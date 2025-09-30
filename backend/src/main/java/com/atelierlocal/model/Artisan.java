@@ -1,69 +1,53 @@
 package com.atelierlocal.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Pattern;
-
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "artisans")
-public class Artisan {
+public class Artisan extends User {
     // Atributes
-
-    @Id
-    @GeneratedValue
-    @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
 
     @Size(max = 50, message = "Le nom ne peut pas dépasser 50 caractères.")
     @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(length = 12)
-    @Pattern(regexp = "^(|(\\+33|0)[1-9](\\d{2}){4}$", message = "Numéro invalide (format français attendu)")
-    @Size(max = 12)
-    private String phoneNumber;
-
-    @Column(nullable = false, unique = true, length = 100)
-    @Email(message = "Format d'email invalide")
-    @Size(max = 100, message = "L'email ne peux dépasser 100 caractères.")
-    private String email;
-
-    @Column(name = "hashed_password", nullable = false, length = 255)
-    private String hashedPwd;
-
     @Size(max = 500, message = "La bio ne peut pas dépasser 500 caractères.")
     @Column(length = 500)
     private String bio;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "artisan_category_name")
     private ArtisanCategory category;
 
-    @Embedded
-    private Address address;
+    @Column(length = 14)
+    @Pattern(regexp = "\\d+", message = "Le champ ne doit contenir que des chiffres.") // Validation du format seulement
+    @Size(min = 14, max = 14)
+    private String siret;
 
-    @OneToOne(mappedBy = "artisan", cascade = CascadeType.ALL, orphanRemoval = true)
-    private ArtisanAvatar avatar;
+    @OneToMany(mappedBy = "artisan", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UploadedPhoto> photoGallery = new ArrayList<>();
 
-    @OneToMany(mappedBy = "creator")
-    private List<UploadedEstimation> uploadedFiles;
+    private LocalDate activityStartDate;
+
+    @OneToMany(mappedBy = "artisan")
+    private List<Recommendation> recommendations = new ArrayList<>();
 
     // Getters and setters
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
-    public String getPhoneNumber() { return phoneNumber; }
-    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
-
-    public String getHashedPassword() { return hashedPwd; }
-    public void setHashedPassword(String hashedPwd) { this.hashedPwd = hashedPwd; }
 
     public String getBio() { return bio; }
     public void setBio(String bio) { this.bio = bio; }
@@ -71,12 +55,15 @@ public class Artisan {
     public ArtisanCategory getCategory() { return category; }
     public void setCategory(ArtisanCategory category) { this.category = category; }
 
-    public Address getAddress() { return address; }
-    public void setAddress(Address address) { this.address = address; }
+    public String getSiret() { return siret; }
+    public void setSiret(String siret) { this.siret = siret; }
 
-    public Avatar getAvatar() { return avatar; }
-    public void setAvatar(Avatar avatar) { this.avatar = avatar; }
+    public List<UploadedPhoto> getPhotoGallery() { return photoGallery; }
+    public void setPhotoGallery(List<UploadedPhoto> photoGallery) { this.photoGallery = photoGallery; }
 
-    public List<UploadedEstimation> getUploadedFile() { return uploadedFiles; }
-    public void setUploadedFile(List<UploadedEstimation> uploadedFiles) { this.uploadedFiles = uploadedFiles;}
+    public LocalDate getActivityStartDate() { return activityStartDate; }
+    public void setActivityStartDate(LocalDate activityStartDate) { this.activityStartDate = activityStartDate; }
+
+    public List<Recommendation> getRecommendations() { return recommendations; }
+    public void setRecommendations(List<Recommendation> recommendations) { this.recommendations = recommendations; }
 }

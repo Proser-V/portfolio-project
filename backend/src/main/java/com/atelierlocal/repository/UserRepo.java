@@ -1,10 +1,12 @@
 package com.atelierlocal.repository;
 
-import com.atelierlocal.model.User;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import java.util.UUID;
-import java.util.Optional;
+
+import com.atelierlocal.model.User;
 
 /**
  * JpaRepository key inherited methods include:

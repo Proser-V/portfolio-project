@@ -1,13 +1,23 @@
 package com.atelierlocal.model;
 
-import jakarta.persistence.*;
-
+import java.time.LocalDateTime;
 import java.util.UUID;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "uploaded_photos")
 public class UploadedPhoto {
-    // Atributes
+    // Atributs
 
     @Id
     @GeneratedValue
@@ -17,22 +27,35 @@ public class UploadedPhoto {
     @Column(nullable = false)
     private String extension;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column
+    private String uploadedPhotoUrl;
 
     @ManyToOne
-    @JoinColumn(name = "artisan_id")
+    @JoinColumn(name = "artisan_id", nullable = false)
     private Artisan artisan;
 
-    // Getters and setters
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
+    // Getters et setters
+
+    public UUID getId() { return id; }
 
     public String getExtension() { return extension; }
     public void setExtension(String extension) { this.extension = extension; }
 
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
+    public String getUploadedPhotoUrl() { return uploadedPhotoUrl; }
+    public void setUploadedPhotoUrl(String uploadedPhotoUrl) { this.uploadedPhotoUrl = uploadedPhotoUrl; }
 
     public Artisan getArtisan() { return artisan; }
     public void setArtisan(Artisan artisan) { this.artisan = artisan; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }

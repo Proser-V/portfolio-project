@@ -1,8 +1,13 @@
 package com.atelierlocal.repository;
 
 import com.atelierlocal.model.Artisan;
+import com.atelierlocal.model.ArtisanCategory;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -15,4 +20,7 @@ import java.util.UUID;
  */
 
 @Repository
-public interface ArtisanRepo extends JpaRepository<Artisan, UUID> {}
+public interface ArtisanRepo extends JpaRepository<Artisan, UUID> {
+    Optional<Artisan> findByEmail(String email);
+    List<Artisan> findAllByCategory(ArtisanCategory artisanCategory);
+}

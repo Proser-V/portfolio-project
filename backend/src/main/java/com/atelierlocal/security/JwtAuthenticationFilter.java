@@ -1,20 +1,22 @@
 package com.atelierlocal.security;
 
 
+import java.io.IOException;
+
+import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Service;
+import org.springframework.web.filter.OncePerRequestFilter;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.lang.NonNull;
-
-import java.io.IOException;
-
+@Service
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
@@ -44,6 +46,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         jwt = authHeader.substring(7); // Retire le "Bearer"
+        if (jwtService.isTokenBlacklisted(jwt)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\": \"Token invalide ou expiré\"}");
+            return;
+        }
         username = jwtService.extractUsername(jwt);
 
         // Vérifier si l'utilisateur est déjà connecté
@@ -67,5 +75,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // On continue la chaîne de filtres
         filterChain.doFilter(request, response);
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+        return path.equals("/api/clients/register")
+            || path.equals("/api/artisans/register")
+            || path.equals("/api/users/login")
+            || path.equals("/api/artisans/debug/categories")
+            || path.startsWith("/swagger-ui")
+            || path.startsWith("v3/api/docs");
     }
 }

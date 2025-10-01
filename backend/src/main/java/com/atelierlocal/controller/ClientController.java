@@ -9,7 +9,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,7 +50,7 @@ public class ClientController {
         @ApiResponse(responseCode = "400", description = "Requête invalide (données manquantes ou incorrectes)"),
         @ApiResponse(responseCode = "409", description = "Email déjà utilisé")
     })
-    public ResponseEntity<ClientResponseDTO> registerClient(@Valid @ModelAttribute ClientRequestDTO request) {
+    public ResponseEntity<ClientResponseDTO> registerClient(@Valid @RequestBody ClientRequestDTO request) {
         ClientResponseDTO clientDto = clientService.createClient(request);
             return ResponseEntity.status(201).body(clientDto);
     }
@@ -86,7 +85,7 @@ public class ClientController {
 
     @PutMapping("/{id}/update")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
-    public ResponseEntity<ClientResponseDTO> updateClient(@PathVariable UUID id, @RequestBody ClientRequestDTO requestDTO, @AuthenticationPrincipal Client currentClient) {
+    public ResponseEntity<ClientResponseDTO> updateClient(@Valid @PathVariable UUID id, @RequestBody ClientRequestDTO requestDTO, @AuthenticationPrincipal Client currentClient) {
         ClientResponseDTO updatedClient = clientService.updateClient(id, requestDTO, currentClient);
         return ResponseEntity.ok(updatedClient);
     }

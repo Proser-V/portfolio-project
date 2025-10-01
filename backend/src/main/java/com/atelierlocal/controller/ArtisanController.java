@@ -5,10 +5,10 @@ import java.util.UUID;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -20,6 +20,9 @@ import com.atelierlocal.dto.ArtisanRequestDTO;
 import com.atelierlocal.dto.ArtisanResponseDTO;
 import com.atelierlocal.dto.RecommendationRequestDTO;
 import com.atelierlocal.dto.RecommendationResponseDTO;
+import com.atelierlocal.model.Artisan;
+import com.atelierlocal.model.Client;
+import com.atelierlocal.model.User;
 import com.atelierlocal.service.ArtisanService;
 import com.atelierlocal.service.RecommendationService;
 
@@ -50,15 +53,15 @@ public class ArtisanController {
         @ApiResponse(responseCode = "400", description = "Requête invalide (données manquantes ou incorrectes)"),
         @ApiResponse(responseCode = "409", description = "Email déjà utilisé")
     })
-    public ResponseEntity<ArtisanResponseDTO> registerArtisan(@Valid @ModelAttribute ArtisanRequestDTO request) {
+    public ResponseEntity<ArtisanResponseDTO> registerArtisan(@Valid @RequestBody ArtisanRequestDTO request) {
         ArtisanResponseDTO artisanDto = artisanService.createArtisan(request);
         return ResponseEntity.status(201).body(artisanDto);
     }
 
     @GetMapping("/me")
-    public ResponseEntity<ArtisanResponseDTO> getCurrentUser(Authentication authentication) {
-        String email = authentication.getName();
-        ArtisanResponseDTO artisanDTO = artisanService.getArtisanByEmail(email);
+    @PreAuthorize("hasRole('ARTISAN')")
+    public ResponseEntity<ArtisanResponseDTO> getCurrentUser(@AuthenticationPrincipal Artisan currentArtisan) {
+        ArtisanResponseDTO artisanDTO = artisanService.getArtisanById(currentArtisan.getId());
         return ResponseEntity.ok(artisanDTO);
     }
 
@@ -69,26 +72,30 @@ public class ArtisanController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<ArtisanResponseDTO>> getAllArtisans() {
-        List<ArtisanResponseDTO> allArtisans = artisanService.getAllArtisans();
+    @PreAuthorize("hasAnyRole('CLIENT', 'ADMIN')")
+    public ResponseEntity<List<ArtisanResponseDTO>> getAllArtisans(@AuthenticationPrincipal Client currentClient) {
+        List<ArtisanResponseDTO> allArtisans = artisanService.getAllArtisans(currentClient);
         return ResponseEntity.ok(allArtisans);
     }
     
     @PutMapping("/{id}/update")
-    public ResponseEntity<ArtisanResponseDTO> updateArtisans(@PathVariable UUID id, @RequestBody ArtisanRequestDTO request) {
-        ArtisanResponseDTO artisanDto = artisanService.updateArtisan(id, request);
+    @PreAuthorize("hasAnyRole('ARTISAN', 'ADMIN')")
+    public ResponseEntity<ArtisanResponseDTO> updateArtisans(@Valid @PathVariable UUID id, @RequestBody ArtisanRequestDTO request, @AuthenticationPrincipal User currentUser) {
+        ArtisanResponseDTO artisanDto = artisanService.updateArtisan(id, request, currentUser);
         return ResponseEntity.ok(artisanDto);
     }
 
     @DeleteMapping("/{id}/delete")
-    public ResponseEntity<Void> deleteArtisan(@PathVariable UUID id) {
-        artisanService.deleteArtisan(id);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteArtisan(@PathVariable UUID id, @AuthenticationPrincipal Client currentClient) {
+        artisanService.deleteArtisan(id, currentClient);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/recommandation")
-    public ResponseEntity<RecommendationResponseDTO> newRecommendation(UUID id, RecommendationRequestDTO request) {
-        RecommendationResponseDTO newRecommendation = recommendationService.createRecommendation(id, request);
+    @PreAuthorize("hasRole('CLIENT')")
+    public ResponseEntity<RecommendationResponseDTO> newRecommendation(@Valid @PathVariable UUID id, @RequestBody RecommendationRequestDTO request, @AuthenticationPrincipal Client currentClient) {
+        RecommendationResponseDTO newRecommendation = recommendationService.createRecommendation(id, request, currentClient);
         return ResponseEntity.ok(newRecommendation);
     }
     

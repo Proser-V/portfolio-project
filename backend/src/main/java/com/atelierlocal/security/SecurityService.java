@@ -12,6 +12,9 @@ import com.atelierlocal.model.UserRole;
 
 @Service
 public class SecurityService {
+
+    // ---------- Vérifie la propriété d'un utilisateur (ou admin) ----------
+
     public void checkUserOwnershipOrAdmin(User currentUser, UUID ownerId) throws AccessDeniedException {
         boolean isAdmin = currentUser.getUserRole() == UserRole.ADMIN;
         boolean isOwner = ownerId.equals(currentUser.getId());
@@ -40,6 +43,8 @@ public class SecurityService {
 
     }
 
+    // ---------- Vérifie le role de l'utilisateur ----------
+
     public void checkAdminOnly(User currentUser) throws AccessDeniedException {
         boolean isAdmin = currentUser.getUserRole() == UserRole.ADMIN;
         if (!isAdmin) {
@@ -59,14 +64,16 @@ public class SecurityService {
         }
     }
 
+    // ---------- Vérifie le role de l'utilisateur ou si il est admin ----------
+
     public void checkClientOrAdmin(User currentUser) throws AccessDeniedException {
-        if (currentUser.getUserRole() == UserRole.CLIENT || currentUser.getUserRole() == UserRole.ADMIN) {
+        if (currentUser.getUserRole() != UserRole.CLIENT && currentUser.getUserRole() != UserRole.ADMIN) {
             throw new AccessDeniedException("Seuls les clients peuvent accéder à cette ressource.");
         }
     }
 
     public void checkArtisanOrAdmin(User currentUser) throws AccessDeniedException {
-        if (currentUser.getUserRole() == UserRole.ARTISAN || currentUser.getUserRole() == UserRole.ADMIN) {
+        if (currentUser.getUserRole() != UserRole.ARTISAN && currentUser.getUserRole() != UserRole.ADMIN) {
             throw new AccessDeniedException("Seuls les artisans peuvent accéder à cette ressource.");
         }
     }

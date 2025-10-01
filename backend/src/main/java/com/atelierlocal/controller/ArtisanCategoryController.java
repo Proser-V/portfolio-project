@@ -6,16 +6,19 @@ import org.springframework.web.bind.annotation.RestController;
 import com.atelierlocal.dto.ArtisanCategoryRequestDTO;
 import com.atelierlocal.dto.ArtisanCategoryResponseDTO;
 import com.atelierlocal.dto.ArtisanResponseDTO;
+import com.atelierlocal.model.Client;
 import com.atelierlocal.service.ArtisanCategoryService;
 import com.atelierlocal.service.ArtisanService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,7 +41,7 @@ public class ArtisanCategoryController {
     }
 
     @PostMapping("/creation")
-    public ResponseEntity<ArtisanCategoryResponseDTO> createArtisanCategory(@RequestBody ArtisanCategoryRequestDTO request) {
+    public ResponseEntity<ArtisanCategoryResponseDTO> createArtisanCategory(@Valid @RequestBody ArtisanCategoryRequestDTO request) {
         ArtisanCategoryResponseDTO newArtisanCategory = artisanCategoryService.createArtisanCategory(request);
         return ResponseEntity.ok(newArtisanCategory);
     }
@@ -56,14 +59,14 @@ public class ArtisanCategoryController {
     }
 
     @GetMapping("/{id}/artisans")
-    public ResponseEntity<List<ArtisanResponseDTO>> getArtisansByCategory(@PathVariable UUID id) {
-        List<ArtisanResponseDTO> artisansByCategory = artisanService.getAllArtisansByCategory(id);
+    public ResponseEntity<List<ArtisanResponseDTO>> getArtisansByCategory(@PathVariable UUID id, @AuthenticationPrincipal Client currentClient) {
+        List<ArtisanResponseDTO> artisansByCategory = artisanService.getAllArtisansByCategory(id, currentClient);
         return ResponseEntity.ok(artisansByCategory);
     }
     
 
     @PutMapping("/{id}/update")
-    public ResponseEntity<ArtisanCategoryResponseDTO> updateArtisanCategory(@PathVariable UUID id, @RequestBody ArtisanCategoryRequestDTO request) {
+    public ResponseEntity<ArtisanCategoryResponseDTO> updateArtisanCategory(@Valid @PathVariable UUID id, @RequestBody ArtisanCategoryRequestDTO request) {
         ArtisanCategoryResponseDTO updatedArtisanCategory = artisanCategoryService.updateArtisanCategory(id, request);
         return ResponseEntity.ok(updatedArtisanCategory);
     }

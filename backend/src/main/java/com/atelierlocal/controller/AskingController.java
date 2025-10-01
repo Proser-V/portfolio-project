@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 
 
 @RestController
@@ -47,7 +48,7 @@ public class AskingController {
 
     @PostMapping("/creation")
     @PreAuthorize("hasRole('CLIENT')")
-    public ResponseEntity<AskingResponseDTO> createAsking(@RequestBody AskingRequestDTO request, @AuthenticationPrincipal Client currentClient) {
+    public ResponseEntity<AskingResponseDTO> createAsking(@Valid @RequestBody AskingRequestDTO request, @AuthenticationPrincipal Client currentClient) {
         AskingResponseDTO newAsking = askingService.createAsking(request, currentClient);
         return ResponseEntity.ok(newAsking);
     }
@@ -68,6 +69,7 @@ public class AskingController {
     @PutMapping("/{id}/update")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
     public ResponseEntity<AskingResponseDTO> updateAsking(
+                                                @Valid
                                                 @PathVariable UUID id,
                                                 @RequestBody AskingRequestDTO request,
                                                 @AuthenticationPrincipal Client currentClient
@@ -96,6 +98,7 @@ public class AskingController {
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
     public ResponseEntity<AskingResponseDTO> updateStatus(
+                                                @Valid
                                                 @PathVariable UUID id,
                                                 @RequestParam AskingStatus status,
                                                 @AuthenticationPrincipal Client currentClient

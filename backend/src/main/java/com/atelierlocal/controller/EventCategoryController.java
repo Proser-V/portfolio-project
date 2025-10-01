@@ -20,6 +20,7 @@ import com.atelierlocal.dto.EventCategoryResponseDTO;
 import com.atelierlocal.service.EventCategoryService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 
 @RestController
@@ -34,7 +35,7 @@ public class EventCategoryController {
     }
 
     @PostMapping("/creation")
-    public ResponseEntity<EventCategoryResponseDTO> createEventCategory(@RequestBody EventCategoryRequestDTO request) {
+    public ResponseEntity<EventCategoryResponseDTO> createEventCategory(@Valid @RequestBody EventCategoryRequestDTO request) {
         EventCategoryResponseDTO newEventCategory = eventCategoryService.createEventCategory(request);
         return ResponseEntity.ok(newEventCategory);
     }
@@ -58,7 +59,7 @@ public class EventCategoryController {
     }
 
     @PutMapping("/{id}/update")
-    public ResponseEntity<EventCategoryResponseDTO> updateEventCategory(@PathVariable UUID id, @RequestBody EventCategoryRequestDTO request) {
+    public ResponseEntity<EventCategoryResponseDTO> updateEventCategory(@Valid @PathVariable UUID id, @RequestBody EventCategoryRequestDTO request) {
         EventCategoryResponseDTO updatedEventCategory = eventCategoryService.updateEventCategory(id, request);
         return ResponseEntity.ok(updatedEventCategory);
     }

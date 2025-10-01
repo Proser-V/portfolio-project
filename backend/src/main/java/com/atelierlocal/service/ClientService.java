@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.atelierlocal.repository.AvatarRepo;
 import com.atelierlocal.repository.ClientRepo;
+import com.atelierlocal.security.SecurityService;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -24,17 +25,20 @@ public class ClientService {
     private final ClientRepo clientRepo;
     private final AvatarService avatarService;
     private final AvatarRepo avatarRepo;
+    private final SecurityService securityService;
 
     public ClientService(
                 PasswordService passwordService,
                 ClientRepo clientRepo,
                 AvatarService avatarService,
-                AvatarRepo avatarRepo
+                AvatarRepo avatarRepo,
+                SecurityService securityService
                 ) {
         this.passwordService = passwordService;
         this.clientRepo = clientRepo;
         this.avatarService = avatarService;
         this.avatarRepo = avatarRepo;
+        this.securityService = securityService;
     }
 
     public ClientResponseDTO createClient(ClientRequestDTO dto) {
@@ -81,14 +85,16 @@ public class ClientService {
         return new ClientResponseDTO(savedClient);
     }
 
-    public void deleteClient(UUID cientId) {
+    public void deleteClient(UUID cientId, Client currentClient ) {
+        securityService.checkAdminOnly(currentClient);
         Client client = clientRepo.findById(cientId)
             .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé."));
 
         clientRepo.delete(client);
     }
 
-    public ClientResponseDTO updateClient(UUID clientId, ClientRequestDTO request) {
+    public ClientResponseDTO updateClient(UUID clientId, ClientRequestDTO request, Client currentClient) {
+        securityService.checkClientOrAdmin(currentClient);
         Client client = clientRepo.findById(clientId)
             .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé."));
         
@@ -130,19 +136,22 @@ public class ClientService {
         return new ClientResponseDTO(client);
     }
 
-    public ClientResponseDTO getClientByEmail(String email) {
+    public ClientResponseDTO getClientByEmail(String email, Client currentClient) {
+        securityService.checkAdminOnly(currentClient);
         Client client = clientRepo.findByEmail(email)
             .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé."));
         return new ClientResponseDTO(client);
     }
 
-    public List<ClientResponseDTO> getAllClients() {
+    public List<ClientResponseDTO> getAllClients(Client currentClient) {
+        securityService.checkAdminOnly(currentClient);
         return clientRepo.findAll().stream()
                                 .map(ClientResponseDTO::new)
                                 .collect(Collectors.toList());
     }
 
-    public void banClient(UUID clientId) {
+    public void banClient(UUID clientId, Client currentClient) {
+        securityService.checkAdminOnly(currentClient);
         Client client = clientRepo.findById(clientId)
             .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé."));
         client.setActive(false);

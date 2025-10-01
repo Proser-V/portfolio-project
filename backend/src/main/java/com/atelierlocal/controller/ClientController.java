@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -19,6 +20,7 @@ import com.atelierlocal.dto.ClientRequestDTO;
 import com.atelierlocal.service.AskingService;
 import com.atelierlocal.service.ClientService;
 import com.atelierlocal.dto.ClientResponseDTO;
+import com.atelierlocal.model.Client;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -55,16 +57,16 @@ public class ClientController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<ClientResponseDTO> getCurrentUser(Authentication authentication) {
+    public ResponseEntity<ClientResponseDTO> getCurrentUser(Authentication authentication, @AuthenticationPrincipal Client currentClient) {
         String email = authentication.getName();
-        ClientResponseDTO clientDTO = clientService.getClientByEmail(email);
+        ClientResponseDTO clientDTO = clientService.getClientByEmail(email, currentClient);
         return ResponseEntity.ok(clientDTO);
     }
 
     @GetMapping("/")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<ClientResponseDTO>> getAllClients() {
-        List<ClientResponseDTO> allClients = clientService.getAllClients();
+    public ResponseEntity<List<ClientResponseDTO>> getAllClients(@AuthenticationPrincipal Client currentClient) {
+        List<ClientResponseDTO> allClients = clientService.getAllClients(currentClient);
         return ResponseEntity.ok(allClients);
     }
 
@@ -75,22 +77,24 @@ public class ClientController {
     }
 
     @GetMapping("/{id}/askings")
-    public ResponseEntity<List<AskingResponseDTO>> getAskingsByClient(@PathVariable UUID id) {
-        List<AskingResponseDTO> askingsByClient = askingService.getAskingsByClient(id);
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
+    public ResponseEntity<List<AskingResponseDTO>> getAskingsByClient(@PathVariable UUID id, @AuthenticationPrincipal Client currentClient) {
+        List<AskingResponseDTO> askingsByClient = askingService.getAskingsByClient(id, currentClient);
         return ResponseEntity.ok(askingsByClient);
     }
 
 
     @PutMapping("/{id}/update")
-    public ResponseEntity<ClientResponseDTO> updateClient(@PathVariable UUID id, @RequestBody ClientRequestDTO requestDTO) {
-        ClientResponseDTO updatedClient = clientService.updateClient(id, requestDTO);
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
+    public ResponseEntity<ClientResponseDTO> updateClient(@PathVariable UUID id, @RequestBody ClientRequestDTO requestDTO, @AuthenticationPrincipal Client currentClient) {
+        ClientResponseDTO updatedClient = clientService.updateClient(id, requestDTO, currentClient);
         return ResponseEntity.ok(updatedClient);
     }
 
     @DeleteMapping("/{id}/delete")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteClient(@PathVariable UUID id) {
-        clientService.deleteClient(id);
+    public ResponseEntity<Void> deleteClient(@PathVariable UUID id, @AuthenticationPrincipal Client currentClient) {
+        clientService.deleteClient(id, currentClient);
         return ResponseEntity.noContent().build();
     }
 }

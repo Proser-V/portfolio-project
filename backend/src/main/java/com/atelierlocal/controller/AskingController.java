@@ -8,7 +8,6 @@ import com.atelierlocal.dto.AskingResponseDTO;
 import com.atelierlocal.model.Asking;
 import com.atelierlocal.model.AskingStatus;
 import com.atelierlocal.model.Client;
-import com.atelierlocal.model.User;
 import com.atelierlocal.model.UserRole;
 import com.atelierlocal.repository.AskingRepo;
 import com.atelierlocal.service.AskingService;
@@ -48,15 +47,15 @@ public class AskingController {
 
     @PostMapping("/creation")
     @PreAuthorize("hasRole('CLIENT')")
-    public ResponseEntity<AskingResponseDTO> createAsking(@RequestBody AskingRequestDTO request) {
-        AskingResponseDTO newAsking = askingService.createAsking(request);
+    public ResponseEntity<AskingResponseDTO> createAsking(@RequestBody AskingRequestDTO request, @AuthenticationPrincipal Client currentClient) {
+        AskingResponseDTO newAsking = askingService.createAsking(request, currentClient);
         return ResponseEntity.ok(newAsking);
     }
 
     @GetMapping("/")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<AskingResponseDTO>> getAllAskings() {
-        List<AskingResponseDTO> allAskings = askingService.getAllAskings();
+    public ResponseEntity<List<AskingResponseDTO>> getAllAskings(@AuthenticationPrincipal Client currentClient) {
+        List<AskingResponseDTO> allAskings = askingService.getAllAskings(currentClient);
         return ResponseEntity.ok(allAskings);
     }
 
@@ -83,14 +82,14 @@ public class AskingController {
             throw new AccessDeniedException("Vous ne pouvez pas modifier cette demande.");
         }
 
-        AskingResponseDTO updatedAsking = askingService.updateAsking(id, request);
+        AskingResponseDTO updatedAsking = askingService.updateAsking(id, request, currentClient);
         return ResponseEntity.ok(updatedAsking);
     }
 
     @DeleteMapping("/{id}/delete")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteAsking(@PathVariable UUID id) {
-        askingService.deleteAsking(id);
+    public ResponseEntity<Void> deleteAsking(@PathVariable UUID id, @AuthenticationPrincipal Client currentClient) {
+        askingService.deleteAsking(id, currentClient);
         return ResponseEntity.noContent().build();
     }
 

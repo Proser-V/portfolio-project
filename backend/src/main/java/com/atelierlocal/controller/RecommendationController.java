@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +29,7 @@ public class RecommendationController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<RecommendationResponseDTO>> getAllRecommendations(@AuthenticationPrincipal Client currentClient) {
         return ResponseEntity.ok(recommendationService.getAllRecommendations(currentClient));
     }
@@ -38,6 +40,7 @@ public class RecommendationController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteRecommendation(@PathVariable UUID id, @AuthenticationPrincipal Client currentClient) {
         recommendationService.deleteRecommendation(id, currentClient);
         return ResponseEntity.ok().body(

@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -20,10 +21,14 @@ import com.atelierlocal.dto.ArtisanRequestDTO;
 import com.atelierlocal.dto.ArtisanResponseDTO;
 import com.atelierlocal.dto.RecommendationRequestDTO;
 import com.atelierlocal.dto.RecommendationResponseDTO;
+import com.atelierlocal.dto.UploadedPhotoRequestDTO;
+import com.atelierlocal.dto.UploadedPhotoResponseDTO;
 import com.atelierlocal.model.Artisan;
 import com.atelierlocal.model.Client;
+import com.atelierlocal.model.UploadedPhoto;
 import com.atelierlocal.model.User;
 import com.atelierlocal.service.ArtisanService;
+import com.atelierlocal.service.PortfolioService;
 import com.atelierlocal.service.RecommendationService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,10 +45,12 @@ import jakarta.validation.Valid;
 public class ArtisanController {
     private final ArtisanService artisanService;
     private final RecommendationService recommendationService;
+    private final PortfolioService portfolioService;
 
-    public ArtisanController(ArtisanService artisanService, RecommendationService recommendationService) {
+    public ArtisanController(ArtisanService artisanService, RecommendationService recommendationService, PortfolioService portfolioService) {
         this.artisanService = artisanService;
         this.recommendationService = recommendationService;
+        this.portfolioService = portfolioService;
     }
 
     @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -99,4 +106,20 @@ public class ArtisanController {
         return ResponseEntity.ok(newRecommendation);
     }
     
+    @PostMapping("/{id}/portfolio/upload")
+    @PreAuthorize("hasRole('ARTISAN')")
+    public ResponseEntity<UploadedPhotoResponseDTO> uploadPortfolioPhoto(@Valid @PathVariable("id") UUID artisanId, @ModelAttribute UploadedPhotoRequestDTO request, @AuthenticationPrincipal Artisan currentArtisan) {
+        UploadedPhoto photo = portfolioService.addPhoto(artisanId, request.getFile(), currentArtisan);
+        return ResponseEntity.ok(new UploadedPhotoResponseDTO(photo));
+    }
+
+    @DeleteMapping("/{artisan.id}/portfolio/{photo.id}/delete")
+    @PreAuthorize("hasAnyRole('ARTISAN', 'ADMIN')")
+    public ResponseEntity<Void> deletePortfolioPhoto(
+                                            @PathVariable("artisan.id") UUID artisanId,
+                                            @PathVariable("photo.id") UUID photoId,
+                                            @AuthenticationPrincipal User currentUser) {
+        portfolioService.removePhoto(artisanId, photoId, currentUser);
+        return ResponseEntity.noContent().build();
+    } 
 }

@@ -13,7 +13,6 @@ import com.atelierlocal.model.Artisan;
 import com.atelierlocal.model.ArtisanCategory;
 import com.atelierlocal.model.Avatar;
 import com.atelierlocal.model.Client;
-import com.atelierlocal.model.UploadedPhoto;
 import com.atelierlocal.model.User;
 import com.atelierlocal.model.UserRole;
 import com.atelierlocal.dto.ArtisanRequestDTO;
@@ -97,37 +96,6 @@ public class ArtisanService {
 
         Artisan savedArtisan = artisanRepo.save(artisan);
         return new ArtisanResponseDTO(savedArtisan);
-    }
-
-    public Artisan addGalleryPhoto(UUID artisanId, UploadedPhoto photo, Artisan currentArtisan) {
-        securityService.checkArtisanOnly(currentArtisan);
-        // Cherche l'artisan
-        Artisan artisan = artisanRepo.findById(artisanId)
-            .orElseThrow(() -> new EntityNotFoundException("Professionnel non trouvé."));
-
-        photo.setArtisan(artisan); // Etabli le lien entre la photo et l'artisan
-        artisan.getPhotoGallery().add(photo); // Ajoute la photo
-
-        return artisanRepo.save(artisan); // Retourne l'artisan mis à jour
-    }
-
-    public Artisan removeGalleryPhoto(UUID artisanId, UUID photoId, User currentUser) {
-        securityService.checkAdminOnly(currentUser);
-        // Cherche l'artisan
-        Artisan artisan = artisanRepo.findById(artisanId)
-            .orElseThrow(() -> new EntityNotFoundException("Professionnel non trouvé."));
-
-        // Cherche la photo à supprimer
-        UploadedPhoto photoToRemove = artisan.getPhotoGallery().stream() // Créer un objet Stream pour éviter boucle manuelle
-            .filter(photo -> photo.getId().equals(photoId)) // Selectionne la photo dont l'ID correspond
-            .findFirst() // Assure de prendre la première photo trouvé (sécurité meme si UUID unique), retourne un Optional
-            .orElseThrow(() -> new EntityNotFoundException("Photo non trouvé.")); // Si Optional vide, lance une exception
-
-        artisan.getPhotoGallery().remove(photoToRemove); // Supprime la photo
-        photoToRemove.setArtisan(null); // casse la relation entre la photo et l'artisan
-
-        // Photo supprimée de la DB grâce à orpheanRemoval = true
-        return artisanRepo.save(artisan); // Retourne l'artisan mis à jour
     }
 
     public void deleteArtisan(UUID atisanId, Client currentClient) {

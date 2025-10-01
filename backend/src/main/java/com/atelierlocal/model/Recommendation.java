@@ -30,6 +30,7 @@ public class Recommendation {
     // Getters et setters
 
     public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
 
     public Client getClient() { return client; }
     public void setClient(Client client) { this.client = client; }

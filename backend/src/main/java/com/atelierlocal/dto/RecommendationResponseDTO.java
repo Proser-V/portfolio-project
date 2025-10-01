@@ -14,8 +14,13 @@ public class RecommendationResponseDTO {
         this.artisanId = artisanId;
     }
 
-    // Getters
+    // Getters et setters
     public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
+
     public UUID getClientId() { return clientId; }
+    public void setClientId(UUID clientId) { this.clientId = clientId; }
+
     public UUID getArtisanId() { return artisanId; }
+    public void setArtisanId(UUID artisanId) { this.artisanId = artisanId; }
 }

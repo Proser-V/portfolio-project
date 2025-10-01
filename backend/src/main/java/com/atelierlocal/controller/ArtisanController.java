@@ -38,7 +38,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 
-
 @RestController
 @RequestMapping("/api/artisans")
 @Tag(name = "Artisans", description = "Définition du controlleur des artisans")
@@ -60,7 +59,7 @@ public class ArtisanController {
         @ApiResponse(responseCode = "400", description = "Requête invalide (données manquantes ou incorrectes)"),
         @ApiResponse(responseCode = "409", description = "Email déjà utilisé")
     })
-    public ResponseEntity<ArtisanResponseDTO> registerArtisan(@Valid @RequestBody ArtisanRequestDTO request) {
+    public ResponseEntity<ArtisanResponseDTO> registerArtisan(@Valid @ModelAttribute ArtisanRequestDTO request) {
         ArtisanResponseDTO artisanDto = artisanService.createArtisan(request);
         return ResponseEntity.status(201).body(artisanDto);
     }
@@ -87,7 +86,7 @@ public class ArtisanController {
     
     @PutMapping("/{id}/update")
     @PreAuthorize("hasAnyRole('ARTISAN', 'ADMIN')")
-    public ResponseEntity<ArtisanResponseDTO> updateArtisans(@Valid @PathVariable UUID id, @RequestBody ArtisanRequestDTO request, @AuthenticationPrincipal User currentUser) {
+    public ResponseEntity<ArtisanResponseDTO> updateArtisan(@Valid @PathVariable UUID id, @RequestBody ArtisanRequestDTO request, @AuthenticationPrincipal User currentUser) {
         ArtisanResponseDTO artisanDto = artisanService.updateArtisan(id, request, currentUser);
         return ResponseEntity.ok(artisanDto);
     }
@@ -113,11 +112,11 @@ public class ArtisanController {
         return ResponseEntity.ok(new UploadedPhotoResponseDTO(photo));
     }
 
-    @DeleteMapping("/{artisan.id}/portfolio/{photo.id}/delete")
+    @DeleteMapping("/{artisanId}/portfolio/{photoId}/delete")
     @PreAuthorize("hasAnyRole('ARTISAN', 'ADMIN')")
     public ResponseEntity<Void> deletePortfolioPhoto(
-                                            @PathVariable("artisan.id") UUID artisanId,
-                                            @PathVariable("photo.id") UUID photoId,
+                                            @PathVariable UUID artisanId,
+                                            @PathVariable UUID photoId,
                                             @AuthenticationPrincipal User currentUser) {
         portfolioService.removePhoto(artisanId, photoId, currentUser);
         return ResponseEntity.noContent().build();

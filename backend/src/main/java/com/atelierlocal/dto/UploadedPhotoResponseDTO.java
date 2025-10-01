@@ -18,6 +18,7 @@ public class UploadedPhotoResponseDTO {
     }
 
     public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
 
     public UUID getOwnerId() { return ownerId; }
     public void setOwnerId(UUID ownerId) { this.ownerId = ownerId; }

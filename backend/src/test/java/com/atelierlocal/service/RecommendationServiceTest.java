@@ -8,6 +8,7 @@ import com.atelierlocal.model.Recommendation;
 import com.atelierlocal.repository.ArtisanRepo;
 import com.atelierlocal.repository.ClientRepo;
 import com.atelierlocal.repository.RecommendationRepo;
+import com.atelierlocal.security.SecurityService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,9 @@ class RecommendationServiceTest {
 
     @Mock
     private ArtisanRepo artisanRepo;
+
+    @Mock
+    private SecurityService securityService;
 
     @InjectMocks
     private RecommendationService recommendationService;
@@ -72,7 +76,7 @@ class RecommendationServiceTest {
         when(artisanRepo.findById(artisanId)).thenReturn(Optional.of(artisan));
         when(recommendationRepo.save(any(Recommendation.class))).thenReturn(recommendation);
 
-        RecommendationResponseDTO response = recommendationService.createRecommendation(artisanId, request);
+        RecommendationResponseDTO response = recommendationService.createRecommendation(artisanId, request, client);
 
         assertNotNull(response);
         assertEquals(recommendationId, response.getId());
@@ -88,7 +92,7 @@ class RecommendationServiceTest {
         when(clientRepo.findById(clientId)).thenReturn(Optional.empty());
 
         Exception ex = assertThrows(IllegalArgumentException.class, () ->
-            recommendationService.createRecommendation(artisanId, request)
+            recommendationService.createRecommendation(artisanId, request, client)
         );
 
         assertTrue(ex.getMessage().contains("Client non trouvé"));
@@ -103,7 +107,7 @@ class RecommendationServiceTest {
         when(artisanRepo.findById(artisanId)).thenReturn(Optional.empty());
 
         Exception ex = assertThrows(IllegalArgumentException.class, () ->
-            recommendationService.createRecommendation(artisanId, request)
+            recommendationService.createRecommendation(artisanId, request, client)
         );
 
         assertTrue(ex.getMessage().contains("Artisan non trouvé"));
@@ -114,7 +118,7 @@ class RecommendationServiceTest {
         when(recommendationRepo.existsById(recommendationId)).thenReturn(true);
         doNothing().when(recommendationRepo).deleteById(recommendationId);
 
-        recommendationService.deleteRecommendation(recommendationId);
+        recommendationService.deleteRecommendation(recommendationId, client);
 
         verify(recommendationRepo, times(1)).deleteById(recommendationId);
     }
@@ -124,7 +128,7 @@ class RecommendationServiceTest {
         when(recommendationRepo.existsById(recommendationId)).thenReturn(false);
 
         Exception ex = assertThrows(IllegalArgumentException.class, () ->
-            recommendationService.deleteRecommendation(recommendationId)
+            recommendationService.deleteRecommendation(recommendationId, client)
         );
 
         assertTrue(ex.getMessage().contains("Recommendation non trouvée"));
@@ -162,7 +166,7 @@ class RecommendationServiceTest {
 
         when(recommendationRepo.findAll()).thenReturn(Arrays.asList(recommendation, recommendation2));
 
-        List<RecommendationResponseDTO> responses = recommendationService.getAllRecommendations();
+        List<RecommendationResponseDTO> responses = recommendationService.getAllRecommendations(client);
 
         assertEquals(2, responses.size());
         assertEquals(recommendationId, responses.get(0).getId());

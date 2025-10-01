@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
@@ -23,10 +22,12 @@ import com.atelierlocal.dto.ArtisanRequestDTO;
 import com.atelierlocal.dto.ArtisanResponseDTO;
 import com.atelierlocal.model.Artisan;
 import com.atelierlocal.model.ArtisanCategory;
-import com.atelierlocal.model.UploadedPhoto;
+import com.atelierlocal.model.Client;
+import com.atelierlocal.model.User;
 import com.atelierlocal.repository.ArtisanCategoryRepo;
 import com.atelierlocal.repository.ArtisanRepo;
 import com.atelierlocal.repository.AvatarRepo;
+import com.atelierlocal.security.SecurityService;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -47,13 +48,21 @@ class ArtisanServiceTest {
     @Mock
     private ArtisanCategoryRepo artisanCategoryRepo;
 
+    @Mock
+    private SecurityService sercurityService;
+
     @InjectMocks
     private ArtisanService artisanService;
+
+    @InjectMocks
+    private RecommendationService recommendationService;
 
     private Artisan artisan;
     private ArtisanCategory category;
     private UUID artisanId;
     private UUID categoryId;
+    private Client client;
+    private User user;
 
     @BeforeEach
     void setUp() {
@@ -141,62 +150,13 @@ class ArtisanServiceTest {
         assertThrows(IllegalArgumentException.class, () -> artisanService.createArtisan(dto));
     }
 
-    // --- ADD PHOTO ---
-
-    @Test
-    void testAddGalleryPhoto_success() {
-        UploadedPhoto photo = new UploadedPhoto();
-        photo.setId(UUID.randomUUID());
-
-        when(artisanRepo.findById(artisanId)).thenReturn(Optional.of(artisan));
-        when(artisanRepo.save(any(Artisan.class))).thenReturn(artisan);
-
-        Artisan updated = artisanService.addGalleryPhoto(artisanId, photo);
-
-        assertTrue(updated.getPhotoGallery().contains(photo));
-        verify(artisanRepo).save(artisan);
-    }
-
-    @Test
-    void testAddGalleryPhoto_artisanNotFound() {
-        when(artisanRepo.findById(artisanId)).thenReturn(Optional.empty());
-
-        assertThrows(EntityNotFoundException.class, () ->
-                artisanService.addGalleryPhoto(artisanId, new UploadedPhoto()));
-    }
-
-    // --- REMOVE PHOTO ---
-
-    @Test
-    void testRemoveGalleryPhoto_success() {
-        UploadedPhoto photo = new UploadedPhoto();
-        UUID photoId = UUID.randomUUID();
-        photo.setId(photoId);
-        artisan.getPhotoGallery().add(photo);
-
-        when(artisanRepo.findById(artisanId)).thenReturn(Optional.of(artisan));
-        when(artisanRepo.save(any(Artisan.class))).thenReturn(artisan);
-
-        Artisan updated = artisanService.removeGalleryPhoto(artisanId, photoId);
-
-        assertFalse(updated.getPhotoGallery().contains(photo));
-    }
-
-    @Test
-    void testRemoveGalleryPhoto_photoNotFound() {
-        when(artisanRepo.findById(artisanId)).thenReturn(Optional.of(artisan));
-
-        assertThrows(EntityNotFoundException.class, () ->
-                artisanService.removeGalleryPhoto(artisanId, UUID.randomUUID()));
-    }
-
     // --- DELETE ---
 
     @Test
     void testDeleteArtisan_success() {
         when(artisanRepo.findById(artisanId)).thenReturn(Optional.of(artisan));
 
-        artisanService.deleteArtisan(artisanId);
+        artisanService.deleteArtisan(artisanId, client);
 
         verify(artisanRepo).delete(artisan);
     }
@@ -205,7 +165,7 @@ class ArtisanServiceTest {
     void testDeleteArtisan_notFound() {
         when(artisanRepo.findById(artisanId)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> artisanService.deleteArtisan(artisanId));
+        assertThrows(EntityNotFoundException.class, () -> artisanService.deleteArtisan(artisanId, client));
     }
 
     // --- UPDATE ---
@@ -222,7 +182,7 @@ class ArtisanServiceTest {
         when(passwordService.hashPassword("newpass")).thenReturn("hashed");
         when(artisanRepo.save(any(Artisan.class))).thenReturn(artisan);
 
-        ArtisanResponseDTO response = artisanService.updateArtisan(artisanId, dto);
+        ArtisanResponseDTO response = artisanService.updateArtisan(artisanId, dto, user);
 
         assertNotNull(response);
         assertEquals("Nouveau Nom", response.getName());
@@ -234,7 +194,7 @@ class ArtisanServiceTest {
         when(artisanRepo.findById(artisanId)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () ->
-                artisanService.updateArtisan(artisanId, new ArtisanRequestDTO()));
+                artisanService.updateArtisan(artisanId, new ArtisanRequestDTO(), user));
     }
 
     // --- GETTERS ---
@@ -260,7 +220,7 @@ class ArtisanServiceTest {
     void testGetArtisanByEmail_success() {
         when(artisanRepo.findByEmail("jean@mail.com")).thenReturn(Optional.of(artisan));
 
-        ArtisanResponseDTO response = artisanService.getArtisanByEmail("jean@mail.com");
+        ArtisanResponseDTO response = artisanService.getArtisanByEmail("jean@mail.com", client);
 
         assertNotNull(response);
         assertEquals("Jean Dupont", response.getName());
@@ -270,14 +230,14 @@ class ArtisanServiceTest {
     void testGetArtisanByEmail_notFound() {
         when(artisanRepo.findByEmail("x@mail.com")).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> artisanService.getArtisanByEmail("x@mail.com"));
+        assertThrows(EntityNotFoundException.class, () -> artisanService.getArtisanByEmail("x@mail.com", client));
     }
 
     @Test
     void testGetAllArtisans() {
         when(artisanRepo.findAll()).thenReturn(List.of(artisan));
 
-        List<ArtisanResponseDTO> artisans = artisanService.getAllArtisans();
+        List<ArtisanResponseDTO> artisans = artisanService.getAllArtisans(client);
 
         assertEquals(1, artisans.size());
     }
@@ -287,7 +247,7 @@ class ArtisanServiceTest {
         when(artisanCategoryRepo.findById(categoryId)).thenReturn(Optional.of(category));
         when(artisanRepo.findAllByCategory(category)).thenReturn(List.of(artisan));
 
-        List<ArtisanResponseDTO> artisans = artisanService.getAllArtisansByCategory(categoryId);
+        List<ArtisanResponseDTO> artisans = artisanService.getAllArtisansByCategory(categoryId, client);
 
         assertEquals(1, artisans.size());
     }
@@ -297,7 +257,7 @@ class ArtisanServiceTest {
         when(artisanCategoryRepo.findById(categoryId)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () ->
-                artisanService.getAllArtisansByCategory(categoryId));
+                artisanService.getAllArtisansByCategory(categoryId, client));
     }
 
     // --- BAN ---

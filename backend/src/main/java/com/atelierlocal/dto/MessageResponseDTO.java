@@ -36,7 +36,7 @@ public class MessageResponseDTO {
     public void setReceiverId(UUID receiverId) { this.receiverId = receiverId; }
 
     public String getContent() { return content; }
-    public void setCOntent(String content) { this.content = content; }
+    public void setContent(String content) { this.content = content; }
 
     public String getMessageError() { return messageError; }
     public void setMessageError(String messageError) { this.messageError = messageError; }

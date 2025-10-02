@@ -30,16 +30,16 @@ public class MessageController {
     @MessageMapping("/chat")
     public void processMessage(@Valid MessageRequestDTO message) {
         try {
-            logger.info("Réception d'un message");
+            logger.info("Réception d'un message de {} à {}", message.getSenderId(), message.getReceiverId());
             MessageResponseDTO response = messageService.sendMessage(message);
 
             messagingTemplate.convertAndSendToUser(
             response.getReceiverId().toString(),
             "/queue/messages",
             response);
-            logger.info("Message envoyé à {} via WebSocket");
+            logger.info("Message envoyé à {} via WebSocket", response.getReceiverId());
         } catch (Exception e) {
-            logger.error("Erreur lors du traitement du message", e.getMessage(), e);
+            logger.error("Erreur lors du traitement du message : {}", e.getMessage(), e);
             MessageResponseDTO errorResponse = new MessageResponseDTO(null);
             errorResponse.setMessageError("Erreur lors de l'envoi du message : " + e.getMessage());
 

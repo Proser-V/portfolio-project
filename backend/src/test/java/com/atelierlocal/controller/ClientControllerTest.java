@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import org.springframework.http.ResponseEntity;
 
-class ClientControllerUnitTest {
+class ClientControllerTest {
 
     private ClientController clientController;
     private ClientService clientService;

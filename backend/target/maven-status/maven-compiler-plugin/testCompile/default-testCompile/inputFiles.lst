@@ -1,5 +1,10 @@
+/home/valentin/portfolio-project/backend/src/test/java/com/atelierlocal/controller/ArtisanCategoryControllerTest.java
 /home/valentin/portfolio-project/backend/src/test/java/com/atelierlocal/controller/ArtisanControllerTest.java
+/home/valentin/portfolio-project/backend/src/test/java/com/atelierlocal/controller/AskingControllerTest.java
 /home/valentin/portfolio-project/backend/src/test/java/com/atelierlocal/controller/ClientControllerTest.java
+/home/valentin/portfolio-project/backend/src/test/java/com/atelierlocal/controller/EventCategoryControllerTest.java
+/home/valentin/portfolio-project/backend/src/test/java/com/atelierlocal/controller/LoginControllerTest.java
+/home/valentin/portfolio-project/backend/src/test/java/com/atelierlocal/controller/RecommendationControllerTest.java
 /home/valentin/portfolio-project/backend/src/test/java/com/atelierlocal/service/ArtisanServiceTest.java
 /home/valentin/portfolio-project/backend/src/test/java/com/atelierlocal/service/AskingServiceTest.java
 /home/valentin/portfolio-project/backend/src/test/java/com/atelierlocal/service/AvatarServiceTest.java

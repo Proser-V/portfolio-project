@@ -39,16 +39,15 @@ class EventCategoryServiceTest {
     @InjectMocks
     private EventCategoryService eventCategoryService;
 
-    private UUID eventCategoryId;
     private UUID artisanCategoryId;
     private EventCategory eventCategory;
     private ArtisanCategory artisanCategory;
+
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        eventCategoryId = UUID.randomUUID();
         artisanCategoryId = UUID.randomUUID();
 
         artisanCategory = new ArtisanCategory();

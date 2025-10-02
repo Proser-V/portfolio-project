@@ -17,7 +17,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class ArtisanControllerUnitTest {
+class ArtisanControllerTest {
 
     private ArtisanController artisanController;
     private ArtisanService artisanService;
@@ -25,10 +25,9 @@ class ArtisanControllerUnitTest {
     private PortfolioService portfolioService;
 
     private UUID artisanId;
-    private UUID clientId;
     private Artisan artisan;
     private ArtisanResponseDTO artisanResponseDTO;
-    private RecommendationResponseDTO recommendationResponseDTO;
+
 
     @BeforeEach
     void setUp() {
@@ -38,9 +37,7 @@ class ArtisanControllerUnitTest {
 
         artisanController = new ArtisanController(artisanService, recommendationService, portfolioService);
 
-        // UUID fixes pour tests
         artisanId = UUID.fromString("11111111-1111-1111-1111-111111111111");
-        clientId = UUID.fromString("22222222-2222-2222-2222-222222222222");
 
         artisan = new Artisan();
         artisan.setId(artisanId);

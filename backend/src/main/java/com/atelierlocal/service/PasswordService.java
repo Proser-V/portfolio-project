@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 
+
 @Service
 public class PasswordService {
 
@@ -66,25 +67,26 @@ public class PasswordService {
         if (password != null && password.length() > 128) {
             errors.add("Le mot de passe ne peut pas dépasser 128 caractères");
         }
+        if (password != null) {
+            boolean hasUpperCase = false;
+            boolean hasLowerCase = false;
+            boolean hasDigit = false;
+            boolean hasSpecialChar = false;
 
-        boolean hasUpperCase = false;
-        boolean hasLowerCase = false;
-        boolean hasDigit = false;
-        boolean hasSpecialChar = false;
+            String specialChars = "!@#$%^&*(),.?\":{}|<>";
 
-        String specialChars = "!@#$%^&*(),.?\":{}|<>";
+            for (char c : password.toCharArray()) {
+                if (Character.isUpperCase(c)) hasUpperCase = true;
+                else if (Character.isLowerCase(c)) hasLowerCase = true;
+                else if (Character.isDigit(c)) hasDigit = true;
+                else if (specialChars.indexOf(c) != -1) hasSpecialChar = true;
+            }
 
-        for (char c : password.toCharArray()) {
-            if (Character.isUpperCase(c)) hasUpperCase = true;
-            else if (Character.isLowerCase(c)) hasLowerCase = true;
-            else if (Character.isDigit(c)) hasDigit = true;
-            else if (specialChars.indexOf(c) != -1) hasSpecialChar = true;
+            if (!hasUpperCase) errors.add("Il manque au moins une majuscule (A-Z).");
+            if (!hasLowerCase) errors.add("Il manque au moins une minuscule (a-z).");
+            if (!hasDigit) errors.add("Il manque au moins un chiffre (0-9).");
+            if (!hasSpecialChar) errors.add("Il manque au moins un caractère spécial (ex: !@#$%^&*).");
         }
-
-        if (!hasUpperCase) errors.add("Il manque au moins une majuscule (A-Z).");
-        if (!hasLowerCase) errors.add("Il manque au moins une minuscule (a-z).");
-        if (!hasDigit) errors.add("Il manque au moins un chiffre (0-9).");
-        if (!hasSpecialChar) errors.add("Il manque au moins un caractère spécial (ex: !@#$%^&*).");
 
         return errors;
     }

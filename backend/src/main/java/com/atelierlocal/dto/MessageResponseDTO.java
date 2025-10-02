@@ -26,6 +26,10 @@ public class MessageResponseDTO {
         this.messageStatus = message.getMessageStatus();
     }
 
+    public MessageResponseDTO(String errorMessage) {
+        this.messageError = errorMessage;
+    }
+
     // Getters et setters
     public UUID getId() { return id; }
 

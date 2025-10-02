@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.io.IOException;
 
 import org.springframework.stereotype.Service;
@@ -110,5 +111,13 @@ public class MessageService {
     attachment.setFileUrl(url);
     attachment.setFileType(file.getContentType());
     return attachment;
+    }
+
+    public List<MessageResponseDTO> getConversation(UUID user1Id, UUID user2Id) {
+        List<Message> messages = messageRepo
+            .findBySenderIdAndReceiverIdOrReceiverIdAndSenderIdOrderByTimestampAsc(user1Id, user2Id, user1Id, user2Id);
+        return messages.stream()
+                       .map(MessageResponseDTO::new)
+                       .collect(Collectors.toList());
     }
 }

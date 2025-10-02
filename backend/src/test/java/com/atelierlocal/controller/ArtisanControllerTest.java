@@ -50,7 +50,6 @@ class ArtisanControllerUnitTest {
         artisanResponseDTO = new ArtisanResponseDTO(artisan);
     }
 
-
     // GET /api/artisans/me
     @Test
     void testGetCurrentUser() {

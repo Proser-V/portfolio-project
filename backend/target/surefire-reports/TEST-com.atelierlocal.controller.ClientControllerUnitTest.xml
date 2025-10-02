@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.atelierlocal.service.ArtisanServiceTest" time="0.043" tests="17" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.atelierlocal.controller.ClientControllerUnitTest" time="0.805" tests="7" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="21"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -36,11 +36,8 @@
     <property name="os.version" value="6.6.87.2-microsoft-standard-WSL2"/>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
     <property name="file.encoding" value="UTF-8"/>
-    <property name="jnidispatch.path" value="/home/valentin/.cache/JNA/temp/jna5431749690901900106.tmp"/>
     <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
-    <property name="jna.platform.library.path" value="/usr/lib/x86_64-linux-gnu:/lib/x86_64-linux-gnu:/usr/lib64:/lib64:/usr/lib:/lib:/usr/lib/wsl/lib:/usr/lib/x86_64-linux-gnu/libfakeroot"/>
     <property name="localRepository" value="/home/valentin/.m2/repository"/>
-    <property name="jna.loaded" value="true"/>
     <property name="java.vendor.url.bug" value="https://bugs.launchpad.net/ubuntu/+source/openjdk-21"/>
     <property name="java.io.tmpdir" value="/tmp"/>
     <property name="java.version" value="21.0.8"/>
@@ -56,21 +53,18 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="65.0"/>
   </properties>
-  <testcase name="testCreateArtisan_invalidCategory" classname="com.atelierlocal.service.ArtisanServiceTest" time="0.003"/>
-  <testcase name="testGetArtisanByEmail_success" classname="com.atelierlocal.service.ArtisanServiceTest" time="0.003"/>
-  <testcase name="testDeleteArtisan_notFound" classname="com.atelierlocal.service.ArtisanServiceTest" time="0.002"/>
-  <testcase name="testUpdateArtisan_notFound" classname="com.atelierlocal.service.ArtisanServiceTest" time="0.002"/>
-  <testcase name="testCreateArtisan_duplicateEmail" classname="com.atelierlocal.service.ArtisanServiceTest" time="0.002"/>
-  <testcase name="testGetArtisanById_notFound" classname="com.atelierlocal.service.ArtisanServiceTest" time="0.002"/>
-  <testcase name="testGetArtisanByEmail_notFound" classname="com.atelierlocal.service.ArtisanServiceTest" time="0.002"/>
-  <testcase name="testDeleteArtisan_success" classname="com.atelierlocal.service.ArtisanServiceTest" time="0.001"/>
-  <testcase name="testCreateArtisan_success" classname="com.atelierlocal.service.ArtisanServiceTest" time="0.002"/>
-  <testcase name="testBanArtisan_notFound" classname="com.atelierlocal.service.ArtisanServiceTest" time="0.002"/>
-  <testcase name="testGetAllArtisansByCategory_notFound" classname="com.atelierlocal.service.ArtisanServiceTest" time="0.002"/>
-  <testcase name="testBanArtisan_success" classname="com.atelierlocal.service.ArtisanServiceTest" time="0.002"/>
-  <testcase name="testGetAllArtisans" classname="com.atelierlocal.service.ArtisanServiceTest" time="0.002"/>
-  <testcase name="testCreateArtisan_missingPassword" classname="com.atelierlocal.service.ArtisanServiceTest" time="0.003"/>
-  <testcase name="testGetArtisanById_success" classname="com.atelierlocal.service.ArtisanServiceTest" time="0.001"/>
-  <testcase name="testGetAllArtisansByCategory_success" classname="com.atelierlocal.service.ArtisanServiceTest" time="0.001"/>
-  <testcase name="testUpdateArtisan_success" classname="com.atelierlocal.service.ArtisanServiceTest" time="0.002"/>
+  <testcase name="testGetClientById" classname="com.atelierlocal.controller.ClientControllerUnitTest" time="0.683">
+    <system-err><![CDATA[Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+WARNING: A Java agent has been loaded dynamically (/home/valentin/.m2/repository/net/bytebuddy/byte-buddy-agent/1.17.7/byte-buddy-agent-1.17.7.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+]]></system-err>
+  </testcase>
+  <testcase name="testGetCurrentUser" classname="com.atelierlocal.controller.ClientControllerUnitTest" time="0.08"/>
+  <testcase name="testGetAllClients" classname="com.atelierlocal.controller.ClientControllerUnitTest" time="0.004"/>
+  <testcase name="testUpdateClient" classname="com.atelierlocal.controller.ClientControllerUnitTest" time="0.002"/>
+  <testcase name="testDeleteClient" classname="com.atelierlocal.controller.ClientControllerUnitTest" time="0.004"/>
+  <testcase name="testGetAskingsByClient" classname="com.atelierlocal.controller.ClientControllerUnitTest" time="0.004"/>
+  <testcase name="testRegisterClient" classname="com.atelierlocal.controller.ClientControllerUnitTest" time="0.002"/>
 </testsuite>

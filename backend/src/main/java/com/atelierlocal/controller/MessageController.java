@@ -1,10 +1,9 @@
 package com.atelierlocal.controller;
 
 import org.slf4j.LoggerFactory;
-
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
-
 import org.slf4j.Logger;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -33,8 +32,12 @@ public class MessageController {
     }
 
     @MessageMapping("/chat")
-    public void processMessage(@Valid MessageRequestDTO message) {
+    public void processMessage(@Valid MessageRequestDTO message, Principal principal) {
         try {
+            UUID authenticatedId = UUID.fromString(principal.getName());
+
+            message.setSenderId(authenticatedId);
+
             logger.info("Réception d'un message de {} à {}", message.getSenderId(), message.getReceiverId());
             MessageResponseDTO response = messageService.sendMessage(message);
 
@@ -48,20 +51,21 @@ public class MessageController {
         } catch (Exception e) {
             logger.error("Erreur lors du traitement du message : {}", e.getMessage(), e);
 
-            // Utilisation du nouveau constructeur pour les erreurs
             MessageResponseDTO errorResponse = new MessageResponseDTO(
                 "Erreur lors de l'envoi du message : " + e.getMessage()
             );
 
-            // On notifie à la fois l'expéditeur et le destinataire
-            messagingTemplate.convertAndSendToUser(
-                message.getReceiverId().toString(),
-                "/queue/messages",
-                errorResponse
-            );
+            String receiver = (message.getReceiverId() != null) ? message.getReceiverId().toString() : null;
+            if (receiver != null) {
+                messagingTemplate.convertAndSendToUser(
+                    receiver,
+                    "/queue/messages",
+                    errorResponse
+                );
+            }
 
             messagingTemplate.convertAndSendToUser(
-                message.getSenderId().toString(),
+                principal.getName(),
                 "/queue/messages",
                 errorResponse
             );
@@ -71,8 +75,13 @@ public class MessageController {
     @GetMapping("/messages/history")
     public List<MessageResponseDTO> getHistory(
         @RequestParam UUID user1Id,
-        @RequestParam UUID user2Id
+        @RequestParam UUID user2Id,
+        Principal principal
     ) {
+        UUID authId = UUID.fromString(principal.getName());
+        if (!(authId.equals(user1Id) || authId.equals(user2Id))) {
+            throw new SecurityException("Accès refusé à cet historique de conversation");
+        }
         return messageService.getConversation(user1Id, user2Id);
     }
 }

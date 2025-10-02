@@ -25,9 +25,15 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
                                    Map<String, Object> attributes) {
         if (request instanceof ServletServerHttpRequest servletRequest) {
             String token = servletRequest.getServletRequest().getParameter("token");
-            if (token != null && jwtService.isTokenValid(token, null)) {
-                String username = jwtService.extractUsername(token);
-                attributes.put("username", username);
+            if (token == null) {
+                String auth = servletRequest.getServletRequest().getHeader("Authorization");
+                if (auth != null && auth.startsWith("Bearer ")) {
+                    token = auth.substring(7);
+                }
+            }
+
+            if (token != null && jwtService.isTokenValid(token,null)) {
+                attributes.put("jwt", token);
                 return true;
             }
         }
@@ -41,4 +47,3 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
                                Exception exception) {
     }
 }
-

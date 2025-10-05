@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import com.atelierlocal.model.User;
 import com.atelierlocal.repository.UserRepo;
 
+import org.springframework.lang.NonNull;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 @Component
@@ -29,7 +31,7 @@ public class WebSocketAuthChannelInterceptor implements ChannelInterceptor {
     }
 
     @Override
-    public Message<?> preSend(Message<?> message, MessageChannel channel) {
+    public Message<?> preSend(@NonNull Message<?> message, @NonNull MessageChannel channel) {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
         if (accessor == null) return message;
 

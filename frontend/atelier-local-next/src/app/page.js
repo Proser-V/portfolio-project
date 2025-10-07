@@ -1,8 +1,15 @@
+import ClientHome from "@/components/ClientHome";
+
 export default function Home() {
+  let header;
+  const user = {
+    role: "client",
+    firstName: "Valentin",
+    avatar: "/tronche.jpg"
+  };
   return (
     <>
-      <h1 className="text-center text-3xl mt-8">Bienvenue sur L'Atelier Local</h1>
-      <p className="text-center mt-4">Contenu de la page</p>
+      return <ClientHome client={user} />
     </>
   );
 }

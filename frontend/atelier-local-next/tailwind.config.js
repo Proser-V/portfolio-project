@@ -6,6 +6,11 @@ module.exports = {
     "./src/app/**/*.{js,ts,jsx,tsx}",
     "./src/components/**/*.{js,ts,jsx,tsx}"
   ],
+  safelist: [
+    'bg-gradient-to-br',
+    'from-transparent',
+    'to-white/70',
+  ],
   theme: {
     extend: {
       colors: {

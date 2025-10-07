@@ -20,7 +20,7 @@ export default function ClientHeader({ client }) {
             height={45}
           />
         </a>
-        <a href="#" className="bg-gold text-blue flex-auto flex items-center justify-center px-2 hover:underline">
+        <a href="#" className="bg-gold text-blue flex-auto flex items-center justify-center px-2 hover:underline pb-2 md:pb-0">
             <span className="pt-2 md:pt-0 whitespace-nowrap">
               Bienvenue dans l'Atelier,
               <br className="hidden md:block" />
@@ -34,7 +34,7 @@ export default function ClientHeader({ client }) {
             className="hidden md:block ml-2"
           />
         </a>
-        <a href="#" className="bg-gold text-blue flex-auto flex items-center justify-center pr-2 py-2 hover:underline">Déconnexion</a>
+        <a href="#" className="bg-gold text-blue flex-auto flex items-center justify-center pr-2 py-1 hover:underline">Déconnexion</a>
       </nav>
     </header>
   );

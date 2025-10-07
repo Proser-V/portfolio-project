@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import avatar from "../../public/tronche.jpg"
 
-export default function ClientHome({ client }) {
+export default function AdminHome({ admin }) {
     return (
         <section className="relative mx-auto px-4 sm:px-6 md:px-8">
             <h1 className="text-blue text-xl md:text-2xl text-center mt-4 font-cabin">
@@ -17,7 +17,7 @@ export default function ClientHome({ client }) {
                 Déposez vos besoins ici, les professionnels vous recontactent directement.
             </p>
             <div className="text-center">
-                <p className="text-gold -mb-1 text-lg">Bienvenue dans l'Atelier, {client.firstName} !</p>
+                <p className="text-gold -mb-1 text-lg">Bienvenue dans l'Atelier, {admin.firstName} !</p>
             </div>
             <div className="flex flex-wrap justify-center gap-1 md:flex-row-1">
                 <Link

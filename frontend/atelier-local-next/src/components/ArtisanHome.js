@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import avatar from "../../public/tronche.jpg"
 
-export default function ClientHome({ client }) {
+export default function ArtisanHome({ artisan }) {
     return (
         <section className="relative mx-auto px-4 sm:px-6 md:px-8">
             <h1 className="text-blue text-xl md:text-2xl text-center mt-4 font-cabin">
@@ -17,28 +17,17 @@ export default function ClientHome({ client }) {
                 Déposez vos besoins ici, les professionnels vous recontactent directement.
             </p>
             <div className="text-center">
-                <p className="text-gold -mb-1 text-lg">Bienvenue dans l'Atelier, {client.firstName} !</p>
+                <p className="text-gold -mb-1 text-lg">Bienvenue dans l'Atelier, {artisan.name} !</p>
             </div>
-            <div className="flex flex-wrap justify-center gap-1 md:flex-row-1">
-                <Link
-                href="/askings"
-                className="max-w-xs h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
-                            text-gold text-sm font-normal font-cabin
-                            flex items-center justify-center mx-2 
-                            hover:bg-blue transition mt-5 px-4"
-                >
-                Postez une demande de prestation
-                </Link>
-                <Link
-                href="/artisans"
-                className="max-w-xs h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
-                            text-gold text-sm font-normal font-cabin
-                            flex items-center justify-center mx-2
-                            hover:bg-blue transition md:mt-5 px-4"
-                >
-                Parcourez les artisans autour de chez vous
-                </Link>
-            </div>
+            <Link
+            href="/askings"
+            className="max-w-xs h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
+                        text-gold text-sm font-normal font-cabin
+                        flex items-center justify-center mx-auto
+                        hover:bg-blue transition mt-5 px-4"
+            >
+            Parcourez et répondez aux besoins des habitants
+            </Link>
 
             <div className="relative flex flex-col items-center w-full">
                 <p className="text-blue text-center font-cabin text-sm mb-4 md:absolute md:top-10 md:mb-0">

@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import avatar from "../../public/tronche.jpg"
 
-export default function ClientHome({ client }) {
+export default function VisitorHome() {
     return (
         <section className="relative mx-auto px-4 sm:px-6 md:px-8">
             <h1 className="text-blue text-xl md:text-2xl text-center mt-4 font-cabin">
@@ -16,28 +16,17 @@ export default function ClientHome({ client }) {
                 <br className="block" />
                 Déposez vos besoins ici, les professionnels vous recontactent directement.
             </p>
-            <div className="text-center">
-                <p className="text-gold -mb-1 text-lg">Bienvenue dans l'Atelier, {client.firstName} !</p>
-            </div>
-            <div className="flex flex-wrap justify-center gap-1 md:flex-row-1">
-                <Link
-                href="/askings"
-                className="max-w-xs h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
-                            text-gold text-sm font-normal font-cabin
-                            flex items-center justify-center mx-2 
-                            hover:bg-blue transition mt-5 px-4"
-                >
-                Postez une demande de prestation
-                </Link>
-                <Link
-                href="/artisans"
-                className="max-w-xs h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
-                            text-gold text-sm font-normal font-cabin
-                            flex items-center justify-center mx-2
-                            hover:bg-blue transition md:mt-5 px-4"
-                >
-                Parcourez les artisans autour de chez vous
-                </Link>
+
+            <div className="flex flex-wrap justify-center md:grid-cols-3">
+                <div className="text-center md:text-right">
+                    <p className="text-gold mb-1">Vous avez besoin d'artisans dijonnais ?</p>
+                    <a href="/login/client" className="text-blue underline text-sm">Entrez dans L'Atelier Local et faites appel aux artisans dijonnais.</a>
+                </div>
+                <div className="w-px bg-silver mx-4"></div>
+                <div className="text-center md:text-left">
+                    <p className="text-gold mb-1">Vous êtes artisans à proximité de Dijon ?</p>
+                    <a href="/login/artisan" className="text-blue underline text-sm">Entrez dans L'Atelier Local et répondez aux besoins des habitants.</a>
+                </div>
             </div>
 
             <div className="relative flex flex-col items-center w-full">
@@ -118,6 +107,15 @@ export default function ClientHome({ client }) {
                         </div>
                     </Link>
                 </div>
+                <Link
+                href="/artisans"
+                className="w-full max-w-xs h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
+                            text-gold text-base font-normal font-cabin
+                            flex items-center justify-center mx-auto 
+                            hover:bg-blue transition mt-5"
+                >
+                Découvrez les artisans dijonnais
+                </Link>
             </div>
         </section>
     );

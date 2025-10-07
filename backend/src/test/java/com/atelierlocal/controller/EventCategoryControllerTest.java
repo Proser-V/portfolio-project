@@ -61,7 +61,7 @@ class EventCategoryControllerTest {
     void testGetAllEventCategories() {
         when(service.getAllEventCategories()).thenReturn(List.of(eventCategoryResponseDTO));
 
-        ResponseEntity<List<EventCategoryResponseDTO>> response = controller.getAllEventCateogries();
+        ResponseEntity<List<EventCategoryResponseDTO>> response = controller.getAllEventCategories();
         assertNotNull(response.getBody());
 
         List<EventCategoryResponseDTO> body = Objects.requireNonNull(response.getBody(), "Response body is null");

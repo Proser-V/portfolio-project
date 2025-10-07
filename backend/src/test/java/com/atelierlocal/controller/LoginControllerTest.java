@@ -70,10 +70,15 @@ class LoginControllerTest {
 
         assertNotNull(response);
         assertEquals(401, response.getStatusCode().value());
-        assertEquals("Email ou mot de passe incorrect", response.getBody());
+
+        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        assertNotNull(body);
+        assertEquals("Email ou mot de passe incorrect", body.get("error"));
+
         verify(loginService).login(request.getEmail(), request.getPassword());
         verifyNoInteractions(userDetailsService, jwtService);
-    }
+}
+
 
     @Test
     void testLogoutSuccess() {

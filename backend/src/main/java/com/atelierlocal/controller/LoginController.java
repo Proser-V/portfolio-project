@@ -16,11 +16,14 @@ import com.atelierlocal.security.CustomUserDetailsService;
 import com.atelierlocal.security.JwtService;
 import com.atelierlocal.service.LoginService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/users")
-@Tag(name = "Login", description = "API pour le login.")
+@Tag(name = "Login", description = "API pour l'authentification des utilisateurs")
 public class LoginController {
     private final LoginService loginService;
     private final JwtService jwtService;
@@ -33,24 +36,35 @@ public class LoginController {
     }
 
     @PostMapping("/login")
+    @Operation(summary = "Connexion d'un utilisateur", description = "Génère un JWT en cas de succès")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Connexion réussie, retourne le token"),
+        @ApiResponse(responseCode = "401", description = "Email ou mot de passe incorrect"),
+        @ApiResponse(responseCode = "400", description = "Requête invalide")
+    })
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         boolean success = loginService.login(request.getEmail(), request.getPassword());
         if (!success) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Email ou mot de passe incorrect");
+                    .body(Map.of("error", "Email ou mot de passe incorrect"));
         }
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
-
         String token = jwtService.generateToken(userDetails);
 
         return ResponseEntity.ok(Map.of("token", token));
     }
 
     @PostMapping("/logout")
+    @Operation(summary = "Déconnexion de l'utilisateur", description = "Blackliste le JWT")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Déconnexion réussie"),
+        @ApiResponse(responseCode = "400", description = "Token manquant ou malformé")
+    })
     public ResponseEntity<?> logout(@RequestHeader("Authorization") String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Token manquant"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "Token manquant"));
         }
         String token = authHeader.substring(7);
         jwtService.blacklistToken(token);

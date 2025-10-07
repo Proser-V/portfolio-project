@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -66,8 +67,14 @@ public class JwtService {
         long expirationMsLong = Long.parseLong(expirationMs);
         Instant expiration = now.plus(expirationMsLong, ChronoUnit.MILLIS);
 
+        String role = userDetails.getAuthorities().stream()
+                                 .findFirst()
+                                 .map(GrantedAuthority::getAuthority)
+                                 .orElse("ROLE_USER");
+
         return Jwts.builder()
             .setSubject(userDetails.getUsername())
+            .claim("role", role)
             .setIssuedAt(Date.from(now))
             .setExpiration(Date.from(expiration))
             .signWith(getSigningKey(), SignatureAlgorithm.HS256)

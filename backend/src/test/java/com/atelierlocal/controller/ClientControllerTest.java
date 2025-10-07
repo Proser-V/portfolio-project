@@ -69,18 +69,21 @@ class ClientControllerTest {
     // GET /api/clients/me
     @Test
     void testGetCurrentUser() {
-        Authentication auth = mock(Authentication.class);
-        when(auth.getName()).thenReturn("client@example.com");
-        when(clientService.getClientByEmail("client@example.com", client)).thenReturn(clientResponseDTO);
+        Client currentClient = new Client();
+        currentClient.setId(clientId);
+        currentClient.setEmail("client@example.com");
 
-        ResponseEntity<ClientResponseDTO> response = clientController.getCurrentUser(auth, client);
+        when(clientService.getClientById(clientId)).thenReturn(clientResponseDTO);
+
+        ResponseEntity<ClientResponseDTO> response = clientController.getCurrentUser(currentClient);
         ClientResponseDTO result = response.getBody();
 
         assertNotNull(result);
         assertEquals("Alice", result.getFirstName());
         assertEquals("Martin", result.getLastName());
-        verify(clientService).getClientByEmail("client@example.com", client);
+        verify(clientService).getClientById(clientId);
     }
+
 
     // GET /api/clients/
     @Test

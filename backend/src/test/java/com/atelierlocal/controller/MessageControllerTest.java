@@ -2,14 +2,11 @@ package com.atelierlocal.controller;
 
 import com.atelierlocal.dto.MessageRequestDTO;
 import com.atelierlocal.dto.MessageResponseDTO;
-import com.atelierlocal.model.Client;
-import com.atelierlocal.model.Artisan;
-import com.atelierlocal.model.Message;
 import com.atelierlocal.service.MessageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
-
+import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.security.Principal;
@@ -17,9 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 class MessageControllerTest {
@@ -47,29 +42,19 @@ class MessageControllerTest {
     void testProcessMessageSuccess() {
         UUID receiverId = UUID.randomUUID();
 
-        Client senderUser = new Client();
-        senderUser.setId(authenticatedUserId);
-        Artisan receiverUser = new Artisan();
-        receiverUser.setId(receiverId);
-
-        Message message = mock(Message.class);
-        when(message.getId()).thenReturn(UUID.randomUUID());
-        when(message.getSender()).thenReturn(senderUser);
-        when(message.getReceiver()).thenReturn(receiverUser);
-        when(message.getContent()).thenReturn("Hello");
-
-        MessageResponseDTO response = new MessageResponseDTO(message);
-        when(messageService.sendMessage(any(MessageRequestDTO.class))).thenReturn(response);
-
         MessageRequestDTO request = new MessageRequestDTO();
         request.setReceiverId(receiverId);
         request.setContent("Hello");
 
+        MessageResponseDTO response = new MessageResponseDTO("Hello");
+        response.setReceiverId(receiverId);
+        when(messageService.sendMessage(any(MessageRequestDTO.class))).thenReturn(response);
+
         messageController.processMessage(request, mockPrincipal);
 
-        ArgumentCaptor<MessageRequestDTO> dtoCaptor = ArgumentCaptor.forClass(MessageRequestDTO.class);
-        verify(messageService, times(1)).sendMessage(dtoCaptor.capture());
-        assertEquals(authenticatedUserId, dtoCaptor.getValue().getSenderId());
+        ArgumentCaptor<MessageRequestDTO> captor = ArgumentCaptor.forClass(MessageRequestDTO.class);
+        verify(messageService, times(1)).sendMessage(captor.capture());
+        assertEquals(authenticatedUserId, captor.getValue().getSenderId());
 
         verify(messagingTemplate, times(1))
             .convertAndSendToUser(eq(receiverId.toString()), eq("/queue/messages"), eq(response));
@@ -79,12 +64,12 @@ class MessageControllerTest {
     void testProcessMessageException() {
         UUID receiverId = UUID.randomUUID();
 
-        when(messageService.sendMessage(any(MessageRequestDTO.class)))
-            .thenThrow(new RuntimeException("Service down"));
-
         MessageRequestDTO request = new MessageRequestDTO();
         request.setReceiverId(receiverId);
         request.setContent("Hello");
+
+        when(messageService.sendMessage(any(MessageRequestDTO.class)))
+            .thenThrow(new RuntimeException("Service down"));
 
         messageController.processMessage(request, mockPrincipal);
 
@@ -109,10 +94,16 @@ class MessageControllerTest {
         when(messageService.getConversation(authenticatedUserId, otherUserId))
             .thenReturn(List.of(msg1, msg2));
 
-        List<MessageResponseDTO> history = messageController.getHistory(authenticatedUserId, otherUserId, mockPrincipal);
+        var responseEntity = messageController.getHistory(authenticatedUserId, otherUserId, mockPrincipal);
 
-        assertEquals(2, history.size());
-        assertEquals("hello", history.get(0).getMessageError());
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        List<MessageResponseDTO> history = responseEntity.getBody();
+        assertNotNull(history, "L'historique ne doit pas être null");
+        assertEquals(2, history.size(), "Il doit y avoir 2 messages");
+        assertEquals("hello", history.get(0).getMessageError(), "Premier message incorrect");
+        assertEquals("world", history.get(1).getMessageError(), "Deuxième message incorrect");
+
+        verify(messageService, times(1)).getConversation(authenticatedUserId, otherUserId);
     }
 
     @Test
@@ -120,9 +111,10 @@ class MessageControllerTest {
         UUID user1 = UUID.randomUUID();
         UUID user2 = UUID.randomUUID();
 
-        assertThrows(SecurityException.class, () ->
-            messageController.getHistory(user1, user2, mockPrincipal)
-        );
+        var responseEntity = messageController.getHistory(user1, user2, mockPrincipal);
+
+        assertEquals(HttpStatus.FORBIDDEN , responseEntity.getStatusCode());
+        assertNull(responseEntity.getBody());
 
         verify(messageService, never()).getConversation(any(), any());
     }

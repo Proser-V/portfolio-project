@@ -1,15 +1,16 @@
 package com.atelierlocal.security;
 
-
 import java.io.IOException;
 
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.atelierlocal.model.User;
+import com.atelierlocal.repository.UserRepo;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,55 +21,62 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final CustomUserDetailsService userDetailsService;
+    private final UserRepo userRepository;
 
-    public JwtAuthenticationFilter(JwtService jwtService, CustomUserDetailsService userDetailsService) {
+    public JwtAuthenticationFilter(JwtService jwtService, UserRepo userRepository) {
         this.jwtService = jwtService;
-        this.userDetailsService = userDetailsService;
+        this.userRepository = userRepository;
     }
 
     @Override
     protected void doFilterInternal(
-        @NonNull HttpServletRequest request,
-        @NonNull HttpServletResponse response,
-        @NonNull FilterChain filterChain
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
         // Récupération du header Authorization
         final String authHeader = request.getHeader("Authorization");
-        final String jwt;
-        final String username;
 
-        // En cas d'absence de JWT, on passe au filtre suivant
+        // Si le header est absent ou ne commence pas par "Bearer ", on passe au filtre suivant
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        jwt = authHeader.substring(7); // Retire le "Bearer"
+        // Extraction du JWT en retirant "Bearer "
+        final String jwt = authHeader.substring(7);
+
+        // Vérification si le token est blacklisté (ex. logout)
         if (jwtService.isTokenBlacklisted(jwt)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\": \"Token invalide ou expiré\"}");
             return;
         }
-        username = jwtService.extractUsername(jwt);
 
-        // Vérifier si l'utilisateur est déjà connecté
+        // Extraction du username à partir du token
+        final String username = jwtService.extractUsername(jwt);
+
+        // Vérifier si l'utilisateur n'est pas déjà authentifié
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
-            // Vérification du token
-            if (jwtService.isTokenValid(jwt, userDetails)) {
+            // Récupération de l'entité User depuis la base
+            User user = userRepository.findByEmail(username).orElse(null);
+
+            if (user != null && jwtService.isTokenValid(jwt, user)) {
+                // Création d'un objet Authentication avec l'entité User
                 UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
+                        new UsernamePasswordAuthenticationToken(
+                                user,             // on stocke le User directement
+                                null,             // pas de mot de passe ici
+                                user.getAuthorities() // liste des rôles/authorities
                         );
+
+                // Ajout des détails de la requête (IP, session, etc.)
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                // On stocke l'auth dans le SecurityContext
+                // On place l'objet Authentication dans le contexte de sécurité
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
@@ -79,12 +87,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
+        // Exclure certaines routes publiques (login, register, Swagger...)
         String path = request.getServletPath();
         return path.equals("/api/clients/register")
-            || path.equals("/api/artisans/register")
-            || path.equals("/api/users/login")
-            || path.equals("/api/artisans/debug/categories")
-            || path.startsWith("/swagger-ui")
-            || path.startsWith("v3/api/docs");
+                || path.equals("/api/artisans/register")
+                || path.equals("/api/users/login")
+                || path.equals("/api/artisans/debug/categories")
+                || path.startsWith("/swagger-ui")
+                || path.startsWith("/v3/api/docs");
     }
 }

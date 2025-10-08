@@ -20,12 +20,12 @@ export default function VisitorHome() {
             <div className="flex flex-wrap justify-center md:grid-cols-3">
                 <div className="text-center md:text-right">
                     <p className="text-gold mb-1">Vous avez besoin d'artisans dijonnais ?</p>
-                    <a href="/login/client" className="text-blue underline text-sm">Entrez dans L'Atelier Local et faites appel aux artisans dijonnais.</a>
+                    <a href="/registration" className="text-blue underline text-sm">Entrez dans L'Atelier Local et faites appel aux artisans dijonnais.</a>
                 </div>
                 <div className="w-px bg-silver mx-4"></div>
                 <div className="text-center md:text-left">
                     <p className="text-gold mb-1">Vous êtes artisans à proximité de Dijon ?</p>
-                    <a href="/login/artisan" className="text-blue underline text-sm">Entrez dans L'Atelier Local et répondez aux besoins des habitants.</a>
+                    <a href="/registration" className="text-blue underline text-sm">Entrez dans L'Atelier Local et répondez aux besoins des habitants.</a>
                 </div>
             </div>
 

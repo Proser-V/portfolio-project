@@ -10,10 +10,10 @@ export default function VisitorHeader() {
         className="h-12 w-auto mb-2 md:mb-0"
       />
       <nav className="flex flex-col md:flex-row md:gap-6 w-full md:w-auto text-sm text-center">
-        <a href="#" className="flex-auto flex items-center justify-center py-2 hover:underline">Demande de prestation</a>
-        <a href="#" className="flex-auto flex items-center justify-center py-2 hover:underline">Artisans</a>
-        <a href="#" className="flex-auto flex items-center justify-center py-2 hover:underline">Créer un compte</a>
-        <a href="#" className="flex-auto flex items-center justify-center py-2 hover:underline">Connexion</a>
+        <a href="/new-asking" className="flex-auto flex items-center justify-center py-2 hover:underline">Demande de prestation</a>
+        <a href="/artisans" className="flex-auto flex items-center justify-center py-2 hover:underline">Artisans</a>
+        <a href="/registration" className="flex-auto flex items-center justify-center py-2 hover:underline">Créer un compte</a>
+        <a href="/login" className="flex-auto flex items-center justify-center py-2 hover:underline">Connexion</a>
       </nav>
     </header>
   );

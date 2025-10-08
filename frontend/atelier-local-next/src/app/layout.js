@@ -11,7 +11,7 @@ import { imageConfigDefault } from "next/dist/shared/lib/image-config";
 export default function RootLayout({ children }) {
   let header;
   const user = {
-    role: "artisan",
+    role: "",
     name: "Valentin",
     avatar: "/tronche.jpg"
   };

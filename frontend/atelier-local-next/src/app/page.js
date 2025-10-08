@@ -5,7 +5,7 @@ import AdminHome from "@/components/AdminHome";
 
 export default function Home() {
   const user = {
-    role: "artisan",
+    role: "",
     name: "Valentin",
     avatar: "/tronche.jpg"
   };

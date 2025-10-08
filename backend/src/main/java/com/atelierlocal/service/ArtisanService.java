@@ -18,6 +18,7 @@ import com.atelierlocal.model.UserRole;
 import com.atelierlocal.dto.ArtisanRequestDTO;
 import com.atelierlocal.dto.ArtisanResponseDTO;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -181,5 +182,12 @@ public class ArtisanService {
             .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé."));
         artisan.setActive(false);
         artisanRepo.save(artisan);
+    }
+
+    public List<Artisan> getRandomTopArtisans(int count) {
+        List<Artisan> top10 = artisanRepo.findTop10ByOrderByRecommendationsDesc();
+        if (top10.isEmpty()) return Collections.emptyList();
+        Collections.shuffle(top10);
+        return top10.subList(0, Math.min(count, top10.size()));
     }
 }

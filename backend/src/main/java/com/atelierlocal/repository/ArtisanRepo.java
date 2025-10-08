@@ -23,4 +23,5 @@ import java.util.UUID;
 public interface ArtisanRepo extends JpaRepository<Artisan, UUID> {
     Optional<Artisan> findByEmail(String email);
     List<Artisan> findAllByCategory(ArtisanCategory artisanCategory);
+    List<Artisan> findTop10ByOrderByRecommendationsDesc();
 }

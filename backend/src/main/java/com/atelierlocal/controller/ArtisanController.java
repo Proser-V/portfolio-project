@@ -139,6 +139,16 @@ public class ArtisanController {
         return ResponseEntity.ok(newRecommendation);
     }
 
+    /**
+     * Récupération de 3 artisans aléatoires parmis les plus recommandés.
+     * Route publique : pas besoin d'être connecté (home page)
+     */
+    @GetMapping("/random-top")
+    public ResponseEntity<List<Artisan>> getRandomTopArtisans() {
+        List<Artisan> artisans = artisanService.getRandomTopArtisans(3);
+        return ResponseEntity.ok(artisans);
+    }
+
     // --------------------
     // PORTFOLIO
     // --------------------

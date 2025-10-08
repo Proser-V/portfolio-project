@@ -4,14 +4,14 @@ import java.util.UUID;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class MessageRequestDTO {
     // Attributs
-    @NotBlank(message = "L'ID de l'envoyeur est requise")
+    @NotNull(message = "L'ID de l'envoyeur est requise")
     private UUID senderId;
 
-    @NotBlank(message = "L'ID du receveur est requise")
+    @NotNull(message = "L'ID du destinataire est requise")
     private UUID receiverId;
 
     private String content;

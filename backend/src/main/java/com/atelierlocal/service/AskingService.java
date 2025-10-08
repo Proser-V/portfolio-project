@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.atelierlocal.dto.AskingRequestDTO;
@@ -16,10 +14,10 @@ import com.atelierlocal.model.AskingStatus;
 import com.atelierlocal.model.Client;
 import com.atelierlocal.model.EventCategory;
 import com.atelierlocal.model.User;
-import com.atelierlocal.model.UserRole;
 import com.atelierlocal.repository.AskingRepo;
 import com.atelierlocal.repository.ClientRepo;
 import com.atelierlocal.repository.EventCategoryRepo;
+import com.atelierlocal.security.SecurityService;
 import com.atelierlocal.repository.ArtisanCategoryRepo;
 
 @Service
@@ -29,19 +27,24 @@ public class AskingService {
     private final ArtisanCategoryRepo artisanCategoryRepo;
     private final ClientRepo clientRepo;
     private final EventCategoryRepo eventCategoryRepo;
+    private final SecurityService securityService;
 
     public AskingService(
                 AskingRepo askingRepo,
                 ArtisanCategoryRepo artisanCategoryRepo,
                 ClientRepo clientRepo,
-                EventCategoryRepo eventCategoryRepo) {
+                EventCategoryRepo eventCategoryRepo,
+                SecurityService securityService) {
         this.askingRepo = askingRepo;
         this.artisanCategoryRepo = artisanCategoryRepo;
         this.clientRepo = clientRepo;
         this.eventCategoryRepo = eventCategoryRepo;
+        this.securityService = securityService;
     }
 
-    public AskingResponseDTO createAsking(AskingRequestDTO dto) {
+    public AskingResponseDTO createAsking(AskingRequestDTO dto, Client currentClient) {
+        securityService.checkClientOnly(currentClient);
+
         if (dto.getTitle().isBlank() || dto.getTitle() == null) {
             throw new IllegalArgumentException("La demande doit contenir un titre.");
         }
@@ -87,12 +90,7 @@ public class AskingService {
         Asking asking = askingRepo.findById(askingId)
             .orElseThrow(() -> new IllegalArgumentException("Demande non trouvée."));
 
-        boolean isAdmin = currentClient.getUserRole() == UserRole.ADMIN;
-        boolean isOwner = currentClient.getId().equals(asking.getClient().getId());
-
-        if (!isAdmin && !isOwner) {
-            throw new AccessDeniedException("Vous n'êtes pas autorisé à modifier cette demande.");
-        }
+        securityService.checkClientOwnershipOrAdmin(currentClient, asking.getClient().getId());
 
         AskingStatus currentStatus = asking.getStatus();
 
@@ -109,17 +107,19 @@ public class AskingService {
         return new AskingResponseDTO(patchedAsking);
     }
 
-    public void deleteAsking(UUID askingId) {
+    public void deleteAsking(UUID askingId, Client currentClient) {
         Asking asking = askingRepo.findById(askingId)
             .orElseThrow(() -> new RuntimeException("Demande non trouvée."));
 
-        askingRepo.delete(asking);
+        securityService.checkClientOwnershipOrAdmin(currentClient, asking.getClient().getId());
     }
 
-    public AskingResponseDTO updateAsking(UUID askingId, AskingRequestDTO request) {
+    public AskingResponseDTO updateAsking(UUID askingId, AskingRequestDTO request, Client currentClient) {
         Asking asking = askingRepo.findById(askingId)
             .orElseThrow(() -> new RuntimeException("Demande non trouvée."));
-        
+
+        securityService.checkClientOwnershipOrAdmin(currentClient, asking.getClient().getId());
+
         if (request.getContent() != null) { asking.setContent(request.getContent());}
         if (request.getTitle() != null) { asking.setTitle(request.getTitle());}
         if (request.getArtisanCategoryId() != null &&
@@ -140,9 +140,11 @@ public class AskingService {
         return new AskingResponseDTO(asking);
     }
 
-    public List<AskingResponseDTO> getAskingsByClient(UUID clientId) {
+    public List<AskingResponseDTO> getAskingsByClient(UUID clientId, Client currentClient) {
         Client client = clientRepo.findById(clientId)
             .orElseThrow(() -> new IllegalArgumentException("Client non trouvé."));
+
+        securityService.checkClientOwnershipOrAdmin(currentClient, clientId);
 
         List<Asking> askings = askingRepo.findAllByClient(client);
 
@@ -151,7 +153,9 @@ public class AskingService {
             .collect(Collectors.toList());
     }
 
-    public List<AskingResponseDTO> getAllAskings() {
+    public List<AskingResponseDTO> getAllAskings(User currentUser) {
+        securityService.checkAdminOnly(currentUser);;
+
         List<Asking> allAskings = askingRepo.findAll();
 
         return allAskings.stream()

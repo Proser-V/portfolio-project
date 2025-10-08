@@ -5,13 +5,15 @@ import org.springframework.stereotype.Service;
 import com.atelierlocal.repository.ArtisanCategoryRepo;
 import com.atelierlocal.repository.ArtisanRepo;
 import com.atelierlocal.repository.AvatarRepo;
+import com.atelierlocal.security.SecurityService;
 
 import jakarta.persistence.EntityNotFoundException;
 
 import com.atelierlocal.model.Artisan;
 import com.atelierlocal.model.ArtisanCategory;
 import com.atelierlocal.model.Avatar;
-import com.atelierlocal.model.UploadedPhoto;
+import com.atelierlocal.model.Client;
+import com.atelierlocal.model.User;
 import com.atelierlocal.model.UserRole;
 import com.atelierlocal.dto.ArtisanRequestDTO;
 import com.atelierlocal.dto.ArtisanResponseDTO;
@@ -28,6 +30,7 @@ public class ArtisanService {
     private final AvatarService avatarService;
     private final AvatarRepo avatarRepo;
     private final ArtisanCategoryRepo artisanCategoryRepo;
+    private final SecurityService securityService;
     
     // Constructeur
     public ArtisanService(
@@ -35,13 +38,15 @@ public class ArtisanService {
                 ArtisanRepo artisanRepo,
                 AvatarService avatarService,
                 AvatarRepo avatarRepo,
-                ArtisanCategoryRepo artisanCategoryRepo
+                ArtisanCategoryRepo artisanCategoryRepo,
+                SecurityService securityService
                 ) {
         this.passwordService = passwordService;
         this.artisanRepo = artisanRepo;
         this.avatarService = avatarService;
         this.avatarRepo = avatarRepo;
         this.artisanCategoryRepo = artisanCategoryRepo;
+        this.securityService = securityService;
     }
 
     public ArtisanResponseDTO createArtisan(ArtisanRequestDTO dto) {
@@ -93,43 +98,16 @@ public class ArtisanService {
         return new ArtisanResponseDTO(savedArtisan);
     }
 
-    public Artisan addGalleryPhoto(UUID artisanId, UploadedPhoto photo) {
-        // Cherche l'artisan
-        Artisan artisan = artisanRepo.findById(artisanId)
-            .orElseThrow(() -> new EntityNotFoundException("Professionnel non trouvé."));
-
-        photo.setArtisan(artisan); // Etabli le lien entre la photo et l'artisan
-        artisan.getPhotoGallery().add(photo); // Ajoute la photo
-
-        return artisanRepo.save(artisan); // Retourne l'artisan mis à jour
-    }
-
-    public Artisan removeGalleryPhoto(UUID artisanId, UUID photoId) {
-        // Cherche l'artisan
-        Artisan artisan = artisanRepo.findById(artisanId)
-            .orElseThrow(() -> new EntityNotFoundException("Professionnel non trouvé."));
-
-        // Cherche la photo à supprimer
-        UploadedPhoto photoToRemove = artisan.getPhotoGallery().stream() // Créer un objet Stream pour éviter boucle manuelle
-            .filter(photo -> photo.getId().equals(photoId)) // Selectionne la photo dont l'ID correspond
-            .findFirst() // Assure de prendre la première photo trouvé (sécurité meme si UUID unique), retourne un Optional
-            .orElseThrow(() -> new EntityNotFoundException("Photo non trouvé.")); // Si Optional vide, lance une exception
-
-        artisan.getPhotoGallery().remove(photoToRemove); // Supprime la photo
-        photoToRemove.setArtisan(null); // casse la relation entre la photo et l'artisan
-
-        // Photo supprimée de la DB grâce à orpheanRemoval = true
-        return artisanRepo.save(artisan); // Retourne l'artisan mis à jour
-    }
-
-    public void deleteArtisan(UUID atisanId) {
+    public void deleteArtisan(UUID atisanId, Client currentClient) {
+        securityService.checkAdminOnly(currentClient);
         Artisan artisan = artisanRepo.findById(atisanId)
             .orElseThrow(() -> new EntityNotFoundException("Professionnel non trouvé."));
 
         artisanRepo.delete(artisan);
     }
 
-    public ArtisanResponseDTO updateArtisan(UUID artisanId, ArtisanRequestDTO request) {
+    public ArtisanResponseDTO updateArtisan(UUID artisanId, ArtisanRequestDTO request, User currentUser) {
+        securityService.checkUserOwnershipOrAdmin(currentUser, artisanId);
         Artisan artisan = artisanRepo.findById(artisanId)
             .orElseThrow(() -> new EntityNotFoundException("Professionnel non trouvé."));
 
@@ -174,19 +152,22 @@ public class ArtisanService {
         return new ArtisanResponseDTO(artisan);
     }
 
-    public ArtisanResponseDTO getArtisanByEmail(String email) {
+    public ArtisanResponseDTO getArtisanByEmail(String email, Client currentClient) {
+        securityService.checkAdminOnly(currentClient);
         Artisan artisan = artisanRepo.findByEmail(email)
             .orElseThrow(() -> new EntityNotFoundException("Professionnel non trouvé."));
         return new ArtisanResponseDTO(artisan);
     }
 
-    public List<ArtisanResponseDTO> getAllArtisans() {
+    public List<ArtisanResponseDTO> getAllArtisans(Client currentClient) {
+        securityService.checkClientOrAdmin(currentClient);
         return artisanRepo.findAll().stream()
                                 .map(ArtisanResponseDTO::new)
                                 .collect(Collectors.toList());
     }
 
-    public List<ArtisanResponseDTO> getAllArtisansByCategory(UUID categoryId) {
+    public List<ArtisanResponseDTO> getAllArtisansByCategory(UUID categoryId, Client currentClient) {
+        securityService.checkClientOrAdmin(currentClient);
         ArtisanCategory category = artisanCategoryRepo.findById(categoryId)
             .orElseThrow(() -> new EntityNotFoundException("Categorie non trouvée."));
 

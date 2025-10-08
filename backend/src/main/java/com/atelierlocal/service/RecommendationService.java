@@ -15,6 +15,7 @@ import com.atelierlocal.model.Recommendation;
 import com.atelierlocal.repository.ArtisanRepo;
 import com.atelierlocal.repository.ClientRepo;
 import com.atelierlocal.repository.RecommendationRepo;
+import com.atelierlocal.security.SecurityService;
 
 @Service
 @Transactional
@@ -23,18 +24,22 @@ public class RecommendationService {
     private final RecommendationRepo recommendationRepo;
     private final ClientRepo clientRepo;
     private final ArtisanRepo artisanRepo;
+    private final SecurityService securityService;
 
     public RecommendationService(
         RecommendationRepo recommendationRepo,
         ClientRepo clientRepo,
-        ArtisanRepo artisanRepo
+        ArtisanRepo artisanRepo,
+        SecurityService securityService
     ) {
         this.recommendationRepo = recommendationRepo;
         this.clientRepo = clientRepo;
         this.artisanRepo = artisanRepo;
+        this.securityService = securityService;
     }
 
-    public RecommendationResponseDTO createRecommendation(UUID artisanId, RecommendationRequestDTO request) {
+    public RecommendationResponseDTO createRecommendation(UUID artisanId, RecommendationRequestDTO request, Client currentClient) {
+        securityService.checkClientOnly(currentClient);
         Client client = clientRepo.findById(request.getClientId())
             .orElseThrow(() -> new IllegalArgumentException("Client non trouvé : " + request.getClientId()));
 
@@ -50,7 +55,8 @@ public class RecommendationService {
         return toResponseDTO(saved);
     }
 
-    public void deleteRecommendation(UUID recommendationId) {
+    public void deleteRecommendation(UUID recommendationId, Client currentClient) {
+        securityService.checkAdminOnly(currentClient);
         if (!recommendationRepo.existsById(recommendationId)) {
             throw new IllegalArgumentException("Recommendation non trouvée : " + recommendationId);
         }
@@ -63,7 +69,8 @@ public class RecommendationService {
         return toResponseDTO(recommendation);
     }
 
-    public List<RecommendationResponseDTO> getAllRecommendations() {
+    public List<RecommendationResponseDTO> getAllRecommendations(Client currentClient) {
+        securityService.checkAdminOnly(currentClient);
         return recommendationRepo.findAll().stream()
             .map(this::toResponseDTO)
             .collect(Collectors.toList());

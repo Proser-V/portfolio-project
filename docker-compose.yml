@@ -22,6 +22,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/atelierlocal
       SPRING_DATASOURCE_USERNAME: valentin
       SPRING_DATASOURCE_PASSWORD: Drummer21121!
+      SPRING_PROFILES_ACTIVE: demo
 
 volumes:
   db_data:

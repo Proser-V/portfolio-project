@@ -1,10 +1,14 @@
 package com.atelierlocal.model;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -24,10 +28,9 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = "users") 
+@Table(name = "users")
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class User {
-    // Attributs
+public abstract class User implements UserDetails {
 
     @Id
     @GeneratedValue
@@ -36,7 +39,7 @@ public abstract class User {
 
     @Column(nullable = false, unique = true, length = 100)
     @Email(message = "Format d'email invalide.")
-    @Size(max = 100, message = "L'email ne peux dépasser 100 caractères.")
+    @Size(max = 100, message = "L'email ne peut dépasser 100 caractères.")
     private String email;
 
     @Column(name = "hashed_password", nullable = false)
@@ -62,7 +65,7 @@ public abstract class User {
     private Double longitude;
 
     @Column(length = 12)
-    @Pattern(regexp = "^(|(\\+33|0)[1-9](\\d{2}){4}$", message = "Numéro invalide (format français attendu)")
+    @Pattern(regexp = "^(|(\\+33|0)[1-9](\\d{2}){4})$", message = "Numéro invalide (format français attendu)")
     @Size(min = 10, max = 12)
     private String phoneNumber;
 
@@ -73,9 +76,9 @@ public abstract class User {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    // Getters et setters
-
+    // Getters et setters classiques
     public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
@@ -102,7 +105,46 @@ public abstract class User {
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
-
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    // ======================
+    // Méthodes UserDetails
+    // ======================
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Simple rôle unique basé sur l'enum UserRole
+        return Collections.singleton(() -> "ROLE_" + userRole.name());
+    }
+
+    @Override
+    public String getPassword() {
+        return hashedPwd;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true; // Pas de gestion d'expiration pour l'instant
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true; // Pas de verrouillage pour l'instant
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true; // Pas de gestion d'expiration des credentials
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return Boolean.TRUE.equals(isActive);
+    }
 }

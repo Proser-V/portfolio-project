@@ -84,16 +84,6 @@ public class EventCategoryService {
     }
 
     private EventCategoryResponseDTO toResponseDTO(EventCategory category) {
-        List<UUID> artisanIds = category.getArtisanCategoryList().stream()
-            .map(ArtisanCategory::getId)
-            .collect(Collectors.toList());
-
-            return new EventCategoryResponseDTO(
-                category.getId(),
-                category.getName(),
-                artisanIds,
-                category.getCreatedAt(),
-                category.getUpdatedAt()
-            );
+            return new EventCategoryResponseDTO(category);
     }
 }

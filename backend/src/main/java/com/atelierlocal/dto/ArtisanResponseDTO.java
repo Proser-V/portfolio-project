@@ -1,6 +1,7 @@
 package com.atelierlocal.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import com.atelierlocal.model.Artisan;
@@ -19,6 +20,7 @@ public class ArtisanResponseDTO {
     private String categoryName;
     private LocalDate activityStartDate;
     private int recommendationsCount;
+    private List<UploadedPhotoResponseDTO> photoGallery;
 
     public ArtisanResponseDTO(Artisan artisan) {
         this.id = artisan.getId();
@@ -33,11 +35,15 @@ public class ArtisanResponseDTO {
         this.categoryName = artisan.getCategory() != null ? artisan.getCategory().getName() : null;
         this.activityStartDate = artisan.getActivityStartDate();
         this.recommendationsCount = artisan.getRecommendations() != null ? artisan.getRecommendations().size() : 0;
+        this.photoGallery = artisan.getPhotoGallery().stream()
+            .map(UploadedPhotoResponseDTO::new)
+            .toList();
     }
 
     // Getters et setters
 
     public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
@@ -71,4 +77,7 @@ public class ArtisanResponseDTO {
 
     public int getRecommendations() { return recommendationsCount; }
     public void setRecommendations(int recommendationsCount) { this.recommendationsCount = recommendationsCount; }
+
+    public List<UploadedPhotoResponseDTO> getPhotoGallery() { return photoGallery; }
+    public void setPhotoGallery(List<UploadedPhotoResponseDTO> photoGallery) { this.photoGallery = photoGallery; }
 }

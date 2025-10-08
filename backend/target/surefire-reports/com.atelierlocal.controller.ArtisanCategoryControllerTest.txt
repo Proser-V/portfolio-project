@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.atelierlocal.controller.ArtisanCategoryControllerTest
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.062 s -- in com.atelierlocal.controller.ArtisanCategoryControllerTest

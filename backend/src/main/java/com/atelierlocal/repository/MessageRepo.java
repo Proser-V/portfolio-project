@@ -1,5 +1,6 @@
 package com.atelierlocal.repository;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,4 +18,8 @@ import com.atelierlocal.model.Message;
  */
 
 @Repository
-public interface MessageRepo extends JpaRepository<Message, UUID> {}
+public interface MessageRepo extends JpaRepository<Message, UUID> {
+    List<Message> findBySenderIdAndReceiverIdOrReceiverIdAndSenderIdOrderByTimestampAsc(
+        UUID senderId, UUID receiverId, UUID senderId2, UUID receiverId2
+    );
+}

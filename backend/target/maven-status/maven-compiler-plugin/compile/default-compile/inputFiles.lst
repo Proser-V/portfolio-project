@@ -4,7 +4,6 @@
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/config/S3Config.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/config/SecurityConfig.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/config/WebSocketConfig.java
-/home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/controller/AdminController.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/controller/ArtisanCategoryController.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/controller/ArtisanController.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/controller/AskingController.java
@@ -30,6 +29,8 @@
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/RecommendationDTO.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/RecommendationRequestDTO.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/RecommendationResponseDTO.java
+/home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/UploadedPhotoRequestDTO.java
+/home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/UploadedPhotoResponseDTO.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/exception/ResourceNotFoundException.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/model/Artisan.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/model/ArtisanCategory.java
@@ -60,7 +61,7 @@
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/security/CustomUserDetailsService.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/security/JwtAuthenticationFilter.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/security/JwtService.java
-/home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/service/AdminService.java
+/home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/security/SecurityService.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/service/ArtisanCategoryService.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/service/ArtisanService.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/service/AskingService.java
@@ -71,4 +72,5 @@
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/service/LoginService.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/service/MessageService.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/service/PasswordService.java
+/home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/service/PortfolioService.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/service/RecommendationService.java

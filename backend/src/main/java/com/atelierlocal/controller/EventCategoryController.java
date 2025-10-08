@@ -19,13 +19,16 @@ import com.atelierlocal.dto.EventCategoryRequestDTO;
 import com.atelierlocal.dto.EventCategoryResponseDTO;
 import com.atelierlocal.service.EventCategoryService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/event-categories")
 @PreAuthorize("hasRole('ADMIN')")
-@Tag(name = "Event Categories", description = "API pour la création des évènements.")
+@Tag(name = "Event Categories", description = "API pour la gestion des catégories d'évènements")
 public class EventCategoryController {
     private final EventCategoryService eventCategoryService;
 
@@ -34,36 +37,75 @@ public class EventCategoryController {
     }
 
     @PostMapping("/creation")
-    public ResponseEntity<EventCategoryResponseDTO> createEventCategory(@RequestBody EventCategoryRequestDTO request) {
+    @Operation(summary = "Créer une catégorie d'évènement", description = "Accessible uniquement aux administrateurs")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Catégorie créée avec succès"),
+        @ApiResponse(responseCode = "400", description = "Requête invalide"),
+        @ApiResponse(responseCode = "401", description = "Admin non authentifié"),
+        @ApiResponse(responseCode = "403", description = "Droits insuffisants")
+    })
+    public ResponseEntity<EventCategoryResponseDTO> createEventCategory(@Valid @RequestBody EventCategoryRequestDTO request) {
         EventCategoryResponseDTO newEventCategory = eventCategoryService.createEventCategory(request);
         return ResponseEntity.ok(newEventCategory);
     }
-    
+
     @GetMapping("/")
-    public ResponseEntity<List<EventCategoryResponseDTO>> getAllEventCateogries() {
+    @Operation(summary = "Lister toutes les catégories d'évènements", description = "Accessible uniquement aux administrateurs")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Liste récupérée avec succès"),
+        @ApiResponse(responseCode = "401", description = "Admin non authentifié"),
+        @ApiResponse(responseCode = "403", description = "Droits insuffisants")
+    })
+    public ResponseEntity<List<EventCategoryResponseDTO>> getAllEventCategories() {
         List<EventCategoryResponseDTO> allEventCategories = eventCategoryService.getAllEventCategories();
         return ResponseEntity.ok(allEventCategories);
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Récupérer une catégorie par ID", description = "Accessible uniquement aux administrateurs")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Catégorie récupérée"),
+        @ApiResponse(responseCode = "404", description = "Catégorie non trouvée")
+    })
     public ResponseEntity<EventCategoryResponseDTO> getEventCategoryById(@PathVariable UUID id) {
         EventCategoryResponseDTO eventCategory = eventCategoryService.getEventCategoryById(id);
         return ResponseEntity.ok(eventCategory);
     }
-    
-    @GetMapping("{id}/artisan-categories")
+
+    @GetMapping("/{id}/artisan-categories")
+    @Operation(summary = "Lister les catégories d'artisans associées à un évènement", description = "Accessible uniquement aux administrateurs")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Liste des catégories d'artisans récupérée"),
+        @ApiResponse(responseCode = "404", description = "Evènement non trouvé")
+    })
     public ResponseEntity<List<ArtisanCategoryResponseDTO>> getArtisanCategoriesByEvent(@PathVariable UUID id) {
         List<ArtisanCategoryResponseDTO> artisanCategoriesByEvent = eventCategoryService.getArtisanCategoriesByEvent(id);
         return ResponseEntity.ok(artisanCategoriesByEvent);
     }
 
     @PutMapping("/{id}/update")
-    public ResponseEntity<EventCategoryResponseDTO> updateEventCategory(@PathVariable UUID id, @RequestBody EventCategoryRequestDTO request) {
+    @Operation(summary = "Mettre à jour une catégorie d'évènement", description = "Accessible uniquement aux administrateurs")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Catégorie mise à jour"),
+        @ApiResponse(responseCode = "400", description = "Requête invalide"),
+        @ApiResponse(responseCode = "404", description = "Catégorie non trouvée"),
+        @ApiResponse(responseCode = "403", description = "Droits insuffisants")
+    })
+    public ResponseEntity<EventCategoryResponseDTO> updateEventCategory(
+            @Valid @PathVariable UUID id,
+            @RequestBody EventCategoryRequestDTO request
+    ) {
         EventCategoryResponseDTO updatedEventCategory = eventCategoryService.updateEventCategory(id, request);
         return ResponseEntity.ok(updatedEventCategory);
     }
 
     @DeleteMapping("/{id}/delete")
+    @Operation(summary = "Supprimer une catégorie d'évènement", description = "Accessible uniquement aux administrateurs")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Catégorie supprimée"),
+        @ApiResponse(responseCode = "404", description = "Catégorie non trouvée"),
+        @ApiResponse(responseCode = "403", description = "Droits insuffisants")
+    })
     public ResponseEntity<Void> deleteEventCategory(@PathVariable UUID id) {
         eventCategoryService.deleteEventCategory(id);
         return ResponseEntity.noContent().build();

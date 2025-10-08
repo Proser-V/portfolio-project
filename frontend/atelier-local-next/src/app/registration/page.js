@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { fetchCoordinates } from "../utils/location";
 
 export default function RegistrationPage() {
   const [role, setRole] = useState(null);
@@ -34,17 +35,21 @@ export default function RegistrationPage() {
   const handleSubmitClient = async (e) => {
     e.preventDefault();
     try {
-        const response = await fetch("http://localhost:8080/api/clients/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(ClientFormData),
-            credentials: "include",
-        });
+      const coords = await fetchCoordinates(ClientFormData.address);
+      const { address, ...rest } = ClientFormData;
+      const payload = { ...rest, latitude: coords.latitude, longitude: coords.longitude };
 
-        if (!response.ok) {
-            setError("Veuillez remplir tous les champs obligatoires.");
-            return;
-        }
+      const response = await fetch("http://localhost:8080/api/clients/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          credentials: "include",
+      });
+
+      if (!response.ok) {
+          setError("Veuillez remplir tous les champs obligatoires.");
+          return;
+      }
 
         setError("");
         console.log("Compte créé avec succès.");
@@ -58,21 +63,25 @@ export default function RegistrationPage() {
   const handleSubmitArtisan = async (e) => {
     e.preventDefault();
     try {
-        const response = await fetch("http://localhost:8080/api/artisans/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(ArtisanFormData),
-            credentials: "include",
-        });
+      const coords = await fetchCoordinates(ArtisanFormData.address);
+      const { address, ...rest } = ArtisanFormData;
+      const payload = { ...rest, latitude: coords.latitude, longitude: coords.longitude };
 
-        if (!response.ok) {
-            setError("Veuillez remplir tous les champs obligatoires.");
-            return;
-        }
+      const response = await fetch("http://localhost:8080/api/artisans/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          credentials: "include",
+      });
 
-        setError("");
-        console.log("Compte créé avec succès.");
-        router.push("/");
+      if (!response.ok) {
+          setError("Veuillez remplir tous les champs obligatoires.");
+          return;
+      }
+
+      setError("");
+      console.log("Compte créé avec succès.");
+      router.push("/");
     } catch (err) {
         console.error("Erreur réseau :", err);
         setError("Serveur inaccessible. Vérifiez votre connexion.");
@@ -192,7 +201,7 @@ export default function RegistrationPage() {
         <form onSubmit={handleSubmitArtisan} className="flex flex-col items-center w-full max-w-md gap-6">
           <input
             name="entreprise"
-            value={formData.entreprise}
+            value={ArtisanformData.name}
             onChange={handleChange}
             placeholder="Nom de votre entreprise"
             className="w-full h-10 rounded-[42.5px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]
@@ -200,7 +209,7 @@ export default function RegistrationPage() {
           />
           <input
             name="email"
-            value={formData.email}
+            value={ArtisanformData.email}
             onChange={handleChange}
             placeholder="Adresse email"
             className="w-full h-10 rounded-[42.5px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]
@@ -208,7 +217,7 @@ export default function RegistrationPage() {
           />
           <input
             name="password"
-            value={formData.password}
+            value={ArtisanformData.password}
             onChange={handleChange}
             type="password"
             placeholder="Mot de passe"
@@ -217,7 +226,7 @@ export default function RegistrationPage() {
           />
           <input
             name="phone"
-            value={formData.phone}
+            value={ArtisanformData.phoneNumber}
             onChange={handleChange}
             placeholder="Numéro de téléphone (optionnel)"
             className="w-full h-10 rounded-[42.5px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]
@@ -225,7 +234,7 @@ export default function RegistrationPage() {
           />
           <input
             name="adresse"
-            value={formData.adresse}
+            value={ArtisanformData.adress}
             onChange={handleChange}
             placeholder="Adresse (optionnel)"
             className="w-full h-10 rounded-[42.5px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]
@@ -233,7 +242,7 @@ export default function RegistrationPage() {
           />
           <input
             name="siret"
-            value={formData.siret}
+            value={ArtisanformData.siret}
             onChange={handleChange}
             placeholder="SIRET"
             className="w-full h-10 rounded-[42.5px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]

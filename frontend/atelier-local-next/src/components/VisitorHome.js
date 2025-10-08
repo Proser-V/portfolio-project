@@ -2,7 +2,18 @@ import Image from "next/image";
 import Link from "next/link";
 import avatar from "../../public/tronche.jpg"
 
-export default function VisitorHome() {
+export default async function VisitorHome() {
+    const res = await fetch("http://localhost:8080/api/artisans/random-top", {
+        cache: "no-store",
+    });
+
+    if (!res.ok) {
+        console.error("Erreur lors du fetch des artisans");
+        return <div>Impossible de charger les artisans</div>;
+    }
+
+    const artisans = await res.json();
+
     return (
         <section className="relative mx-auto px-4 sm:px-6 md:px-8">
             <h1 className="text-blue text-xl md:text-2xl text-center mt-4 font-cabin">
@@ -35,29 +46,37 @@ export default function VisitorHome() {
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 justify-items-center w-full max-w-4xl mx-auto">
+                    {artisans.map((artisan, index) => (
                     <Link
-                        href="/artisans"
-                        className="relative w-[250px] h-[250px] border-2 border-solid border-gold shadow-lg overflow-hidden md:mt-12">
+                        key={artisan.id || index}
+                        href={`/artisans/${artisan.id}`}
+                        className={`relative w-[250px] h-[250px] border-2 border-solid border-gold shadow-lg overflow-hidden ${
+                        index === 1 ? "md:mt-24" : "md:mt-12"
+                        }`}
+                    >
                         <Image
-                            src={avatar}
-                            alt="avatar"
-                            fill
-                            className="object-cover"
+                        src={artisan.avatar.avatarUrl}
+                        alt={artisan.name}
+                        fill
+                        className="object-cover"
                         />
-                        <div className="absolute inset-0 z-10"
-                            style={{
-                                backgroundImage: 'linear-gradient(to bottom right, transparent, rgba(255, 255, 255, 1))'
-                            }}>
-                        </div>
+                        <div
+                        className="absolute inset-0 z-10"
+                        style={{
+                            backgroundImage:
+                            "linear-gradient(to bottom right, transparent, rgba(255, 255, 255, 1))",
+                        }}
+                        ></div>
                         <div className="absolute -bottom-2 right-2 text-right text-blue font-cabin z-20">
-                            <p>
-                                Nom de l'artisan<br/>
-                                Métier<br/>
-                                Tel: 03 80 XX XX XX<br/>
-                                email@artisan.com
-                            </p>
+                        <p>
+                            {artisan.name} <br />
+                            {artisan.artisanCategory} <br />
+                            {artisan.phoneNumber ? `Tel: ${artisan.phoneNumer}` : ""} <br />
+                            {artisan.email}
+                        </p>
                         </div>
                     </Link>
+                    ))}
 
                     <Link
                         href="/artisans"

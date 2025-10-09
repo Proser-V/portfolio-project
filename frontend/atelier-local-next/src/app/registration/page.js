@@ -35,7 +35,7 @@ export default function RegistrationPage() {
   });
 
   useEffect(() => {
-    fetch("http://localhost:8080//api/artisan-category/")
+    fetch("http://host.docker.internal:8080//api/artisan-category/")
       .then((res) => res.json())
       .then(setCategories)
       .catch((err) => console.error("Erreur lors du chargement des catégories :", err));
@@ -48,7 +48,7 @@ export default function RegistrationPage() {
       const { address, ...rest } = ClientFormData;
       const payload = { ...rest, latitude: coords.latitude, longitude: coords.longitude };
 
-      const response = await fetch("http://localhost:8080/api/clients/register", {
+      const response = await fetch("http://host.docker.internal:8080/api/clients/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
@@ -76,7 +76,7 @@ export default function RegistrationPage() {
       const { address, ...rest } = ArtisanFormData;
       const payload = { ...rest, latitude: coords.latitude, longitude: coords.longitude };
 
-      const response = await fetch("http://localhost:8080/api/artisans/register", {
+      const response = await fetch("http://host.docker.internal:8080/api/artisans/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),

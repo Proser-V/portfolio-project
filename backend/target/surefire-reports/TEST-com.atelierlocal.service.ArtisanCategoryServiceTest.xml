@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.atelierlocal.service.PasswordServiceTest" time="0.314" tests="6" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.atelierlocal.service.ArtisanCategoryServiceTest" time="0.024" tests="12" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="21"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -36,11 +36,8 @@
     <property name="os.version" value="6.6.87.2-microsoft-standard-WSL2"/>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
     <property name="file.encoding" value="UTF-8"/>
-    <property name="jnidispatch.path" value="/home/valentin/.cache/JNA/temp/jna17890262711857595886.tmp"/>
     <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
-    <property name="jna.platform.library.path" value="/usr/lib/x86_64-linux-gnu:/lib/x86_64-linux-gnu:/usr/lib64:/lib64:/usr/lib:/lib:/usr/lib/wsl/lib:/usr/lib/x86_64-linux-gnu/libfakeroot"/>
     <property name="localRepository" value="/home/valentin/.m2/repository"/>
-    <property name="jna.loaded" value="true"/>
     <property name="java.vendor.url.bug" value="https://bugs.launchpad.net/ubuntu/+source/openjdk-21"/>
     <property name="java.io.tmpdir" value="/tmp"/>
     <property name="java.version" value="21.0.8"/>
@@ -56,10 +53,16 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="65.0"/>
   </properties>
-  <testcase name="testValidatePassword_success" classname="com.atelierlocal.service.PasswordServiceTest" time="0.015"/>
-  <testcase name="testGetPasswordValidationErrors_longPassword" classname="com.atelierlocal.service.PasswordServiceTest" time="0.002"/>
-  <testcase name="testValidatePassword_failures" classname="com.atelierlocal.service.PasswordServiceTest" time="0.001"/>
-  <testcase name="testGetPasswordValidationErrors_multiple" classname="com.atelierlocal.service.PasswordServiceTest" time="0.001"/>
-  <testcase name="testHashAndVerifyPassword" classname="com.atelierlocal.service.PasswordServiceTest" time="0.293"/>
-  <testcase name="testGetPasswordValidationErrors_none" classname="com.atelierlocal.service.PasswordServiceTest" time="0.001"/>
+  <testcase name="deleteArtisanCategory_ShouldThrow_WhenIdNotFound" classname="com.atelierlocal.service.ArtisanCategoryServiceTest" time="0.002"/>
+  <testcase name="deleteArtisanCategory_ShouldDelete_WhenIdExists" classname="com.atelierlocal.service.ArtisanCategoryServiceTest" time="0.001"/>
+  <testcase name="getArtisanCategoryById_ShouldThrow_WhenNotFound" classname="com.atelierlocal.service.ArtisanCategoryServiceTest" time="0.002"/>
+  <testcase name="getAllArtisanCategory_ShouldReturnList" classname="com.atelierlocal.service.ArtisanCategoryServiceTest" time="0.002"/>
+  <testcase name="updateArtisanCategory_ShouldUpdateFields" classname="com.atelierlocal.service.ArtisanCategoryServiceTest" time="0.002"/>
+  <testcase name="updateArtisanCategory_ShouldThrow_WhenNotFound" classname="com.atelierlocal.service.ArtisanCategoryServiceTest" time="0.003"/>
+  <testcase name="createArtisanCategory_ShouldThrow_WhenNameIsBlank" classname="com.atelierlocal.service.ArtisanCategoryServiceTest" time="0.001"/>
+  <testcase name="getArtisanCategoriesByEvent_ShouldReturnList" classname="com.atelierlocal.service.ArtisanCategoryServiceTest" time="0.001"/>
+  <testcase name="createArtisanCategory_ShouldThrow_WhenDescriptionIsBlank" classname="com.atelierlocal.service.ArtisanCategoryServiceTest" time="0.001"/>
+  <testcase name="getArtisanCategoryById_ShouldReturnDTO_WhenExists" classname="com.atelierlocal.service.ArtisanCategoryServiceTest" time="0.001"/>
+  <testcase name="createArtisanCategory_ShouldReturnResponseDTO_WhenValidInput" classname="com.atelierlocal.service.ArtisanCategoryServiceTest" time="0.001"/>
+  <testcase name="getAllArtisanCategory_ShouldThrow_WhenEmpty" classname="com.atelierlocal.service.ArtisanCategoryServiceTest" time="0.001"/>
 </testsuite>

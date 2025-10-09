@@ -7,14 +7,30 @@ import background from "./favicon.ico"
 import Image from "next/image";
 import './globals.css';
 import { imageConfigDefault } from "next/dist/shared/lib/image-config";
+import { cookies } from "next/headers";
+import ClientProviderWrapper from "../components/ClientProviderWrapper";
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
   let header;
-  const user = {
-    role: "",
-    name: "Valentin",
-    avatar: "/tronche.jpg"
-  };
+  const cookieStore = cookies();
+  const token = cookieStore.get("token")?.value;
+
+  let user = null;
+
+  if (token) {
+    try {
+      const res = await fetch("http://host.docker.internal:8080/api/users/me", {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store"
+      });
+
+      if (res.ok) {
+        user = await res.json();
+      }
+    } catch (err) {
+      console.error("Erreur récupération user :", err);
+    }
+  }
 
   if (user?.role === 'admin') {
     header = <AdminHeader admin={user} />;
@@ -41,7 +57,9 @@ export default function RootLayout({ children }) {
           />
         </div>
         <main className="flex-grow max-w-[1380px] mx-auto px-4 sm:px-6 md:px-8 mb-10">
-          {children}
+          <ClientProviderWrapper user={user}>
+            {children}
+          </ClientProviderWrapper>
         </main>
         <Footer />
       </body>

@@ -3,12 +3,9 @@ import VisitorHome from "@/components/VisitorHome";
 import ArtisanHome from "@/components/ArtisanHome";
 import AdminHome from "@/components/AdminHome";
 
-export default function Home() {
-  const user = {
-    role: "",
-    name: "Valentin",
-    avatar: "/tronche.jpg"
-  };
+export default async function Home() {
+  const res = await fetch("http://host.docker.internal:8080/api/users/me", { cache: "no-store" });
+  const user = res.ok ? await res.json() : null;
 
   if (user?.role === 'admin') {
     return <AdminHome admin={user} />;

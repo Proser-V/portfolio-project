@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.atelierlocal.service.PasswordServiceTest" time="0.314" tests="6" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.atelierlocal.service.MessageServiceTest" time="0.315" tests="2" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="21"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -56,10 +56,6 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="65.0"/>
   </properties>
-  <testcase name="testValidatePassword_success" classname="com.atelierlocal.service.PasswordServiceTest" time="0.015"/>
-  <testcase name="testGetPasswordValidationErrors_longPassword" classname="com.atelierlocal.service.PasswordServiceTest" time="0.002"/>
-  <testcase name="testValidatePassword_failures" classname="com.atelierlocal.service.PasswordServiceTest" time="0.001"/>
-  <testcase name="testGetPasswordValidationErrors_multiple" classname="com.atelierlocal.service.PasswordServiceTest" time="0.001"/>
-  <testcase name="testHashAndVerifyPassword" classname="com.atelierlocal.service.PasswordServiceTest" time="0.293"/>
-  <testcase name="testGetPasswordValidationErrors_none" classname="com.atelierlocal.service.PasswordServiceTest" time="0.001"/>
+  <testcase name="testSendMessageWithFile" classname="com.atelierlocal.service.MessageServiceTest" time="0.312"/>
+  <testcase name="testSendMessageWithoutFile" classname="com.atelierlocal.service.MessageServiceTest" time="0.001"/>
 </testsuite>

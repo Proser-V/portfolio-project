@@ -79,54 +79,6 @@ export default async function VisitorHome() {
                         </div>
                     </Link>
                     ))}
-
-                    <Link
-                        href="/artisans"
-                        className="relative w-[250px] h-[250px] border-2 border-solid border-gold shadow-lg overflow-hidden md:mt-24">
-                        <Image
-                            src={avatar}
-                            alt="avatar"
-                            fill
-                            className="object-cover"
-                        />
-                        <div className="absolute inset-0 z-10"
-                            style={{
-                                backgroundImage: 'linear-gradient(to bottom right, transparent, rgba(255, 255, 255, 1))'
-                            }}>
-                        </div>
-                        <div className="absolute -bottom-2 right-2 text-right text-blue font-cabin z-20">
-                            <p>
-                                Nom de l'artisan<br/>
-                                Métier<br/>
-                                Tel: 03 80 XX XX XX<br/>
-                                email@artisan.com
-                            </p>
-                        </div>
-                    </Link>
-
-                    <Link
-                        href="/artisans"
-                        className="relative w-[250px] h-[250px] border-2 border-solid border-gold shadow-lg overflow-hidden md:mt-12">
-                        <Image
-                            src={avatar}
-                            alt="avatar"
-                            fill
-                            className="object-cover"
-                        />
-                        <div className="absolute inset-0 z-10"
-                            style={{
-                                backgroundImage: 'linear-gradient(to bottom right, transparent, rgba(255, 255, 255, 1))'
-                            }}>
-                        </div>
-                        <div className="absolute -bottom-2 right-2 text-right text-blue font-cabin z-20">
-                            <p>
-                                Nom de l'artisan<br/>
-                                Métier<br/>
-                                Tel: 03 80 XX XX XX<br/>
-                                email@artisan.com
-                            </p>
-                        </div>
-                    </Link>
                 </div>
                 <Link
                 href="/artisans"

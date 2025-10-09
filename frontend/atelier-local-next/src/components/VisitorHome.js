@@ -3,7 +3,9 @@ import Link from "next/link";
 import avatar from "../../public/tronche.jpg"
 
 export default async function VisitorHome() {
-    const res = await fetch("http://localhost:8080/api/artisans/random-top", {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+
+    const res = await fetch(`${apiUrl}/api/artisans/random-top`, {
         cache: "no-store",
     });
 

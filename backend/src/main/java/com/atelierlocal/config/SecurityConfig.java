@@ -41,7 +41,7 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/home", "/", "/api/users/login",
             "/api/clients/register", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**",
-            "/api/artisans/register", "/swagger-resources/**", "/webjars/**").permitAll()
+            "/api/artisans/register", "/swagger-resources/**", "/webjars/**", "/api/artisans/random-top").permitAll()
             .anyRequest().authenticated()
         )
         .userDetailsService(userDetailsService)

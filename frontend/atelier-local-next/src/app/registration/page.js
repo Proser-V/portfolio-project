@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { fetchCoordinates } from "../utils/fetchCoordinates";
+import { fetchCoordinates } from "../../../utils/fetchCoordinates";
 import { useEffect } from "react";
 
 export default function RegistrationPage() {

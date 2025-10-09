@@ -39,7 +39,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/askings")
-@CrossOrigin(origins = "*")
 @Tag(name = "Askings", description = "API pour la gestion des demandes (askings)")
 public class AskingController {
     private final AskingService askingService;

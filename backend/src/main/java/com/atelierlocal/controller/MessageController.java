@@ -28,7 +28,6 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/messages")
-@CrossOrigin(origins = "*")
 @Tag(name = "Messages", description = "API pour la messagerie")
 public class MessageController {
     private static final Logger logger = LoggerFactory.getLogger(MessageController.class);

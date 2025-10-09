@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/artisan-category")
-@CrossOrigin(origins = "*")
 @Tag(name = "Artisan Categories", description = "Définition du controlleur des catégories d'artisans")
 public class ArtisanCategoryController {
     

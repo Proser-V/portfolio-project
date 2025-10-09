@@ -29,7 +29,6 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/event-categories")
 @PreAuthorize("hasRole('ADMIN')")
-@CrossOrigin(origins = "*")
 @Tag(name = "Event Categories", description = "API pour la gestion des catégories d'évènements")
 public class EventCategoryController {
     private final EventCategoryService eventCategoryService;

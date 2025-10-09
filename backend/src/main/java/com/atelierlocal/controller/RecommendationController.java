@@ -24,7 +24,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/recommendations")
-@CrossOrigin(origins = "*")
 @Tag(name = "Recommendations", description = "Routes API gestion des recommendations")
 public class RecommendationController {
     private final RecommendationService recommendationService;

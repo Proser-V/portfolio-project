@@ -4,8 +4,10 @@ import com.atelierlocal.dto.LoginRequest;
 import com.atelierlocal.security.CustomUserDetailsService;
 import com.atelierlocal.security.JwtService;
 import com.atelierlocal.service.LoginService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +15,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 class LoginControllerTest {
@@ -31,31 +35,23 @@ class LoginControllerTest {
     }
 
     @Test
-    void testLoginSuccess() {
+    void testLoginSuccess() throws Exception {
         LoginRequest request = new LoginRequest();
-        request.setEmail("test@example.com");
+        request.setEmail("test@exemple.com");
         request.setPassword("password");
+        String fakeToken = "fake-jwt-token";
 
-        when(loginService.login(request.getEmail(), request.getPassword())).thenReturn(true);
-
-        UserDetails mockUser = User.withUsername(request.getEmail())
-                .password("password").roles("CLIENT").build();
-
-        when(userDetailsService.loadUserByUsername(request.getEmail())).thenReturn(mockUser);
-        when(jwtService.generateToken(mockUser)).thenReturn("fake-jwt-token");
+        when(loginService.login(anyString(), anyString())).thenReturn(true);
+        when(userDetailsService.loadUserByUsername(anyString())).thenReturn(mock(UserDetails.class));
+        when(jwtService.generateToken(any())).thenReturn(fakeToken);
 
         ResponseEntity<?> response = loginController.login(request);
 
-        assertNotNull(response);
-        assertEquals(200, response.getStatusCode().value());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getHeaders().containsKey("Set-Cookie"));
 
-        Map<?, ?> body = (Map<?, ?>) response.getBody();
-        assertNotNull(body);
-        assertEquals("fake-jwt-token", body.get("token"));
-
-        verify(loginService).login(request.getEmail(), request.getPassword());
-        verify(userDetailsService).loadUserByUsername(request.getEmail());
-        verify(jwtService).generateToken(mockUser);
+        String cookieHeader = response.getHeaders().getFirst("Set-Cookie");
+        assertTrue(cookieHeader.contains(fakeToken));
     }
 
     @Test

@@ -20,8 +20,10 @@ export default async function RootLayout({ children }) {
   if (token) {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/me`, {
+        method: "GET",
         headers: { Authorization: `Bearer ${token}` },
-        cache: "no-store"
+        cache: "no-store",
+        credentials: "include"
       });
 
       if (res.ok) {

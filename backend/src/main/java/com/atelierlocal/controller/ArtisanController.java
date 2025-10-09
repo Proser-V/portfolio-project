@@ -21,7 +21,6 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/artisans")
-@CrossOrigin(origins = "*")
 @Tag(name = "Artisans", description = "Définition du controlleur des artisans")
 public class ArtisanController {
     

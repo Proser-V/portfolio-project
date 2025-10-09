@@ -57,7 +57,7 @@ export default async function VisitorHome() {
                         }`}
                     >
                         <Image
-                        src={artisan.avatar.avatarUrl || avatar}
+                        src={artisan.avatar?.avatarUrl || avatar}
                         alt={artisan.name}
                         fill
                         className="object-cover"

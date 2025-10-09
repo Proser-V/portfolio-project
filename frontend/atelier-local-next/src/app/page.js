@@ -4,7 +4,7 @@ import ArtisanHome from "@/components/ArtisanHome";
 import AdminHome from "@/components/AdminHome";
 
 export default async function Home() {
-  const res = await fetch("http://host.docker.internal:8080/api/users/me", { cache: "no-store" });
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/me`, { cache: "no-store" });
   const user = res.ok ? await res.json() : null;
 
   if (user?.role === 'admin') {

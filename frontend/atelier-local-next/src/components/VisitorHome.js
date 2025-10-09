@@ -5,7 +5,7 @@ import avatar from "../../public/tronche.jpg"
 export default async function VisitorHome() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
-    const res = await fetch(`${apiUrl}/api/artisans/random-top`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artisans/random-top`, {
         cache: "no-store",
     });
 

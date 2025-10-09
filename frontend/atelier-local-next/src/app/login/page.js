@@ -14,7 +14,7 @@ export default function LoginPage() {
         err.preventDefault();
 
         try {
-            const response = await fetch("http://host.docker.internal:8080/api/users/login", {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),

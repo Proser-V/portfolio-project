@@ -12,14 +12,14 @@ import ClientProviderWrapper from "../components/ClientProviderWrapper";
 
 export default async function RootLayout({ children }) {
   let header;
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
 
   let user = null;
 
   if (token) {
     try {
-      const res = await fetch("http://host.docker.internal:8080/api/users/me", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/me`, {
         headers: { Authorization: `Bearer ${token}` },
         cache: "no-store"
       });

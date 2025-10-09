@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { fetchCoordinates } from "../utils/location";
+import { fetchCoordinates } from "../utils/fetchCoordinates";
+import { useEffect } from "react";
 
 export default function RegistrationPage() {
   const [role, setRole] = useState(null);
   const [error, setError] = useState("");
   const router = useRouter();
+  const [categories, SetCategories] = useState([]);
   const [ClientFormData, setClientFormData] = useState({
     email: "",
     password: "",
@@ -31,6 +33,13 @@ export default function RegistrationPage() {
     avatar: "",
     userRole: "ARTISAN"
   });
+
+  useEffect(() => {
+    fetch("http://localhost:8080//api/artisan-category/")
+      .then((res) => res.json())
+      .then(setCategories)
+      .catch((err) => console.error("Erreur lors du chargement des catégories :", err));
+  }, []);
 
   const handleSubmitClient = async (e) => {
     e.preventDefault();
@@ -203,10 +212,24 @@ export default function RegistrationPage() {
             name="entreprise"
             value={ArtisanformData.name}
             onChange={handleChange}
-            placeholder="Nom de votre entreprise"
+            placeholder="Nom d'entreprise"
             className="w-full h-10 rounded-[42.5px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]
                        border-2 border-solid border-silver px-4 text-xs text-silver outline-none"
           />
+          <select
+            name="categoryName"
+            value={ArtisanFormData.artisanCategory}
+            onChange={handleChange}
+            className="w-full h-10 rounded-[42.5px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]
+                      border-2 border-solid border-silver px-4 text-xs text-silver outline-none"
+          >
+            <option value="">Sélectionnez une catégorie</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.name}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
           <input
             name="email"
             value={ArtisanformData.email}
@@ -223,6 +246,14 @@ export default function RegistrationPage() {
             placeholder="Mot de passe"
             className="w-full h-10 rounded-[42.5px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]
                        border-2 border-solid border-silver px-4 text-xs text-silver outline-none"
+          />
+          <textarea
+            name="bio"
+            value={ArtisanFormData.bio}
+            onChange={handleChange}
+            placeholder="Écrivez votre la descritpion de votre activité ici..."
+            className="w-full h-24 rounded-[20px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]
+                      border-2 border-solid border-silver px-4 py-2 text-xs text-silver outline-none resize-none"
           />
           <input
             name="phone"
@@ -245,6 +276,15 @@ export default function RegistrationPage() {
             value={ArtisanformData.siret}
             onChange={handleChange}
             placeholder="SIRET"
+            className="w-full h-10 rounded-[42.5px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]
+                       border-2 border-solid border-silver px-4 text-xs text-silver outline-none"
+          />
+          <input
+            type="date"
+            name="activityStartDate"
+            value={ArtisanformData.activityStartDate}
+            onChange={handleChange}
+            placeholder="Date de début d'activité"
             className="w-full h-10 rounded-[42.5px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]
                        border-2 border-solid border-silver px-4 text-xs text-silver outline-none"
           />

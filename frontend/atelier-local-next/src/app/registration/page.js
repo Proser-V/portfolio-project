@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { fetchCoordinates } from "../../../utils/fetchCoordinates";
+import fetchCoordinates from "../../../utils/fetchCoordinates";
 import { useEffect } from "react";
 
 export default function RegistrationPage() {
   const [role, setRole] = useState(null);
   const [error, setError] = useState("");
   const router = useRouter();
-  const [categories, SetCategories] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [ClientFormData, setClientFormData] = useState({
     email: "",
     password: "",
@@ -25,7 +25,7 @@ export default function RegistrationPage() {
     password: "",
     name: "",
     bio: "",
-    categoryName: "",
+    artisanCategory: "",
     siret: "",
     address: "",
     phoneNumber: "",
@@ -35,7 +35,7 @@ export default function RegistrationPage() {
   });
 
   useEffect(() => {
-    fetch("http://host.docker.internal:8080//api/artisan-category/")
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artisan-category/`)
       .then((res) => res.json())
       .then(setCategories)
       .catch((err) => console.error("Erreur lors du chargement des catégories :", err));
@@ -48,7 +48,7 @@ export default function RegistrationPage() {
       const { address, ...rest } = ClientFormData;
       const payload = { ...rest, latitude: coords.latitude, longitude: coords.longitude };
 
-      const response = await fetch("http://host.docker.internal:8080/api/clients/register", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/clients/register`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
@@ -97,13 +97,23 @@ export default function RegistrationPage() {
     }
   };
 
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-        setClientFormData((prev) => ({
-            ...prev,
-            [name]: value
-        }));
+    // handleChange Client
+    const handleChangeClient = (event) => {
+      const { name, value } = event.target;
+      setClientFormData((prev) => ({
+        ...prev,
+        [name]: value
+      }));
     };
+
+    // handleChange Artisan
+    const handleChangeArtisan = (event) => {
+    const { name, value } = event.target;
+    setArtisanFormData((prev) => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   return (
     <div className="mt-20 flex flex-col items-center justify-center px-4 md:px-0">
@@ -139,7 +149,7 @@ export default function RegistrationPage() {
           <input
             name="firstName"
             value={ClientFormData.firstName}
-            onChange={handleChange}
+            onChange={handleChangeClient}
             placeholder="Votre prénom"
             className="w-full h-10 rounded-[42.5px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]
                        border-2 border-solid border-silver px-4 text-xs text-silver outline-none"
@@ -147,7 +157,7 @@ export default function RegistrationPage() {
           <input
             name="lastName"
             value={ClientFormData.lastName}
-            onChange={handleChange}
+            onChange={handleChangeClient}
             placeholder="Votre nom"
             className="w-full h-10 rounded-[42.5px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]
                        border-2 border-solid border-silver px-4 text-xs text-silver outline-none"
@@ -155,7 +165,7 @@ export default function RegistrationPage() {
           <input
             name="email"
             value={ClientFormData.email}
-            onChange={handleChange}
+            onChange={handleChangeClient}
             placeholder="Adresse email"
             className="w-full h-10 rounded-[42.5px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]
                        border-2 border-solid border-silver px-4 text-xs text-silver outline-none"
@@ -163,7 +173,7 @@ export default function RegistrationPage() {
           <input
             name="password"
             value={ClientFormData.password}
-            onChange={handleChange}
+            onChange={handleChangeClient}
             type="password"
             placeholder="Mot de passe"
             className="w-full h-10 rounded-[42.5px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]
@@ -172,7 +182,7 @@ export default function RegistrationPage() {
           <input
             name="phone"
             value={ClientFormData.phoneNumber}
-            onChange={handleChange}
+            onChange={handleChangeClient}
             placeholder="Numéro de téléphone (optionnel)"
             className="w-full h-10 rounded-[42.5px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]
                        border-2 border-solid border-silver px-4 text-xs text-silver outline-none"
@@ -180,7 +190,7 @@ export default function RegistrationPage() {
           <input
             name="adresse"
             value={ClientFormData.adresse}
-            onChange={handleChange}
+            onChange={handleChangeClient}
             placeholder="Adresse (optionnel)"
             className="w-full h-10 rounded-[42.5px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]
                        border-2 border-solid border-silver px-4 text-xs text-silver outline-none"
@@ -210,8 +220,8 @@ export default function RegistrationPage() {
         <form onSubmit={handleSubmitArtisan} className="flex flex-col items-center w-full max-w-md gap-6">
           <input
             name="entreprise"
-            value={ArtisanformData.name}
-            onChange={handleChange}
+            value={ArtisanFormData.name}
+            onChange={handleChangeArtisan}
             placeholder="Nom d'entreprise"
             className="w-full h-10 rounded-[42.5px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]
                        border-2 border-solid border-silver px-4 text-xs text-silver outline-none"
@@ -219,7 +229,7 @@ export default function RegistrationPage() {
           <select
             name="categoryName"
             value={ArtisanFormData.artisanCategory}
-            onChange={handleChange}
+            onChange={handleChangeArtisan}
             className="w-full h-10 rounded-[42.5px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]
                       border-2 border-solid border-silver px-4 text-xs text-silver outline-none"
           >
@@ -232,16 +242,16 @@ export default function RegistrationPage() {
           </select>
           <input
             name="email"
-            value={ArtisanformData.email}
-            onChange={handleChange}
+            value={ArtisanFormData.email}
+            onChange={handleChangeArtisan}
             placeholder="Adresse email"
             className="w-full h-10 rounded-[42.5px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]
                        border-2 border-solid border-silver px-4 text-xs text-silver outline-none"
           />
           <input
             name="password"
-            value={ArtisanformData.password}
-            onChange={handleChange}
+            value={ArtisanFormData.password}
+            onChange={handleChangeArtisan}
             type="password"
             placeholder="Mot de passe"
             className="w-full h-10 rounded-[42.5px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]
@@ -250,31 +260,31 @@ export default function RegistrationPage() {
           <textarea
             name="bio"
             value={ArtisanFormData.bio}
-            onChange={handleChange}
+            onChange={handleChangeArtisan}
             placeholder="Écrivez votre la descritpion de votre activité ici..."
             className="w-full h-24 rounded-[20px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]
                       border-2 border-solid border-silver px-4 py-2 text-xs text-silver outline-none resize-none"
           />
           <input
             name="phone"
-            value={ArtisanformData.phoneNumber}
-            onChange={handleChange}
+            value={ArtisanFormData.phoneNumber}
+            onChange={handleChangeArtisan}
             placeholder="Numéro de téléphone (optionnel)"
             className="w-full h-10 rounded-[42.5px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]
                        border-2 border-solid border-silver px-4 text-xs text-silver outline-none"
           />
           <input
             name="adresse"
-            value={ArtisanformData.adress}
-            onChange={handleChange}
+            value={ArtisanFormData.adress}
+            onChange={handleChangeArtisan}
             placeholder="Adresse (optionnel)"
             className="w-full h-10 rounded-[42.5px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]
                        border-2 border-solid border-silver px-4 text-xs text-silver outline-none"
           />
           <input
             name="siret"
-            value={ArtisanformData.siret}
-            onChange={handleChange}
+            value={ArtisanFormData.siret}
+            onChange={handleChangeArtisan}
             placeholder="SIRET"
             className="w-full h-10 rounded-[42.5px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]
                        border-2 border-solid border-silver px-4 text-xs text-silver outline-none"
@@ -282,8 +292,8 @@ export default function RegistrationPage() {
           <input
             type="date"
             name="activityStartDate"
-            value={ArtisanformData.activityStartDate}
-            onChange={handleChange}
+            value={ArtisanFormData.activityStartDate}
+            onChange={handleChangeArtisan}
             placeholder="Date de début d'activité"
             className="w-full h-10 rounded-[42.5px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]
                        border-2 border-solid border-silver px-4 text-xs text-silver outline-none"

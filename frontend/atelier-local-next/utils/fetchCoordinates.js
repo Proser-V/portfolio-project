@@ -17,3 +17,5 @@ const fetchCoordinates = async (adresse) => {
     return { latitude: null, longitude: null };
   }
 };
+
+export default fetchCoordinates;

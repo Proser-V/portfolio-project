@@ -1,6 +1,7 @@
 com/atelierlocal/model/Asking.class
 com/atelierlocal/service/ArtisanCategoryService.class
 com/atelierlocal/model/EventCategory.class
+com/atelierlocal/controller/UserController.class
 com/atelierlocal/dto/AskingRequestDTO.class
 com/atelierlocal/repository/MessageRepo.class
 com/atelierlocal/dto/EventCategoryRequestDTO.class
@@ -26,6 +27,7 @@ com/atelierlocal/config/OpenApiConfig.class
 com/atelierlocal/BackendApplication.class
 com/atelierlocal/repository/ClientRepo.class
 com/atelierlocal/dto/RecommendationRequestDTO.class
+com/atelierlocal/controller/AvatarController.class
 com/atelierlocal/controller/LoginController.class
 com/atelierlocal/config/S3Config.class
 com/atelierlocal/dto/AvatarDTO.class
@@ -49,6 +51,7 @@ com/atelierlocal/repository/AttachmentRepo.class
 com/atelierlocal/service/ArtisanService.class
 com/atelierlocal/config/SecurityConfig.class
 com/atelierlocal/dto/ArtisanCategoryRequestDTO.class
+com/atelierlocal/dto/GeocodeRequest.class
 com/atelierlocal/controller/ArtisanController.class
 com/atelierlocal/model/Avatar.class
 com/atelierlocal/service/PortfolioService.class

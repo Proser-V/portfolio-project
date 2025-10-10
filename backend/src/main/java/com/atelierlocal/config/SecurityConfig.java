@@ -44,7 +44,7 @@ public class SecurityConfig {
             .requestMatchers("/home", "/", "/api/users/login",
             "/api/clients/register", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**",
             "/api/artisans/register", "/swagger-resources/**", "/webjars/**", "/api/artisans/random-top",
-            "/api/artisan-category/**").permitAll()
+            "/api/artisan-category/**", "/api/geocode/**", "/api/avatar/upload").permitAll()
             .anyRequest().authenticated()
         )
         .userDetailsService(userDetailsService)
@@ -56,11 +56,10 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         var config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://localhost:3000"));
+        config.setAllowedOriginPatterns(List.of("http://localhost:3000"));
         config.setExposedHeaders(List.of("Authorization", "Set-Cookie"));
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        config.setExposedHeaders(List.of("Set-Cookie"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
         var source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

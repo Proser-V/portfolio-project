@@ -8,12 +8,14 @@
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/controller/ArtisanCategoryController.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/controller/ArtisanController.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/controller/AskingController.java
+/home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/controller/AvatarController.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/controller/ClientController.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/controller/EventCategoryController.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/controller/GeocodeController.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/controller/LoginController.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/controller/MessageController.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/controller/RecommendationController.java
+/home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/controller/UserController.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/ArtisanCategoryRequestDTO.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/ArtisanCategoryResponseDTO.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/ArtisanRequestDTO.java
@@ -25,6 +27,7 @@
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/ClientResponseDTO.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/EventCategoryRequestDTO.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/EventCategoryResponseDTO.java
+/home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/GeocodeRequest.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/LoginRequest.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/MessageRequestDTO.java
 /home/valentin/portfolio-project/backend/src/main/java/com/atelierlocal/dto/MessageResponseDTO.java

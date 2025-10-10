@@ -55,9 +55,9 @@ public class LoginController {
 
         ResponseCookie cookie = ResponseCookie.from("jwt", token)
                 .httpOnly(true)
-                .secure(true) // true en HTTPS
+                .secure(false) // true en HTTPS
                 .path("/")
-                // .sameSite("None")
+                .sameSite("Lax")
                 .maxAge(7 * 24 * 60 * 60) // 7 jours
                 .build();
 

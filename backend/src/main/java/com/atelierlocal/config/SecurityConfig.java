@@ -39,7 +39,7 @@ public class SecurityConfig {
                                      Argon2PasswordEncoder passwordEncoder) throws Exception {
     return http
         .csrf(csrf -> csrf.disable())
-        .cors(cors -> {})
+        .cors(c -> c.configurationSource(corsConfigurationSource()))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/home", "/", "/api/users/login",
             "/api/clients/register", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**",
@@ -56,7 +56,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         var config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOriginPattern("http://localhost:3000");
+        config.setAllowedOrigins(List.of("http://localhost:3000"));
+        config.setExposedHeaders(List.of("Authorization", "Set-Cookie"));
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setExposedHeaders(List.of("Set-Cookie"));

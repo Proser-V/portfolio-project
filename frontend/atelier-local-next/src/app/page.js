@@ -1,19 +1,22 @@
+import { headers } from "next/headers";
 import ClientHome from "@/components/ClientHome";
 import VisitorHome from "@/components/VisitorHome";
 import ArtisanHome from "@/components/ArtisanHome";
 import AdminHome from "@/components/AdminHome";
 
 export default async function Home() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/me`, { cache: "no-store" });
-  const user = res.ok ? await res.json() : null;
+  const cookieHeader = (await headers()).get("cookie") || "";
 
-  if (user?.role === 'admin') {
-    return <AdminHome admin={user} />;
-  } else if (user?.role === 'client') {
-    return <ClientHome client={user} />;
-  } else if (user?.role === 'artisan') {
-    return <ArtisanHome artisan={user} />;
-  } else {
-    return <VisitorHome />;
-  }
+  const res = await fetch("http://localhost:3000/api/me", {
+    cache: "no-store",
+    headers: { cookie: cookieHeader },
+  });
+
+  const user = res.ok ? await res.json() : null;
+  const role = user?.role?.toLowerCase();
+
+  if (role === "admin") return <AdminHome admin={user.user} />;
+  if (role === "client") return <ClientHome client={user.user} />;
+  if (role === "artisan") return <ArtisanHome artisan={user.user} />;
+  return <VisitorHome />;
 }

@@ -1,15 +1,18 @@
 import Image from "next/image";
 import logo from "../assets/logo/atelier-local-logo_white.png"
 import messengerLogo from "../assets/messenger/poignee-de-main-gold.png"
+import Link from "next/link";
 
 export default function ClientHeader({ client }) {
   return (
     <header className="bg-blue text-gold shadow-md flex flex-col md:flex-row justify-between items-center">
-      <Image
-        src={logo}
-        alt="Logo"
-        className="h-12 w-auto mb-2 md:mb-0 ml-2"
-      />
+      <Link href="/">
+        <Image
+          src={logo}
+          alt="Logo"
+          className="h-12 w-auto mb-2 md:mb-0 ml-2"
+        />
+      </Link>
       <nav className="flex flex-col md:flex-row w-full md:w-auto text-sm text-center">
         <a href="/new-asking" className="flex-auto flex items-center justify-center px-2 py-1 hover:underline whitespace-nowrap">Demande de prestation</a>
         <a href="/artisans" className="flex-auto flex items-center justify-center px-2 py-1 hover:underline">Artisans</a>

@@ -16,14 +16,14 @@ export default function ClientHeader({ client }) {
       <nav className="flex flex-col md:flex-row w-full md:w-auto text-sm text-center">
         <a href="/new-asking" className="flex-auto flex items-center justify-center px-2 py-1 hover:underline whitespace-nowrap">Demande de prestation</a>
         <a href="/artisans" className="flex-auto flex items-center justify-center px-2 py-1 hover:underline">Artisans</a>
-        <a href="/client/client.id" className="flex-auto flex items-center justify-center px-4 mt-2">
+        <a href="/messenger/" className="flex-auto flex items-center justify-center px-4 mt-2">
           <Image
             src={messengerLogo}
             alt="MessengerLogo"
             height={45}
           />
         </a>
-        <a href="#" className="bg-gold text-blue flex-auto flex items-center justify-center px-2 hover:underline pb-2 md:pb-0">
+        <a href="/client/client.id" className="bg-gold text-blue flex-auto flex items-center justify-center px-2 hover:underline pb-2 md:pb-0">
             <span className="pt-2 md:pt-0 whitespace-nowrap">
               Bienvenue dans l'Atelier,
               <br className="hidden md:block" />

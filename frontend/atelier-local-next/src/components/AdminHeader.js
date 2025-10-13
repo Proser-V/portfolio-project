@@ -14,17 +14,17 @@ export default function AdminHeader({ admin }) {
         />
       </Link>
       <nav className="flex flex-col md:flex-row w-full md:w-auto text-sm text-center">
-        <a href="#" className="flex-auto flex items-center justify-center px-2 py-1 hover:underline">Admin panel</a>
-        <a href="#" className="flex-auto flex items-center justify-center px-2 py-1 hover:underline whitespace-nowrap">Demande de prestation</a>
-        <a href="#" className="flex-auto flex items-center justify-center px-2 py-1 hover:underline">Artisans</a>
-        <a href="#" className="flex-auto flex items-center justify-center px-4 mt-2">
+        <a href="/admin" className="flex-auto flex items-center justify-center px-2 py-1 hover:underline">Admin panel</a>
+        <a href="/new-asking" className="flex-auto flex items-center justify-center px-2 py-1 hover:underline whitespace-nowrap">Demande de prestation</a>
+        <a href="/artisans" className="flex-auto flex items-center justify-center px-2 py-1 hover:underline">Artisans</a>
+        <a href="/messenger" className="flex-auto flex items-center justify-center px-4 mt-2">
           <Image
             src={messengerLogo}
             alt="MessengerLogo"
             height={45}
           />
         </a>
-        <a href="#" className="bg-gold text-blue flex-auto flex items-center justify-center px-2 hover:underline">
+        <a href="/client/client.id" className="bg-gold text-blue flex-auto flex items-center justify-center px-2 hover:underline">
             <span className="pt-2 md:pt-0 whitespace-nowrap">
               Bienvenue dans l'Atelier,
               <br className="hidden md:block" />

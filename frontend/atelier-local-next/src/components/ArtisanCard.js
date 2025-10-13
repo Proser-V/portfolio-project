@@ -1,11 +1,48 @@
 import Image from "next/image";
 import Link from "next/link";
+import logo from "../app/favicon.ico";
+import placeholder from "../../public/tronche.jpg"
 
 export default function ArtisanCard({ artisan, className }) {
   return (
-    <div className={`h-[125px] border border-gold rounded p-4 ${className}`}>
-      {/* Contenu de l'artisan */}
-      <p>{artisan?.name}</p>
-    </div>
+    <Link
+      href={`/artisans/${artisan?.id}`}
+      className={`flex flex-col sm:flex-row items-center sm:items-stretch justify-between bg-white border-2 border-gold shadow-md border-solid overflow-hidden w-full max-w-[1150px] ${className}`}
+    >
+      {/* Image artisan */}
+      <div className="relative w-full sm:w-48 h-48 flex-shrink-0">
+        <Image
+          src={artisan?.logo || placeholder}
+          alt={`${artisan?.name || "Artisan"} logo`}
+          fill
+          className="object-cover"
+        />
+      </div>
+
+      {/* Contenu texte */}
+      <div className="flex flex-col justify-start px-6 text-center sm:text-left flex-grow">
+        <p className="text-xl sm:text-2xl text-gold font-cabin mt-1 mb-0">
+          {artisan?.name || "Nom de l'artisan"}
+        </p>
+        <p className="text-base sm:text-lg text-blue font-cabin my-0">
+          {artisan?.categoryName || "Métier / ville"}
+        </p>
+        <p className="text-sm sm:text-base text-silver font-cabin mt-2">
+          {artisan?.recommendations
+            ? `Recommandé ${artisan.recommendations} fois par les habitants`
+            : "Aucune recommandation pour le moment"}
+        </p>
+      </div>
+
+      {/* Icône métier */}
+      <div className="hidden sm:block relative w-40 h-40 my-auto mr-4">
+        <Image
+          src={logo}
+          alt="icone"
+          fill
+          className="object-cover opacity-5"
+        />
+      </div>
+    </Link>
   );
 }

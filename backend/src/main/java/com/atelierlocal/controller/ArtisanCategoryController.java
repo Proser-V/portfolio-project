@@ -104,10 +104,9 @@ public class ArtisanCategoryController {
 
     /**
      * Récupère tous les artisans d'une catégorie
-     * Accessible aux utilisateurs connectés (CLIENT, ARTISAN, ADMIN)
+     * Route publique : accessible à tout le monde
      */
     @GetMapping("/{id}/artisans")
-    @PreAuthorize("hasAnyRole('CLIENT','ARTISAN','ADMIN')")
     public ResponseEntity<List<ArtisanResponseDTO>> getArtisansByCategory(
             @PathVariable UUID id,
             @AuthenticationPrincipal Client currentClient) {

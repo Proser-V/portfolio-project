@@ -81,10 +81,9 @@ public class ArtisanController {
 
     /**
      * Récupère tous les artisans
-     * Accessible aux CLIENTS et ADMIN
+     * Lecture publique : pas de restriction
      */
     @GetMapping("/")
-    @PreAuthorize("hasAnyRole('CLIENT','ADMIN')")
     public ResponseEntity<List<ArtisanResponseDTO>> getAllArtisans(@AuthenticationPrincipal Client currentClient) {
         List<ArtisanResponseDTO> allArtisans = artisanService.getAllArtisans(currentClient);
         return ResponseEntity.ok(allArtisans);

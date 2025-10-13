@@ -6,7 +6,7 @@ import Link from "next/link";
 export default function AdminHeader({ admin }) {
   return (
     <header className="bg-blue text-gold shadow-md flex flex-col md:flex-row justify-between items-center">
-      <Link>
+      <Link href="/">
         <Image
           src={logo}
           alt="Logo"

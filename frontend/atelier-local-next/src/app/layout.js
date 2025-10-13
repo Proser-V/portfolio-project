@@ -3,58 +3,54 @@ import ClientHeader from "../components/ClientHeader";
 import ArtisanHeader from "../components/ArtisanHeader";
 import AdminHeader from "../components/AdminHeader";
 import Footer from "../components/Footer";
-import background from "./favicon.ico"
+import background from "./favicon.ico";
 import Image from "next/image";
-import './globals.css';
-import { imageConfigDefault } from "next/dist/shared/lib/image-config";
+import "./globals.css";
 import { cookies } from "next/headers";
 import UserProviderWrapper from "../components/UserProviderWrapper";
 import React from "react";
-import { data } from "autoprefixer";
 
 export default async function RootLayout({ children }) {
   let header;
   const cookieStore = await cookies();
   const token = cookieStore.get("jwt")?.value;
+  const cookieHeader = cookieStore
+    .getAll()
+    .map((c) => `${c.name}=${c.value}`)
+    .join("; "); // conversion manuelle
 
   let user = null;
-  let role = null;
 
-  try {
-    const headers = { cache: "no-store" };
+  if (token) {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/me`, {
+        method: "GET",
+        headers: {
+          Cookie: cookieHeader, // envoie le vrai header Cookie
+        },
+        cache: "no-store",
+      });
 
-    // Ajout du bon header selon le cas
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    } else if (cookieHeader) {
-      headers.cookie = cookieHeader;
+      if (res.ok) {
+        const data = await res.json();
+        user = {
+          role: data.role?.toLowerCase(),
+          ...data.user,
+        };
+      } else {
+        console.warn("Échec de récupération du user :", await res.text());
+      }
+    } catch (err) {
+      console.error("Erreur récupération user :", err);
     }
-
-    const res = await fetch("http://localhost:3000/api/me", {
-      method: "GET",
-      headers,
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      user = data.user ?? data;
-      role = (data.role ?? user.role)?.toLowerCase() ?? null;
-    }
-  } catch (err) {
-    console.error("Erreur récupération user :", err);
   }
 
-  console.log(user);
-  console.log(user?.role);
-  if (user?.role === 'admin') {
-    header = <AdminHeader admin={user} />;
-  } else if (user?.role === 'client') {
-    header = <ClientHeader client={user} />;
-  } else if (user?.role === 'artisan') {
-    header = <ArtisanHeader artisan={user} />;
-  } else {
-    header = <VisitorHeader />;
-  }
+  console.log("USER (SSR):", user);
+
+  if (user?.role === "admin") header = <AdminHeader admin={user} />;
+  else if (user?.role === "client") header = <ClientHeader client={user} />;
+  else if (user?.role === "artisan") header = <ArtisanHeader artisan={user} />;
+  else header = <VisitorHeader />;
 
   return (
     <html lang="fr">
@@ -72,8 +68,10 @@ export default async function RootLayout({ children }) {
         </div>
         <main className="flex-grow max-w-[1380px] mx-auto px-4 sm:px-6 md:px-8 mb-10">
           <UserProviderWrapper user={user}>
-            {React.Children.map(children, child => 
-              React.isValidElement(child) ? React.cloneElement(child, { user }) : child
+            {React.Children.map(children, (child) =>
+              React.isValidElement(child)
+                ? React.cloneElement(child, { user })
+                : child
             )}
           </UserProviderWrapper>
         </main>

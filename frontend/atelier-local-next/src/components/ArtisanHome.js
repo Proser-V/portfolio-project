@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import avatar from "../../public/tronche.jpg"
 
-export default function ArtisanHome({ artisan }) {
+export default function ArtisanHome({ artisan, artisans }) {
     return (
         <section className="relative mx-auto px-4 sm:px-6 md:px-8">
             <h1 className="text-blue text-xl md:text-2xl text-center mt-4 font-cabin">
@@ -35,78 +35,47 @@ export default function ArtisanHome({ artisan }) {
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 justify-items-center w-full max-w-4xl mx-auto">
+                    {artisans.map((artisan, index) => (
                     <Link
-                        href="/artisans"
-                        className="relative w-[250px] h-[250px] border-2 border-solid border-gold shadow-lg overflow-hidden md:mt-12">
+                        key={artisan.id || index}
+                        href={`/artisans/${artisan.id}`}
+                        className={`relative w-[250px] h-[250px] border-2 border-solid border-gold shadow-lg overflow-hidden ${
+                        index === 1 ? "md:mt-24" : "md:mt-12"
+                        }`}
+                    >
                         <Image
-                            src={avatar}
-                            alt="avatar"
-                            fill
-                            className="object-cover"
+                        src={artisan.avatar?.avatarUrl || avatar}
+                        alt={artisan.name}
+                        fill
+                        className="object-cover"
                         />
-                        <div className="absolute inset-0 z-10"
-                            style={{
-                                backgroundImage: 'linear-gradient(to bottom right, transparent, rgba(255, 255, 255, 1))'
-                            }}>
-                        </div>
+                        <div
+                        className="absolute inset-0 z-10"
+                        style={{
+                            backgroundImage:
+                            "linear-gradient(to bottom right, transparent, rgba(255, 255, 255, 1))",
+                        }}
+                        ></div>
                         <div className="absolute -bottom-2 right-2 text-right text-blue font-cabin z-20">
-                            <p>
-                                Nom de l'artisan<br/>
-                                Métier<br/>
-                                Tel: 03 80 XX XX XX<br/>
-                                email@artisan.com
-                            </p>
+                        <p>
+                            {artisan.name} <br />
+                            {artisan.artisanCategory} <br />
+                            {artisan.phoneNumber ? `Tel: ${artisan.phoneNumer}` : ""} <br />
+                            {artisan.email}
+                        </p>
                         </div>
                     </Link>
-
-                    <Link
-                        href="/artisans"
-                        className="relative w-[250px] h-[250px] border-2 border-solid border-gold shadow-lg overflow-hidden md:mt-24">
-                        <Image
-                            src={avatar}
-                            alt="avatar"
-                            fill
-                            className="object-cover"
-                        />
-                        <div className="absolute inset-0 z-10"
-                            style={{
-                                backgroundImage: 'linear-gradient(to bottom right, transparent, rgba(255, 255, 255, 1))'
-                            }}>
-                        </div>
-                        <div className="absolute -bottom-2 right-2 text-right text-blue font-cabin z-20">
-                            <p>
-                                Nom de l'artisan<br/>
-                                Métier<br/>
-                                Tel: 03 80 XX XX XX<br/>
-                                email@artisan.com
-                            </p>
-                        </div>
-                    </Link>
-
-                    <Link
-                        href="/artisans"
-                        className="relative w-[250px] h-[250px] border-2 border-solid border-gold shadow-lg overflow-hidden md:mt-12">
-                        <Image
-                            src={avatar}
-                            alt="avatar"
-                            fill
-                            className="object-cover"
-                        />
-                        <div className="absolute inset-0 z-10"
-                            style={{
-                                backgroundImage: 'linear-gradient(to bottom right, transparent, rgba(255, 255, 255, 1))'
-                            }}>
-                        </div>
-                        <div className="absolute -bottom-2 right-2 text-right text-blue font-cabin z-20">
-                            <p>
-                                Nom de l'artisan<br/>
-                                Métier<br/>
-                                Tel: 03 80 XX XX XX<br/>
-                                email@artisan.com
-                            </p>
-                        </div>
-                    </Link>
+                    ))}
                 </div>
+                <Link
+                href="/artisans"
+                className="w-full max-w-xs h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
+                            text-gold text-base font-normal font-cabin
+                            flex items-center justify-center mx-auto 
+                            hover:bg-blue transition mt-5"
+                >
+                Découvrez les artisans dijonnais
+                </Link>
             </div>
         </section>
     );

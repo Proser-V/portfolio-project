@@ -6,44 +6,14 @@ import Footer from "../components/Footer";
 import background from "./favicon.ico";
 import Image from "next/image";
 import "./globals.css";
-import { cookies } from "next/headers";
 import UserProviderWrapper from "../components/UserProviderWrapper";
 import React from "react";
+import { getUser } from "@/lib/getUser";
+
 
 export default async function RootLayout({ children }) {
   let header;
-  const cookieStore = await cookies();
-  const token = cookieStore.get("jwt")?.value;
-  const cookieHeader = cookieStore
-    .getAll()
-    .map((c) => `${c.name}=${c.value}`)
-    .join("; "); // conversion manuelle
-
-  let user = null;
-
-  if (token) {
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/me`, {
-        method: "GET",
-        headers: {
-          Cookie: cookieHeader, // envoie le vrai header Cookie
-        },
-        cache: "no-store",
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        user = {
-          role: data.role?.toLowerCase(),
-          ...data.user,
-        };
-      } else {
-        console.warn("Échec de récupération du user :", await res.text());
-      }
-    } catch (err) {
-      console.error("Erreur récupération user :", err);
-    }
-  }
+  const user = await getUser();
 
   console.log("USER (SSR):", user);
 

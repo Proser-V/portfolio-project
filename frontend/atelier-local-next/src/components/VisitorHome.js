@@ -2,20 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import avatar from "../../public/tronche.jpg"
 
-export default async function VisitorHome() {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artisans/random-top`, {
-        cache: "no-store",
-    });
-
-    if (!res.ok) {
-        console.error("Erreur lors du fetch des artisans");
-        return <div>Impossible de charger les artisans</div>;
-    }
-
-    const artisans = await res.json();
-
+export default function VisitorHome({ artisans }) {
     return (
         <section className="relative mx-auto px-4 sm:px-6 md:px-8">
             <h1 className="text-blue text-xl md:text-2xl text-center mt-4 font-cabin">

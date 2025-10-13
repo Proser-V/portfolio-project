@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import avatar from "../../public/tronche.jpg"
 
-export default function ClientHome({ client }) {
+export default function ClientHome({ client, artisans }) {
     return (
         <section className="relative mx-auto px-4 sm:px-6 md:px-8">
             <h1 className="text-blue text-xl md:text-2xl text-center mt-4 font-cabin">

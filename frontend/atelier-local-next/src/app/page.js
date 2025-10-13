@@ -1,19 +1,24 @@
-import ClientHome from "@/components/ClientHome";
-import VisitorHome from "@/components/VisitorHome";
-import ArtisanHome from "@/components/ArtisanHome";
-import AdminHome from "@/components/AdminHome";
+import { Suspense } from "react";
+import { getUser } from "@/lib/getUser";
+import HomeContent from "@/components/HomeContent";
 
-export default function Home({ user }) {
-  if (!user) return <VisitorHome />;
-
-  switch (user.role) {
-    case "admin":
-      return <AdminHome admin={user} />;
-    case "client":
-      return <ClientHome client={user} />;
-    case "artisan":
-      return <ArtisanHome artisan={user} />;
-    default:
-      return <VisitorHome />;
+export default async function Home() {
+  const user = await getUser();
+  let artisans = null;
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/artisans/random-top`,
+      { cache: "no-store" }
+    );
+    
+    if (res.ok) {
+      artisans = await res.json();
+    } else {
+      console.error("Erreur lors du fetch des artisans");
+    }
+  } catch (err) {
+    console.error("Erreur fetch artisans:", err);
   }
+  
+  return <HomeContent user={user} artisans={artisans} />;
 }

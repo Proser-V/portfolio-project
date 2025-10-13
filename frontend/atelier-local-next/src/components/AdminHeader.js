@@ -2,6 +2,7 @@ import Image from "next/image";
 import logo from "../assets/logo/atelier-local-logo_white.png"
 import messengerLogo from "../assets/messenger/poignee-de-main-gold.png"
 import Link from "next/link";
+import placeholder from "../app/favicon.ico"
 
 export default function AdminHeader({ admin }) {
   return (
@@ -31,7 +32,7 @@ export default function AdminHeader({ admin }) {
               {admin.firstName}
             </span>
           <Image
-            src={admin.avatar}
+            src={placeholder}
             alt={`${admin.firstName} avatar`}
             height={64}
             width={64}

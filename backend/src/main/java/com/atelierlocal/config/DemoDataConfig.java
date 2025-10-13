@@ -2,6 +2,7 @@ package com.atelierlocal.config;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -11,10 +12,12 @@ import org.springframework.context.annotation.Profile;
 import com.atelierlocal.model.Artisan;
 import com.atelierlocal.model.ArtisanCategory;
 import com.atelierlocal.model.Client;
+import com.atelierlocal.model.EventCategory;
 import com.atelierlocal.model.UserRole;
 import com.atelierlocal.repository.ArtisanCategoryRepo;
 import com.atelierlocal.repository.ArtisanRepo;
 import com.atelierlocal.repository.ClientRepo;
+import com.atelierlocal.repository.EventCategoryRepo;
 import com.atelierlocal.service.PasswordService;
 
 @Configuration
@@ -25,6 +28,7 @@ public class DemoDataConfig {
     CommandLineRunner initDemoData(
         ClientRepo clientRepo,
         ArtisanRepo artisanRepo,
+        EventCategoryRepo eventCategoryRepo,
         ArtisanCategoryRepo categoryRepo,
         PasswordService passwordService
     ) {
@@ -50,6 +54,20 @@ public class DemoDataConfig {
             menuiserie.setDescription("Travaux de menuiserie et fabrication sur mesure.");
 
             categoryRepo.saveAll(Arrays.asList(plomberie, electricite, menuiserie));
+
+
+            /* -----------------------------
+             * Catégories d'événements
+             * ----------------------------- */
+            EventCategory depannage = new EventCategory();
+            depannage.setName("Dépannage");
+            depannage.setArtisanCategoryList(List.of(plomberie, electricite));
+
+            EventCategory renovation = new EventCategory();
+            renovation.setName("Rénovation");
+            renovation.setArtisanCategoryList(List.of(menuiserie, electricite));
+
+            eventCategoryRepo.saveAll(List.of(depannage, renovation));
 
             /* -----------------------------
              * Clients (dont admin)
@@ -136,7 +154,7 @@ public class DemoDataConfig {
 
             artisanRepo.saveAll(Arrays.asList(artisan1, artisan2, artisan3));
 
-            System.out.println("Données de démo insérées : 1 admin, 2 clients, 3 artisans, 3 catégories.");
+            System.out.println("Données de démo insérées : 1 admin, 2 clients, 3 artisans, 3 catégories d'artisans, 2 catégories d'événements.");
             System.out.println("Identifiants de test :");
             System.out.println("  Admin: admin@mail.com / password");
             System.out.println("  Clients: client1@mail.com, client2@mail.com / password");

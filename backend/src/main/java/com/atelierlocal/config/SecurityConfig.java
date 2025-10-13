@@ -44,7 +44,8 @@ public class SecurityConfig {
             .requestMatchers("/home", "/", "/api/users/login",
             "/api/clients/register", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**",
             "/api/artisans/register", "/swagger-resources/**", "/webjars/**", "/api/artisans/random-top",
-            "/api/artisan-category/**", "/api/geocode/**", "/api/avatar/upload").permitAll()
+            "/api/artisan-category/**", "/api/geocode/**", "/api/avatar/upload", "/api/event-categories/",
+            "/api/event-categories/{id}", "/api/event-categories/{id}/artisan-categories").permitAll()
             .anyRequest().authenticated()
         )
         .userDetailsService(userDetailsService)

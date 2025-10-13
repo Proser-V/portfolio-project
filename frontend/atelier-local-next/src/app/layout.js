@@ -18,25 +18,30 @@ export default async function RootLayout({ children }) {
   const token = cookieStore.get("jwt")?.value;
 
   let user = null;
+  let role = null;
 
-  if (token) {
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/me`, {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-        cache: "no-store",
-      });
+  try {
+    const headers = { cache: "no-store" };
 
-      if (res.ok) {
-        data = await res.json();
-        user = {
-          role: data.role.toLowerCase(),
-          ...data.user
-        };
-      }
-    } catch (err) {
-      console.error("Erreur récupération user :", err);
+    // Ajout du bon header selon le cas
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    } else if (cookieHeader) {
+      headers.cookie = cookieHeader;
     }
+
+    const res = await fetch("http://localhost:3000/api/me", {
+      method: "GET",
+      headers,
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      user = data.user ?? data;
+      role = (data.role ?? user.role)?.toLowerCase() ?? null;
+    }
+  } catch (err) {
+    console.error("Erreur récupération user :", err);
   }
 
   console.log(user);

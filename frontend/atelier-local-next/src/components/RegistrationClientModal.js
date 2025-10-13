@@ -91,22 +91,57 @@ export default function RegistrationClientModal({ isOpen, onClose, onSuccess }) 
         <h2 className="text-xl text-blue font-cabin mb-4 text-center">Créer un compte</h2>
         {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-          <input name="firstName" value={clientData.firstName} onChange={handleChange} placeholder="Prénom" className="input" />
-          <input name="lastName" value={clientData.lastName} onChange={handleChange} placeholder="Nom" className="input" />
-          <input name="email" value={clientData.email} onChange={handleChange} placeholder="Email" className="input" />
-          <input type="password" name="password" value={clientData.password} onChange={handleChange} placeholder="Mot de passe" className="input" />
-          <input name="phoneNumber" value={clientData.phoneNumber} onChange={handleChange} placeholder="Téléphone (optionnel)" className="input" />
-          <input name="address" value={clientData.address} onChange={handleChange} placeholder="Adresse (optionnel)" className="input" />
-          <div className="flex items-center gap-2">
-            <input type="file" name="avatar" onChange={handleChange} />
-            {clientData.avatarPreview && (
-              <>
-                <img src={clientData.avatarPreview} alt="avatar preview" className="w-12 h-12 object-cover rounded-full" />
-                <button type="button" onClick={handleRemoveAvatar}>&times;</button>
-              </>
-            )}
+          <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-6xl">
+            {/* Colonne gauche */}
+            <div className="relative w-48 aspect-square border-2 border-dashed border-silver flex items-center justify-center text-center mb-6">
+              <input
+                type="file"
+                name="avatar"
+                accept=".jpg,.jpeg,.png"
+                onChange={handleChange}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              />
+              {clientData.avatarPreview ? (
+                <>
+                  <img
+                    src={clientData.avatarPreview}
+                    alt="Prévisualisation de l'avatar"
+                    className="w-full h-full object-cover rounded"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleRemoveAvatar}
+                    className="absolute top-2 right-2 bg-blue text-gold rounded-full w-6 h-6 flex items-center justify-center"
+                  >
+                    &times;
+                  </button>
+                </>
+              ) : (
+                <span className="text-silver">Ajoutez une photo de profil (optionnel)</span>
+              )}
+            </div>
+            {/* Colonne droite */}
+            <div className="flex flex-col items-center justify-center md:w-3/4 gap-4">
+              <input name="firstName" value={clientData.firstName} onChange={handleChange} placeholder="Votre prénom" className="input" />
+              <input name="lastName" value={clientData.lastName} onChange={handleChange} placeholder="Votre nom" className="input" />
+              <input name="email" value={clientData.email} onChange={handleChange} placeholder="Adresse email" className="input" />
+              <input type="password" name="password" value={clientData.password} onChange={handleChange} placeholder="Mot de passe" className="input" />
+              <input name="phoneNumber" value={clientData.phoneNumber} onChange={handleChange} placeholder="Téléphone (optionnel)" className="input" />
+              <input name="address" value={clientData.address} onChange={handleChange} placeholder="Adresse (optionnel)" className="input" />
+            </div>
           </div>
-          <button type="submit" className="mt-4 bg-blue text-gold py-2 rounded-full">Créer mon compte</button>
+
+          <div className="flex justify-center w-full mt-8 mb-5">
+            <button
+              type="submit"
+              className="w-1/2 h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
+                        text-gold text-base font-normal font-cabin
+                        flex items-center justify-center hover:cursor-pointer 
+                        hover:bg-blue transition"
+            >
+              Créer mon compte
+            </button>
+          </div>
         </form>
       </div>
     </div>

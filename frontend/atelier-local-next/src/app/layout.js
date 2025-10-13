@@ -8,12 +8,14 @@ import Image from "next/image";
 import './globals.css';
 import { imageConfigDefault } from "next/dist/shared/lib/image-config";
 import { cookies } from "next/headers";
-import ClientProviderWrapper from "../components/ClientProviderWrapper";
+import UserProviderWrapper from "../components/UserProviderWrapper";
+import React from "react";
+import { data } from "autoprefixer";
 
 export default async function RootLayout({ children }) {
   let header;
   const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+  const token = cookieStore.get("jwt")?.value;
 
   let user = null;
 
@@ -23,17 +25,22 @@ export default async function RootLayout({ children }) {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
         cache: "no-store",
-        credentials: "include"
       });
 
       if (res.ok) {
-        user = await res.json();
+        data = await res.json();
+        user = {
+          role: data.role.toLowerCase(),
+          ...data.user
+        };
       }
     } catch (err) {
       console.error("Erreur récupération user :", err);
     }
   }
 
+  console.log(user);
+  console.log(user?.role);
   if (user?.role === 'admin') {
     header = <AdminHeader admin={user} />;
   } else if (user?.role === 'client') {
@@ -59,9 +66,11 @@ export default async function RootLayout({ children }) {
           />
         </div>
         <main className="flex-grow max-w-[1380px] mx-auto px-4 sm:px-6 md:px-8 mb-10">
-          <ClientProviderWrapper user={user}>
-            {children}
-          </ClientProviderWrapper>
+          <UserProviderWrapper user={user}>
+            {React.Children.map(children, child => 
+              React.isValidElement(child) ? React.cloneElement(child, { user }) : child
+            )}
+          </UserProviderWrapper>
         </main>
         <Footer />
       </body>

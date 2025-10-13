@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import fetchCoordinates from "../../../utils/fetchCoordinates";
 
-export default function RegistrationPage() {
+export default function RegistrationPage({ user }) {
   const router = useRouter();
   const [role, setRole] = useState("client");
   const [error, setError] = useState("");

@@ -21,7 +21,7 @@ export default function ClientHome({ client }) {
             </div>
             <div className="flex flex-wrap justify-center gap-1 md:flex-row-1">
                 <Link
-                href="/askings"
+                href="/new-asking"
                 className="max-w-xs h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
                             text-gold text-sm font-normal font-cabin
                             flex items-center justify-center mx-2 

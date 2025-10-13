@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import RegistrationClientModal from "../../components/RegistrationClientModal";
 
-export default function AskingsForm() {
+export default function AskingsForm({ user }) {
   const [eventCategories, setEventCategories] = useState([]);
   const [allArtisanCategories, setAllArtisanCategories] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState("");
@@ -12,7 +12,7 @@ export default function AskingsForm() {
   const [date, setDate] = useState("");
   const [askings, setAskings] = useState([]); // tableau d'objets
   const [visibleCategories, setVisibleCategories] = useState([]);
-  const [user, setUser] = useState(null);
+  console.log("User context:", user);
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
 
   // --- Fetch event categories ---
@@ -223,7 +223,7 @@ export default function AskingsForm() {
                     newAskings[index].title = e.target.value;
                     setAskings(newAskings);
                   }}
-                  className="text-blue text-sm font-cabin text-left h-10 border-none w-full"
+                  className="text-blue text-sm font-cabin text-left h-10 w-full border-0 border-b-2 border-silver"
                   placeholder="Donnez un titre à votre demande..."
                 />
 

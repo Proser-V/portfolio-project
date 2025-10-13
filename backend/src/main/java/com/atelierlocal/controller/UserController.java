@@ -34,8 +34,9 @@ public class UserController {
     public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal Object principal) {
         if (principal instanceof Client currentClient) {
             ClientResponseDTO dto = clientService.getClientById(currentClient.getId());
+            String role = currentClient.getUserRole().name();
             return ResponseEntity.ok(Map.of(
-                "role", "CLIENT",
+                "role", role,
                 "user", dto
             ));
         }

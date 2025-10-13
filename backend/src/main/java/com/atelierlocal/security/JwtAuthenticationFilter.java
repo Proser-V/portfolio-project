@@ -36,6 +36,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String cookieHeader = request.getHeader("Cookie");
         String jwt = null;
 
+        // Pour /api/users/logout, on ignore le filtre
+        if (request.getServletPath().equals("/api/users/logout")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         // Extraction du JWT depuis le cookie nommé "jwt"
         if (cookieHeader != null && cookieHeader.contains("jwt=")) {
             String[] cookies = cookieHeader.split("; ");

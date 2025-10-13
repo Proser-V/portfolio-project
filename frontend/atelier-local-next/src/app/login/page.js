@@ -28,7 +28,7 @@ export default function LoginPage({ user }) {
 
             setError("");
             console.log("Login success");
-            router.push("/");
+            window.location.href = "/";
         } catch (err) {
             console.error("Erreur réseau :", err);
             setError("Serveur inaccessible. Vérifiez votre connexion.");

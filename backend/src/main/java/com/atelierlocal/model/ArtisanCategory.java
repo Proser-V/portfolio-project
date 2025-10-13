@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -38,13 +39,15 @@ public class ArtisanCategory {
     private String description;
 
     @OneToMany(mappedBy = "category")
-    @JsonIgnore
+    @JsonBackReference
     private List<Artisan> artisanList = new ArrayList<>();
 
     @ManyToMany(mappedBy = "artisanCategoryList")
+    @JsonIgnore
     private List<EventCategory> eventCategories = new ArrayList<>();
 
     @OneToMany(mappedBy = "artisanCategory")
+    @JsonIgnore
     private List<Asking> askingsList = new ArrayList<>();
 
     @CreationTimestamp

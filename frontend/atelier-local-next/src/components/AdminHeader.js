@@ -38,7 +38,7 @@ export default function AdminHeader({ admin }) {
             className="hidden md:block ml-2"
           />
         </a>
-        <a href="#" className="bg-gold text-blue flex-auto flex items-center justify-center pr-2 py-2 hover:underline">Déconnexion</a>
+        <a href="/logout" className="bg-gold text-blue flex-auto flex items-center justify-center pr-2 py-2 hover:underline">Déconnexion</a>
       </nav>
     </header>
   );

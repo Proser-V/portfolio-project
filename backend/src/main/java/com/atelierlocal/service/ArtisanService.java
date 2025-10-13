@@ -161,7 +161,9 @@ public class ArtisanService {
     }
 
     public List<ArtisanResponseDTO> getAllArtisans(Client currentClient) {
+    if (currentClient != null) {
         securityService.checkClientOrAdmin(currentClient);
+    }
         return artisanRepo.findAll().stream()
                                 .map(ArtisanResponseDTO::new)
                                 .collect(Collectors.toList());

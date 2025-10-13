@@ -2,18 +2,19 @@
 
 import { useEffect, useState } from "react";
 import RegistrationClientModal from "../../components/RegistrationClientModal";
+import { useUser } from "../../context/UserContext"
 
-export default function AskingsForm({ user }) {
+export default function AskingsForm() {
   const [eventCategories, setEventCategories] = useState([]);
   const [allArtisanCategories, setAllArtisanCategories] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState("");
   const [selectedArtisan, setSelectedArtisan] = useState("");
   const [lieu, setLieu] = useState("");
   const [date, setDate] = useState("");
-  const [askings, setAskings] = useState([]); // tableau d'objets
+  const [askings, setAskings] = useState([]);
   const [visibleCategories, setVisibleCategories] = useState([]);
-  console.log("User context:", user);
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+  const user = useUser();
 
   // --- Fetch event categories ---
   useEffect(() => {
@@ -103,18 +104,19 @@ export default function AskingsForm({ user }) {
       };
 
       try {
-        const res = await fetch("/api/askings", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/askings/creation`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
+          credentials: "include"
         });
         if (!res.ok) throw new Error(`Erreur HTTP ${res.status}`);
       } catch (err) {
         console.error(err);
       }
     }
-
     alert("Vos demandes ont été envoyées !");
+    window.location.href="/";
   };
 
   return (

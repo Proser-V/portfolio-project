@@ -25,7 +25,7 @@ export default function AdminHeader({ admin }) {
             height={45}
           />
         </a>
-        <a href="/client/client.id" className="bg-gold text-blue flex-auto flex items-center justify-center px-2 hover:underline">
+        <a href={`/clients/${admin.id}`} className="bg-gold text-blue flex-auto flex items-center justify-center px-2 hover:underline">
             <span className="pt-2 md:pt-0 whitespace-nowrap">
               Bienvenue dans l'Atelier,
               <br className="hidden md:block" />

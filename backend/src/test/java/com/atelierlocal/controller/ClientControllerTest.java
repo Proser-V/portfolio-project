@@ -9,7 +9,6 @@ import com.atelierlocal.service.ClientService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.core.Authentication;
 
 import java.util.List;
 import java.util.UUID;

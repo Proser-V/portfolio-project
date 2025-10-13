@@ -1,0 +1,84 @@
+"use client";
+import { useState } from "react";
+import ArtisanCard from "@/components/ArtisanCard";
+
+export default function ArtisansPageClient({ initialCategories, initialArtisans }) {
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [nameFilter, setNameFilter] = useState("");
+
+  // Plus besoin de useEffect, les données sont déjà là !
+  const filteredArtisans = initialArtisans
+    .filter(artisan => {
+      const matchesName = !nameFilter || 
+        (artisan.name || "").toLowerCase().includes(nameFilter.toLowerCase());
+
+      const matchesCategory =
+        selectedCategory === "" ||
+        artisan.categoryName === selectedCategory;
+
+      return matchesName && matchesCategory;
+    })
+    .sort((a, b) => {
+      if (!nameFilter && selectedCategory === "") {
+        return 0;
+      }
+      const catA = a.categoryName || "Sans catégorie";
+      const catB = b.categoryName || "Sans catégorie";
+      const catComparison = catA.localeCompare(catB);
+      if (catComparison !== 0) return catComparison;
+      return (a.name || "").localeCompare(b.name || "");
+    });
+
+  return (
+    <div className="mt-6 flex flex-col items-center justify-center px-4 md:px-0">
+      <h1 className="text-center text-blue text-xl font-normal font-cabin mb-4">
+        Liste des artisans
+      </h1>
+      
+      <p className="text-sm">Filtrer les artisans par</p>
+      <div className="flex flex-col justify-center items-center md:gap-4 gap-2">
+        <div className="w-full flex flex-row justify-center items-center md:gap-4 gap-1">
+          <label className="w-[25%] md:mb-2 text-sm text-right">Nom :</label>
+          <input
+            type="text"
+            value={nameFilter}
+            onChange={e => setNameFilter(e.target.value)}
+            className="input"
+            placeholder="Rechercher par nom..."
+          />
+        </div>
+        <div className="w-full flex flex-row justify-center items-center md:gap-4 gap-1">
+          <label className="w-[25%] text-sm text-right">Catégorie :</label>
+          <select
+            value={selectedCategory}
+            onChange={e => setSelectedCategory(e.target.value)}
+            className="input"
+          >
+            <option value="">-- Toutes les catégories --</option>
+            {initialCategories.map(cat => (
+              <option key={cat.id} value={cat.name}>
+                {cat.name || "Sans nom"}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="mt-4 flex flex-col gap-4 w-full max-w-4xl">
+        {filteredArtisans.length > 0 ? (
+          filteredArtisans.map(artisan => (
+            <ArtisanCard
+              key={artisan.id}
+              artisan={artisan}
+              className="w-full"
+            />
+          ))
+        ) : (
+          <p className="text-center text-silver">
+            Aucun artisan ne correspond aux critères.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}

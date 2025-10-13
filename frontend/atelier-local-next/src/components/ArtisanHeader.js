@@ -22,7 +22,7 @@ export default function ArtisanHeader({ artisan }) {
             height={45}
           />
         </a>
-        <a href="#" className="bg-gold text-blue flex-auto flex items-center justify-center px-2 hover:underline">
+        <a href={`/artisans/${artisan.id}`} className="bg-gold text-blue flex-auto flex items-center justify-center px-2 hover:underline">
             <span className="pt-2 md:pt-0 whitespace-nowrap">
               Bienvenue dans l'Atelier,
               <br className="hidden md:block" />

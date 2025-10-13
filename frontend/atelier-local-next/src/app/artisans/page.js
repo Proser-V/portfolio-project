@@ -5,7 +5,7 @@ async function getArtisanCategories() {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/artisan-category/`,
-      { cache: "no-store" } // ou { next: { revalidate: 3600 } } pour cache 1h
+      { cache: "no-store" }
     );
     if (!res.ok) return [];
     return await res.json();
@@ -19,7 +19,7 @@ async function getAllArtisans() {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/artisans/`,
-      { cache: "no-store" } // ou { next: { revalidate: 600 } } pour cache 10min
+      { cache: "no-store" }
     );
     if (!res.ok) return [];
     const text = await res.text();

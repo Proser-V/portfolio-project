@@ -60,7 +60,7 @@ export default function ArtisanPortfolio({
       setPhotos((prev) => [...prev, {
         id: newPhoto.id,
         uploadedPhotoUrl: newPhoto.fileUrl,
-        extension: newPhoto.fileExtension,
+        extension: newPhoto.extension,
       }]);
 
       e.target.value = "";
@@ -148,7 +148,7 @@ export default function ArtisanPortfolio({
     <div className="w-full mt-8 mb-8">
       {/* En-tête avec titre et bouton gérer */}
       <div className="flex justify-center items-center gap-4 mb-6">
-        <h2 className="text-center text-blue text-2xl font-cabin">
+        <h2 className="text-center text-blue font-cabin">
           {isOwner ? "Mon Portfolio" : "Portfolio"}
         </h2>
         {isOwner && (
@@ -206,7 +206,7 @@ export default function ArtisanPortfolio({
                   <div key={photo.id} className="relative group">
                     <div className="relative w-full h-32">
                       <Image
-                        src={photo.uploadedPhotoUrl}
+                        src={photo.uploadedPhotoUrl || photo.fileUrl}
                         alt="Portfolio"
                         fill
                         className="object-cover rounded-lg"
@@ -272,7 +272,7 @@ export default function ArtisanPortfolio({
                 }`}
               >
                 <Image
-                  src={img.photo.uploadedPhotoUrl}
+                  src={img.photo.uploadedPhotoUrl || img.photo.fileUrl}
                   alt={`Portfolio image ${img.index + 1}`}
                   fill
                   className="object-cover shadow-xl border-4 border-white"

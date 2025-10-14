@@ -5,6 +5,7 @@ import com.atelierlocal.dto.MessageResponseDTO;
 import com.atelierlocal.model.Client;
 import com.atelierlocal.model.S3Properties;
 import com.atelierlocal.model.Artisan;
+import com.atelierlocal.model.Attachment;
 import com.atelierlocal.repository.MessageRepo;
 import com.atelierlocal.repository.UserRepo;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +21,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.core.sync.RequestBody;
 
 import java.io.ByteArrayInputStream;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -55,30 +57,36 @@ class MessageServiceTest {
     void testSendMessageWithoutFile() {
         UUID senderId = UUID.randomUUID();
         UUID receiverId = UUID.randomUUID();
+        String expectedContent = "Hello Artisan";
 
         Client sender = new Client();
         sender.setId(senderId);
-        sender.setFirstName("John");
-        sender.setLastName("Doe");
 
         Artisan receiver = new Artisan();
         receiver.setId(receiverId);
-        receiver.setName("Artisan Bob");
 
         when(userRepo.findById(senderId)).thenReturn(Optional.of(sender));
         when(userRepo.findById(receiverId)).thenReturn(Optional.of(receiver));
 
+        com.atelierlocal.model.Message savedMessage = new com.atelierlocal.model.Message();
+        savedMessage.setContent(expectedContent);
+        savedMessage.setSender(sender);
+        savedMessage.setReceiver(receiver);
+        savedMessage.setTimestamp(LocalDateTime.now());
+        savedMessage.setMessageStatus(com.atelierlocal.model.MessageStatus.DELIVERED);
+        when(messageRepo.save(any(com.atelierlocal.model.Message.class))).thenReturn(savedMessage);
+
         MessageRequestDTO dto = new MessageRequestDTO();
         dto.setSenderId(senderId);
         dto.setReceiverId(receiverId);
-        dto.setContent("Hello Artisan");
+        dto.setContent(expectedContent);
         dto.setFile(null);
 
         MessageResponseDTO response = messageService.sendMessage(dto);
 
-        assertNotNull(response);
-        assertEquals("Hello Artisan", response.getContent());
-        verify(messageRepo, times(1)).save(any());
+        assertNotNull(response, "Response should not be null");
+        assertEquals(expectedContent, response.getContent(), "Message content should match");
+        verify(messageRepo, times(1)).save(any(com.atelierlocal.model.Message.class));
         verify(attachmentService, never()).linkToMessage(any(), any());
     }
 
@@ -86,6 +94,7 @@ class MessageServiceTest {
     void testSendMessageWithFile() throws Exception {
         UUID senderId = UUID.randomUUID();
         UUID receiverId = UUID.randomUUID();
+        String expectedContent = "Message with file";
 
         Client sender = new Client();
         sender.setId(senderId);
@@ -101,23 +110,33 @@ class MessageServiceTest {
         when(file.getContentType()).thenReturn("image/png");
         when(file.getSize()).thenReturn(1024L);
         when(file.getOriginalFilename()).thenReturn("test.png");
-        when(file.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[]{1,2,3}));
+        when(file.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[]{1, 2, 3}));
 
         when(s3Properties.getBucketName()).thenReturn("my-bucket");
         when(s3Properties.getRegion()).thenReturn("eu-west-1");
 
+        com.atelierlocal.model.Message savedMessage = new com.atelierlocal.model.Message();
+        savedMessage.setContent(expectedContent);
+        savedMessage.setSender(sender);
+        savedMessage.setReceiver(receiver);
+        savedMessage.setTimestamp(LocalDateTime.now());
+        savedMessage.setMessageStatus(com.atelierlocal.model.MessageStatus.DELIVERED);
+        when(messageRepo.save(any(com.atelierlocal.model.Message.class))).thenReturn(savedMessage);
+
+        doNothing().when(attachmentService).linkToMessage(any(Attachment.class), any(com.atelierlocal.model.Message.class));
+
         MessageRequestDTO dto = new MessageRequestDTO();
         dto.setSenderId(senderId);
         dto.setReceiverId(receiverId);
-        dto.setContent("Message with file");
+        dto.setContent(expectedContent);
         dto.setFile(file);
 
         MessageResponseDTO response = messageService.sendMessage(dto);
 
-        assertNotNull(response);
-        assertEquals("Message with file", response.getContent());
-        verify(messageRepo, times(1)).save(any());
-        verify(attachmentService, times(1)).linkToMessage(any(), any());
-        verify(s3Client, times(1)).putObject(any(PutObjectRequest.class), ArgumentMatchers.<RequestBody>any());
+        assertNotNull(response, "Response should not be null");
+        assertEquals(expectedContent, response.getContent(), "Message content should match");
+        verify(messageRepo, times(1)).save(any(com.atelierlocal.model.Message.class));
+        verify(attachmentService, times(1)).linkToMessage(any(Attachment.class), any(com.atelierlocal.model.Message.class));
+        verify(s3Client, times(1)).putObject(any(PutObjectRequest.class), any(RequestBody.class));
     }
 }

@@ -12,7 +12,9 @@
     "framer-motion": "^12.23.23",
     "next": "15.5.4",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "sockjs-client": "^1.6.1",
+    "stompjs": "2.3.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

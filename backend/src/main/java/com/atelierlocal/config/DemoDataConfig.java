@@ -1,6 +1,7 @@
 package com.atelierlocal.config;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,12 +14,15 @@ import com.atelierlocal.model.Artisan;
 import com.atelierlocal.model.ArtisanCategory;
 import com.atelierlocal.model.Client;
 import com.atelierlocal.model.EventCategory;
+import com.atelierlocal.model.Message;
+import com.atelierlocal.model.MessageStatus;
 import com.atelierlocal.model.UploadedPhoto;
 import com.atelierlocal.model.UserRole;
 import com.atelierlocal.repository.ArtisanCategoryRepo;
 import com.atelierlocal.repository.ArtisanRepo;
 import com.atelierlocal.repository.ClientRepo;
 import com.atelierlocal.repository.EventCategoryRepo;
+import com.atelierlocal.repository.MessageRepo;
 import com.atelierlocal.service.PasswordService;
 
 @Configuration
@@ -31,7 +35,8 @@ public class DemoDataConfig {
         ArtisanRepo artisanRepo,
         EventCategoryRepo eventCategoryRepo,
         ArtisanCategoryRepo categoryRepo,
-        PasswordService passwordService
+        PasswordService passwordService,
+        MessageRepo messageRepo
     ) {
         return args -> {
             if (clientRepo.count() > 0 || artisanRepo.count() > 0 || categoryRepo.count() > 0) {
@@ -196,11 +201,52 @@ public class DemoDataConfig {
 
             artisanRepo.saveAll(Arrays.asList(artisan1, artisan2, artisan3));
 
-            System.out.println("Données de démo insérées : 1 admin, 2 clients, 3 artisans, 3 catégories d'artisans, 2 catégories d'événements.");
-            System.out.println("Identifiants de test :");
-            System.out.println("  Admin: admin@mail.com / password");
-            System.out.println("  Clients: client1@mail.com, client2@mail.com / password");
-            System.out.println("  Artisans: artisan1@mail.com, artisan2@mail.com, artisan3@mail.com / password");
+            /* -----------------------------
+ * Messages de démo
+ * ----------------------------- */
+            Message msg1 = new Message();
+            msg1.setSender(client1);
+            msg1.setReceiver(artisan1);
+            msg1.setContent("Bonjour, pourriez-vous intervenir pour une fuite dans ma salle de bain ?");
+            msg1.setTimestamp(LocalDateTime.now().minusDays(2));
+            msg1.setMessageStatus(MessageStatus.DELIVERED);
+            msg1.setRead(true);
+
+            Message msg2 = new Message();
+            msg2.setSender(artisan1);
+            msg2.setReceiver(client1);
+            msg2.setContent("Bonjour Jean, oui bien sûr. Pouvez-vous m'envoyer votre adresse exacte ?");
+            msg2.setTimestamp(LocalDateTime.now().minusDays(1).minusHours(3));
+            msg2.setMessageStatus(MessageStatus.DELIVERED);
+            msg2.setRead(true);
+
+            Message msg3 = new Message();
+            msg3.setSender(client1);
+            msg3.setReceiver(artisan1);
+            msg3.setContent("C’est au 10 rue du Bourg, 21000 Dijon. Merci !");
+            msg3.setTimestamp(LocalDateTime.now().minusHours(6));
+            msg3.setMessageStatus(MessageStatus.DELIVERED);
+            msg3.setRead(false);
+
+            Message msg4 = new Message();
+            msg4.setSender(client2);
+            msg4.setReceiver(artisan2);
+            msg4.setContent("Bonjour, j’aurais besoin d’un devis pour remettre aux normes mon installation électrique.");
+            msg4.setTimestamp(LocalDateTime.now().minusDays(1));
+            msg4.setMessageStatus(MessageStatus.DELIVERED);
+            msg4.setRead(false);
+
+            Message msg5 = new Message();
+            msg5.setSender(artisan3);
+            msg5.setReceiver(client2);
+            msg5.setContent("Bonjour Sophie, je peux passer jeudi pour voir votre projet de menuiserie si vous voulez.");
+            msg5.setTimestamp(LocalDateTime.now().minusHours(12));
+            msg5.setMessageStatus(MessageStatus.DELIVERED);
+            msg5.setRead(false);
+
+            messageRepo.saveAll(List.of(msg1, msg2, msg3, msg4, msg5));
+
+            System.out.println("Messages de démo insérés : 5 messages d'exemple entre clients et artisans.");
         };
     }
 }

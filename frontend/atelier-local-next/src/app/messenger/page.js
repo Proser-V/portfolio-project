@@ -29,6 +29,15 @@ export default async function MessengerPage({ searchParams }) {
 
   const user = await userRes.json();
 
+  if (!user?.id) {
+    console.error("Utilisateur non défini, conversation non chargée");
+    return (
+        <div className="mt-20 text-center text-gray-500">
+            Chargement des conversations...
+        </div>
+    );
+  }
+
   // Fetching des conversations
   const convRes = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/messages/conversations/${user.id}`,
@@ -39,34 +48,31 @@ export default async function MessengerPage({ searchParams }) {
     }
   );
 
-  if (!convRes.ok) {
-    const errorText = convRes.status === 404 ? "Utilisateur non trouvé" : "Erreur de chargement des conversations";
+  // Gestion des conversations vides ou erreurs
+  let conversations = [];
+  
+  if (convRes.ok) {
+    const data = await convRes.json();
+    conversations = Array.isArray(data) ? data : [];
+  } else if (convRes.status !== 404) {
+    // Seulement afficher une erreur si ce n'est pas un 404
     return (
-        <div className="mt-20 text-center text-red-500">
-            {errorText}.
-        </div>
-    );
-  }
-
-  let conversations = await convRes.json();
-
-  if (!Array.isArray(conversations) || conversations.length === 0) {
-    conversations = [];
-    return (
-        <div className="mt-20 text-center text-gray-500">
-            Aucune conversation trouvée.
-        </div>
+      <div className="mt-20 text-center text-red-500">
+        Erreur de chargement des conversations.
+      </div>
     );
   }
 
   // Filtrage et tri
-  conversations = conversations
-    .filter((c) => c.otherUserName.toLowerCase().includes(search))
-    .sort((a, b) => {
-      const da = new Date(a.lastTimestamp);
-      const db = new Date(b.lastTimestamp);
-      return sort === "asc" ? da - db : db - da;
-    });
+  if (conversations.length > 0) {
+    conversations = conversations
+      .filter((c) => c.otherUserName.toLowerCase().includes(search))
+      .sort((a, b) => {
+        const da = new Date(a.lastTimestamp);
+        const db = new Date(b.lastTimestamp);
+        return sort === "asc" ? da - db : db - da;
+      });
+  }
 
   // Ajustement du nom d'utilisateur connecté dans le header
   const displayName = user.firstName + " " + user.lastName;

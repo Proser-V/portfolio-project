@@ -13,6 +13,7 @@ import com.atelierlocal.model.Artisan;
 import com.atelierlocal.model.ArtisanCategory;
 import com.atelierlocal.model.Client;
 import com.atelierlocal.model.EventCategory;
+import com.atelierlocal.model.UploadedPhoto;
 import com.atelierlocal.model.UserRole;
 import com.atelierlocal.repository.ArtisanCategoryRepo;
 import com.atelierlocal.repository.ArtisanRepo;
@@ -59,6 +60,7 @@ public class DemoDataConfig {
             /* -----------------------------
              * Catégories d'événements
              * ----------------------------- */
+
             EventCategory depannage = new EventCategory();
             depannage.setName("Dépannage");
             depannage.setArtisanCategoryList(List.of(plomberie, electricite));
@@ -108,7 +110,7 @@ public class DemoDataConfig {
             clientRepo.saveAll(Arrays.asList(admin, client1, client2));
 
             /* -----------------------------
-             * Artisans
+             * Artisan 1
              * ----------------------------- */
             Artisan artisan1 = new Artisan();
             artisan1.setEmail("artisan1@mail.com");
@@ -123,6 +125,46 @@ public class DemoDataConfig {
             artisan1.setLongitude(2.3500);
             artisan1.setPhoneNumber("0600000004");
             artisan1.setActivityStartDate(LocalDate.of(2010, 5, 12));
+
+            /* -----------------------------
+             * Gallerie photo d'artisan 1
+             * ----------------------------- */
+
+            UploadedPhoto photo1 = new UploadedPhoto();
+            photo1.setArtisan(artisan1);
+            photo1.setExtension(".jpg");
+            photo1.setUploadedPhotoUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/shadowmourne2.jpg");
+            artisan1.getPhotoGallery().add(photo1);
+
+            UploadedPhoto photo2 = new UploadedPhoto();
+            photo2.setArtisan(artisan1);
+            photo2.setExtension(".jpg");
+            photo2.setUploadedPhotoUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/Epee-inspiree-de-la-Mastersword-8.jpg");
+            artisan1.getPhotoGallery().add(photo2);
+
+            UploadedPhoto photo3 = new UploadedPhoto();
+            photo3.setArtisan(artisan1);
+            photo3.setExtension(".png");
+            photo3.setUploadedPhotoUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/epee-the-witcher-geralt-de-riv-9.png");
+            artisan1.getPhotoGallery().add(photo3);
+
+            UploadedPhoto photo4 = new UploadedPhoto();
+            photo4.setArtisan(artisan1);
+            photo4.setExtension(".jpg");
+            photo4.setUploadedPhotoUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/Votre-texte-zadazzade-paragraphe-1-copie.jpg");
+            artisan1.getPhotoGallery().add(photo4);
+
+            UploadedPhoto photo5 = new UploadedPhoto();
+            photo5.setArtisan(artisan1);
+            photo5.setExtension(".jpg");
+            photo5.setUploadedPhotoUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/mastersword-et-fourreau.jpg");
+            artisan1.getPhotoGallery().add(photo5);
+
+            artisanRepo.save(artisan1);
+
+            /* -----------------------------
+             * Autres artisans
+             * ----------------------------- */
 
             Artisan artisan2 = new Artisan();
             artisan2.setEmail("artisan2@mail.com");

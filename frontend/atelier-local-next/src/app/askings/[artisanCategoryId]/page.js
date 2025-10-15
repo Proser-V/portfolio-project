@@ -1,4 +1,5 @@
 import AskingsPageClient from "@/components/AskingsPageClient";
+import { getUser } from "@/lib/getUser";
 
 async function getAllAskingsByCategory(artisanCategoryId) {
   try {
@@ -35,11 +36,18 @@ async function getArtisanCategory(artisanCategoryId) {
 }
 
 export default async function AskingsPage({ params }) {
-  const { artisanCategoryId } = params;
+  const { artisanCategoryId } = await params;
+  const user = await getUser();
 
-  const data = await getAllAskingsByCategory(artisanCategoryId);
+    if (!user || user.role !== "artisan") {
+    redirect("/login");
+  }
 
-  const artisanCategoryData = await getArtisanCategory(artisanCategoryId);
+  const [data, artisanCategoryData] = await Promise.all([
+    getAllAskingsByCategory(artisanCategoryId),
+    getArtisanCategory(artisanCategoryId)
+  ]);
+
   const artisanCategoryName = artisanCategoryData.name;
 
   return (

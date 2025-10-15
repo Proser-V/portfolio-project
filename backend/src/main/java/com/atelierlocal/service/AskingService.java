@@ -164,7 +164,7 @@ public class AskingService {
     }
 
     public List<AskingResponseDTO> getAskingsByCategory(UUID categoryId, User currentUser) {
-        securityService.checkArtisanOrAdmin(currentUser);
+        // securityService.checkArtisanOrAdmin(currentUser);
 
         ArtisanCategory category = artisanCategoryRepo.findById(categoryId)
                                     .orElseThrow(() -> new IllegalArgumentException("Catégorie d'artisan non trouvée."));

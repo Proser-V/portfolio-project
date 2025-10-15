@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Profile;
 
 import com.atelierlocal.model.Artisan;
 import com.atelierlocal.model.ArtisanCategory;
+import com.atelierlocal.model.Asking;
+import com.atelierlocal.model.AskingStatus;
 import com.atelierlocal.model.Client;
 import com.atelierlocal.model.EventCategory;
 import com.atelierlocal.model.Message;
@@ -20,6 +22,7 @@ import com.atelierlocal.model.UploadedPhoto;
 import com.atelierlocal.model.UserRole;
 import com.atelierlocal.repository.ArtisanCategoryRepo;
 import com.atelierlocal.repository.ArtisanRepo;
+import com.atelierlocal.repository.AskingRepo;
 import com.atelierlocal.repository.ClientRepo;
 import com.atelierlocal.repository.EventCategoryRepo;
 import com.atelierlocal.repository.MessageRepo;
@@ -35,6 +38,7 @@ public class DemoDataConfig {
         ArtisanRepo artisanRepo,
         EventCategoryRepo eventCategoryRepo,
         ArtisanCategoryRepo categoryRepo,
+        AskingRepo askingRepo,
         PasswordService passwordService,
         MessageRepo messageRepo
     ) {
@@ -202,6 +206,34 @@ public class DemoDataConfig {
             artisanRepo.saveAll(Arrays.asList(artisan1, artisan2, artisan3));
 
             /* -----------------------------
+            * Demandes (Askings)
+            * ----------------------------- */
+            Asking asking1 = new Asking();
+            asking1.setTitle("Fuite sous évier");
+            asking1.setContent("Bonjour, j'ai une petite fuite d'eau sous l'évier de ma cuisine. Pouvez-vous intervenir rapidement ?");
+            asking1.setEventCategory(depannage);
+            asking1.setEventLocalisation("Dijon");
+            asking1.setEventDate(LocalDateTime.now().plusDays(2));
+            asking1.setClient(client1);
+            asking1.setArtisanCategory(plomberie);
+
+            Asking asking2 = new Asking();
+            asking2.setTitle("Installation de chauffe-eau");
+            asking2.setContent("Je souhaite remplacer mon ancien chauffe-eau par un modèle plus récent. Besoin d'un devis.");
+            asking2.setEventCategory(renovation);
+            asking2.setEventLocalisation("Chenôve");
+            asking2.setEventDate(LocalDateTime.now().plusWeeks(1));
+            asking2.setClient(client2);
+            asking2.setArtisanCategory(plomberie);
+
+            // On peut ajouter un statut si ton enum AskingStatus le permet :
+            asking1.setStatus(AskingStatus.PENDING);
+            asking2.setStatus(AskingStatus.PENDING);
+
+            // Sauvegarde
+            askingRepo.saveAll(List.of(asking1, asking2));
+
+            /* -----------------------------
  * Messages de démo
  * ----------------------------- */
             Message msg1 = new Message();
@@ -223,7 +255,7 @@ public class DemoDataConfig {
             Message msg3 = new Message();
             msg3.setSender(client1);
             msg3.setReceiver(artisan1);
-            msg3.setContent("C’est au 10 rue du Bourg, 21000 Dijon. Merci !");
+            msg3.setContent("C'est au 10 rue du Bourg, 21000 Dijon. Merci !");
             msg3.setTimestamp(LocalDateTime.now().minusHours(6));
             msg3.setMessageStatus(MessageStatus.DELIVERED);
             msg3.setRead(false);
@@ -231,7 +263,7 @@ public class DemoDataConfig {
             Message msg4 = new Message();
             msg4.setSender(client2);
             msg4.setReceiver(artisan2);
-            msg4.setContent("Bonjour, j’aurais besoin d’un devis pour remettre aux normes mon installation électrique.");
+            msg4.setContent("Bonjour, j'aurais besoin d'un devis pour remettre aux normes mon installation électrique.");
             msg4.setTimestamp(LocalDateTime.now().minusDays(1));
             msg4.setMessageStatus(MessageStatus.DELIVERED);
             msg4.setRead(false);

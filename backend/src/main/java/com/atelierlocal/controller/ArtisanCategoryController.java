@@ -125,10 +125,10 @@ public class ArtisanCategoryController {
 
     /**
      * Récupère tous les askings liées à une catégorie
-     * Accessible aux artisans et aux admins
+     * Accessible à tous les utilisateurs
      */
     @GetMapping("/{id}/askings")
-    @PreAuthorize("hasAnyRole('ARTISAN', 'ADMIN')")
+    // @PreAuthorize("hasAnyRole('ARTISAN', 'ADMIN')")
     public ResponseEntity<List<AskingResponseDTO>> getAskingsByCategory(
             @PathVariable UUID id,
             @AuthenticationPrincipal User currentUser) {

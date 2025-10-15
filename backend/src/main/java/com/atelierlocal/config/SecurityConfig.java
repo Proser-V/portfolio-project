@@ -48,7 +48,7 @@ public class SecurityConfig {
             "/api/artisans/register", "/api/artisans/", "/api/artisans/{id}", "/swagger-resources/**", "/webjars/**", "/api/artisans/random-top",
             "/api/artisan-category/**", "/api/geocode/**", "/api/avatar/upload", "/api/event-categories/",
             "/api/event-categories/{id}", "/api/event-categories/{id}/artisan-categories", "/api/askings/creation",
-            "/api/artisans/{id}/portfolio/upload", "/api/artisans/{id}/portfolio/delete", "/api/artisan-category/${id}/askings",
+            "/api/artisans/{id}/portfolio/upload", "/api/artisans/{id}/portfolio/delete", "/api/artisan-category/{id}/askings",
             "/api/artisan-category/{id}").permitAll()
             .anyRequest().authenticated()
         )

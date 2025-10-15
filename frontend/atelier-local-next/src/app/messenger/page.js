@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import Link from "next/link";
+import { getUser } from "@/lib/getUser";
 
 export const dynamic = "force-dynamic";
 
@@ -12,29 +13,16 @@ export default async function MessengerPage({ searchParams }) {
   const search = (resolvedSearchParams?.search || "").toLowerCase();
   const sort = resolvedSearchParams?.sort === "asc" ? "asc" : "desc";
 
-  // Récupération de l'utilisateur connecté
-  const userRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/me`, {
-    headers: jwt ? { Cookie: `jwt=${jwt}` } : {},
-    credentials: "include",
-    cache: "no-store",
-  });
+  // Récupérer l'utilisateur avec la même fonction que le layout
+  // Next.js va déduplicater automatiquement cet appel
+  const user = await getUser();
 
-  if (!userRes.ok) {
+  // Vérification de l'utilisateur
+  if (!user || !user.id) {
     return (
       <div className="mt-20 text-center text-red-500">
         Session expirée - <a href="/login" className="underline text-blue-600">Veuillez vous reconnecter</a>.
       </div>
-    );
-  }
-
-  const user = await userRes.json();
-
-  if (!user?.id) {
-    console.error("Utilisateur non défini, conversation non chargée");
-    return (
-        <div className="mt-20 text-center text-gray-500">
-            Chargement des conversations...
-        </div>
     );
   }
 
@@ -74,34 +62,18 @@ export default async function MessengerPage({ searchParams }) {
       });
   }
 
-  // Ajustement du nom d'utilisateur connecté dans le header
-  const displayName = user.firstName + " " + user.lastName;
+  // Ajustement du nom d'utilisateur en fonction du rôle
+  let displayName;
+  if (user.role === "artisan") {
+    displayName = user.name;
+  } else if (user.firstName && user.lastName) {
+    displayName = `${user.firstName} ${user.lastName}`;
+  } else {
+    displayName = user.email || "Utilisateur";
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-blue-900 text-white p-4 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <img src="/logo.png" alt="Atelier Local" className="h-8" />
-          <span className="text-xl font-bold">ATELIER LOCAL</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <a href="/demande-prestation" className="text-yellow-400 hover:underline">
-            Demande de prestation
-          </a>
-          <a href="/artisans" className="text-yellow-400 hover:underline">
-            Artisans
-          </a>
-          <div className="flex items-center gap-2">
-            <span>Bienvenue, {displayName}</span>
-            <img
-              src={user.avatar || "/profile-placeholder.jpg"}
-              alt="Profil"
-              className="h-8 w-8 rounded-full"
-            />
-          </div>
-        </div>
-      </header>
-
       <main className="max-w-4xl mx-auto mt-8 p-4">
         <h1 className="text-center text-blue-900 text-3xl font-semibold mb-6">
           Vos messages
@@ -153,9 +125,6 @@ export default async function MessengerPage({ searchParams }) {
                     src={`/avatars/${conv.otherUserId}.jpg`}
                     alt={`${conv.otherUserName}`}
                     className="w-12 h-12 rounded-full object-cover"
-                    onError={(e) => {
-                      e.target.src = "/default-avatar.jpg";
-                    }}
                   />
                   <div className="flex-1">
                     <p className="font-medium text-blue-900">{conv.otherUserName}</p>
@@ -190,23 +159,6 @@ export default async function MessengerPage({ searchParams }) {
           </button>
         </div>
       </main>
-
-      <footer className="bg-blue-900 text-white p-4 mt-8 text-center">
-        <div className="flex justify-center gap-4">
-          <a href="/contact" className="hover:underline">
-            Contact
-          </a>
-          <a href="/legal" className="hover:underline">
-            Liens utiles
-          </a>
-          <a href="/mentions" className="hover:underline">
-            Mentions légales
-          </a>
-        </div>
-        <p className="text-xs mt-2">
-          Icons made by Freepik & Flaticon. Perfect from www.flaticon.com
-        </p>
-      </footer>
     </div>
   );
 }

@@ -2,6 +2,8 @@ package com.atelierlocal.controller;
 
 import com.atelierlocal.dto.MessageRequestDTO;
 import com.atelierlocal.dto.MessageResponseDTO;
+import com.atelierlocal.model.Artisan;
+import com.atelierlocal.repository.UserRepo;
 import com.atelierlocal.service.MessageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +13,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,17 +28,27 @@ class MessageControllerTest {
     @Mock
     private MessageService messageService;
 
+    @Mock
+    private UserRepo userRepo;
+
     @InjectMocks
     private MessageController messageController;
 
     private UUID authenticatedUserId;
     private Principal mockPrincipal;
+    private Artisan mockUser;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         authenticatedUserId = UUID.randomUUID();
-        mockPrincipal = () -> authenticatedUserId.toString();
+        mockPrincipal = () -> "test@mail.com";
+
+        mockUser = new Artisan();
+        mockUser.setId(authenticatedUserId);
+        mockUser.setEmail("test@mail.com");
+
+        when(userRepo.findByEmail("test@mail.com")).thenReturn(Optional.of(mockUser));
     }
 
     @Test
@@ -98,10 +111,10 @@ class MessageControllerTest {
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         List<MessageResponseDTO> history = responseEntity.getBody();
-        assertNotNull(history, "L'historique ne doit pas être null");
-        assertEquals(2, history.size(), "Il doit y avoir 2 messages");
-        assertEquals("hello", history.get(0).getMessageError(), "Premier message incorrect");
-        assertEquals("world", history.get(1).getMessageError(), "Deuxième message incorrect");
+        assertNotNull(history);
+        assertEquals(2, history.size());
+        assertEquals("hello", history.get(0).getMessageError());
+        assertEquals("world", history.get(1).getMessageError());
 
         verify(messageService, times(1)).getConversation(authenticatedUserId, otherUserId);
     }

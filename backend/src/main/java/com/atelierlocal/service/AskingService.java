@@ -154,12 +154,24 @@ public class AskingService {
     }
 
     public List<AskingResponseDTO> getAllAskings(User currentUser) {
-        securityService.checkAdminOnly(currentUser);;
+        securityService.checkAdminOnly(currentUser);
 
         List<Asking> allAskings = askingRepo.findAll();
 
         return allAskings.stream()
             .map(AskingResponseDTO::new)
             .collect(Collectors.toList());
+    }
+
+    public List<AskingResponseDTO> getAskingsByCategory(UUID categoryId, User currentUser) {
+        securityService.checkArtisanOrAdmin(currentUser);
+
+        ArtisanCategory category = artisanCategoryRepo.findById(categoryId)
+                                    .orElseThrow(() -> new IllegalArgumentException("Catégorie d'artisan non trouvée."));
+
+        List<Asking> askingsByCategory = askingRepo.findAllByArtisanCategory(category);
+        return askingsByCategory.stream()
+                .map(AskingResponseDTO::new)
+                .collect(Collectors.toList());
     }
 }

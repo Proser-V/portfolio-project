@@ -6,7 +6,6 @@ export default function ArtisansPageClient({ initialCategories, initialArtisans 
   const [selectedCategory, setSelectedCategory] = useState("");
   const [nameFilter, setNameFilter] = useState("");
 
-  // Plus besoin de useEffect, les données sont déjà là !
   const filteredArtisans = initialArtisans
     .filter(artisan => {
       const matchesName = !nameFilter || 

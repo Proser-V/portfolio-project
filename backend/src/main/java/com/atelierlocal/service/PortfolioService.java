@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,7 +25,9 @@ public class PortfolioService {
     private final S3Client s3Client;
     private final ArtisanRepo artisanRepo;
     private final SecurityService securityService;
-    private final String bucketName = "atelierlocal-bucket";
+
+    @Value("${aws.s3.bucketName}")
+    private String bucketName;
 
     public PortfolioService(S3Client s3Client, ArtisanRepo artisanRepo, SecurityService securityService) {
         this.s3Client = s3Client;
@@ -83,8 +86,14 @@ public class PortfolioService {
         artisan.getPhotoGallery().add(photo);
 
         // Sauvegarde artisan (cascade = sauvegarde photo) et retour de la photo
-        artisanRepo.save(artisan);
-        return photo;
+        artisan = artisanRepo.save(artisan);
+        UploadedPhoto savedPhoto = artisan.getPhotoGallery()
+            .stream()
+            .filter(p -> p.getUploadedPhotoUrl().equals(publicUrl))
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException("Photo non sauvegardée correctement"));
+
+        return savedPhoto;
     }
 
     // ================= Suppression photo =================

@@ -52,9 +52,10 @@ export default async function ArtisanProfilePage({ params }) {
         {`Page personnelle - ${artisan.name}`}
       </h1>
 
-      <div className="w-full flex flex-col md:flex-row items-center gap-4 mt-4">
+      <div className="mt-6 flex flex-col items-center justify-center px-4 md:px-0 max-w-[1000px] mx-auto">
+      <div className="w-full flex flex-col md:flex-row items-center gap-4">
         {/* Colonne gauche - Avatar et infos */}
-        <div className="flex flex-col w-[250px] items-center gap-1">
+        <div className="flex flex-col w-[250px] items-center gap-2">
           <Image
             src={artisan.avatar || placeholder}
             alt={`${artisan.name} avatar`}
@@ -69,7 +70,7 @@ export default async function ArtisanProfilePage({ params }) {
         </div>
 
         {/* Colonne droite - Carte principale */}
-        <div className="relative flex flex-col bg-white border-gold border-2 border-solid w-[325px] md:w-[700px] overflow-hidden pb-4 md:pb-20">
+        <div className="relative flex flex-col bg-white border-gold border-2 border-solid w-full max-w-7xl mx-auto mb-6 overflow-hidden">
           {/* Filigrane */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="relative w-[300px] h-[300px]">
@@ -110,15 +111,16 @@ export default async function ArtisanProfilePage({ params }) {
             </p>
           </div>
 
+
           {/* Bouton contact */}
           <Link
             href="/#"
-            className="btn-primary 
-                       relative z-10
-                       mx-auto mt-4
-                       md:absolute md:bottom-4 md:right-4 md:mt-0 md:mx-0"
+            className="btn-primary
+                      relative z-10
+                      mx-auto mb-2 md:mb-0
+                      md:absolute md:bottom-4 md:right-4 md:mt-0 md:mx-0"
           >
-            Contactez moi
+            Contactez-moi
           </Link>
         </div>
       </div>
@@ -129,6 +131,7 @@ export default async function ArtisanProfilePage({ params }) {
         initialPhotos={artisan.photoGallery}
         isOwner={isOwner}
       />
+    </div>
     </div>
   );
 }

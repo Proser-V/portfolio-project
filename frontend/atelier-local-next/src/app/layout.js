@@ -36,7 +36,7 @@ export default async function RootLayout({ children }) {
             priority
           />
         </div>
-        <main className="flex-grow max-w-[1380px] mx-auto px-4 sm:px-6 md:px-8 mb-10">
+        <main className="flex-grow max-w-[1380px] mx-auto sm:px-6 md:px-8 mb-10">
           <UserProviderWrapper user={user}>
             {React.Children.map(children, (child) =>
               React.isValidElement(child)

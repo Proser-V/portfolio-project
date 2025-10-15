@@ -6,9 +6,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.atelierlocal.dto.ArtisanCategoryRequestDTO;
 import com.atelierlocal.dto.ArtisanCategoryResponseDTO;
 import com.atelierlocal.dto.ArtisanResponseDTO;
+import com.atelierlocal.dto.AskingResponseDTO;
 import com.atelierlocal.model.Client;
+import com.atelierlocal.model.User;
 import com.atelierlocal.service.ArtisanCategoryService;
 import com.atelierlocal.service.ArtisanService;
+import com.atelierlocal.service.AskingService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -33,10 +36,16 @@ public class ArtisanCategoryController {
     
     private final ArtisanCategoryService artisanCategoryService;
     private final ArtisanService artisanService;
+    private final AskingService askingService;
 
-    public ArtisanCategoryController(ArtisanCategoryService artisanCategoryService, ArtisanService artisanService) {
+    public ArtisanCategoryController(
+        ArtisanCategoryService artisanCategoryService,
+        ArtisanService artisanService,
+        AskingService askingService
+        ) {
         this.artisanCategoryService = artisanCategoryService;
         this.artisanService = artisanService;
+        this.askingService = askingService;
     }
 
     // --------------------
@@ -112,5 +121,18 @@ public class ArtisanCategoryController {
             @AuthenticationPrincipal Client currentClient) {
         List<ArtisanResponseDTO> artisansByCategory = artisanService.getAllArtisansByCategory(id, currentClient);
         return ResponseEntity.ok(artisansByCategory);
+    }
+
+    /**
+     * Récupère tous les askings liées à une catégorie
+     * Accessible aux artisans et aux admins
+     */
+    @GetMapping("/{id}/askings")
+    @PreAuthorize("hasAnyRole('ARTISAN', 'ADMIN')")
+    public ResponseEntity<List<AskingResponseDTO>> getAskingsByCategory(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal User currentUser) {
+        List<AskingResponseDTO> askingsByCategory = askingService.getAskingsByCategory(id, currentUser);
+        return ResponseEntity.ok(askingsByCategory);
     }
 }

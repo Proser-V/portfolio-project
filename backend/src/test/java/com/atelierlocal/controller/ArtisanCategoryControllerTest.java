@@ -8,6 +8,7 @@ import com.atelierlocal.model.ArtisanCategory;
 import com.atelierlocal.model.Client;
 import com.atelierlocal.service.ArtisanCategoryService;
 import com.atelierlocal.service.ArtisanService;
+import com.atelierlocal.service.AskingService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,7 @@ class ArtisanCategoryControllerTest {
 
     private ArtisanCategoryService artisanCategoryService;
     private ArtisanService artisanService;
+    private AskingService askingService;
     private ArtisanCategoryController artisanCategoryController;
 
     private UUID categoryId;
@@ -37,7 +39,8 @@ class ArtisanCategoryControllerTest {
     void setUp() {
         artisanCategoryService = mock(ArtisanCategoryService.class);
         artisanService = mock(ArtisanService.class);
-        artisanCategoryController = new ArtisanCategoryController(artisanCategoryService, artisanService);
+        askingService = mock(AskingService.class);
+        artisanCategoryController = new ArtisanCategoryController(artisanCategoryService, artisanService, askingService);
 
         categoryId = UUID.fromString("11111111-1111-1111-1111-111111111111");
 

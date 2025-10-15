@@ -12,6 +12,7 @@ export default function ArtisanPortfolio({
   const [isManaging, setIsManaging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   // Si pas de photos et pas propriétaire, ne rien afficher
   if (photos.length === 0 && !isOwner) {
@@ -22,6 +23,12 @@ export default function ArtisanPortfolio({
   const handleFileUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // Vérifie doublon par nom de fichier
+    if (photos.some((p) => p.uploadedPhotoUrl?.endsWith(file.name))) {
+        setUploadError("Vous avez déjà uploadé ce fichier.");
+        return;
+    }
 
     const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
     if (!allowedTypes.includes(file.type)) {
@@ -56,7 +63,7 @@ export default function ArtisanPortfolio({
       }
 
       const newPhoto = await res.json();
-      
+
       setPhotos((prev) => [...prev, {
         id: newPhoto.id,
         uploadedPhotoUrl: newPhoto.fileUrl,
@@ -147,23 +154,23 @@ export default function ArtisanPortfolio({
   return (
     <div className="w-full mt-8 mb-8">
       {/* En-tête avec titre et bouton gérer */}
-      <div className="flex justify-center items-center gap-4 mb-6">
-        <h2 className="text-center text-blue font-cabin">
-          {isOwner ? "Mon Portfolio" : "Portfolio"}
-        </h2>
+      <div className="flex gap-4 mb-4">
+        <p className="text-center text-blue font-cabin underline">
+          {isOwner ? "Mon Portfolio" : "Mes réalisations"}
+        </p>
         {isOwner && (
           <button
             onClick={() => setIsManaging(!isManaging)}
-            className="px-4 py-2 bg-blue text-white rounded-full hover:bg-gold transition text-sm"
+            className="px-4 py-2 font-cabin bg-blue text-gold border-gold border-2 border-solid rounded-full transition text-sm"
           >
-            {isManaging ? "Terminer" : "Gérer"}
+            {isManaging ? "Retour à la gallerie photo" : "Ajouter / Supprimer des photos"}
           </button>
         )}
       </div>
 
       {/* ============ MODE GESTION (propriétaire uniquement) ============ */}
       {isManaging && isOwner && (
-        <div className="max-w-4xl mx-auto mb-6 p-6 bg-gray-100 rounded-lg">
+        <div className="max-w-4xl mx-auto mb-6 p-6 bg-white border-solid border-gold border-2">
           {/* Upload */}
           <div className="mb-6">
             <label className="block text-blue font-semibold mb-2">
@@ -175,12 +182,14 @@ export default function ArtisanPortfolio({
                 accept="image/png, image/jpeg"
                 onChange={handleFileUpload}
                 disabled={isUploading}
-                className="block w-full text-sm text-gray-500
+                className="block w-full text-sm text-silver
                   file:mr-4 file:py-2 file:px-4
-                  file:rounded-full file:border-0
+                  file:rounded-full file:border-2
                   file:text-sm file:font-semibold
-                  file:bg-blue file:text-white
-                  hover:file:bg-gold file:cursor-pointer
+                  file:bg-blue file:text-gold
+                  file:border-gold file:border-solid
+                  file:font-cabin
+                  file:cursor-pointer font-cabin
                   disabled:opacity-50 disabled:cursor-not-allowed"
               />
               {isUploading && (
@@ -190,7 +199,7 @@ export default function ArtisanPortfolio({
             {uploadError && (
               <p className="text-red-500 text-sm mt-2">{uploadError}</p>
             )}
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-silver mt-2">
               Format accepté : PNG, JPEG • Taille max : 5 Mo
             </p>
           </div>
@@ -214,10 +223,10 @@ export default function ArtisanPortfolio({
                     </div>
                     <button
                       onClick={() => handleDeletePhoto(photo.id)}
-                      className="absolute top-2 right-2 bg-red-500 text-white 
-                                 rounded-full w-8 h-8 flex items-center justify-center
-                                 opacity-0 group-hover:opacity-100 transition-opacity
-                                 hover:bg-red-600"
+                      className="absolute top-2 right-2 bg-blue text-gold
+                                rounded-full w-6 h-6 flex items-center justify-center
+                                opacity-0 group-hover:opacity-100 transition-opacity
+                                border-gold"
                       title="Supprimer"
                     >
                       ✕
@@ -232,12 +241,12 @@ export default function ArtisanPortfolio({
 
       {/* ============ MODE VISUALISATION (carousel) ============ */}
       {!isManaging && photos.length > 0 && (
-        <div className="relative flex items-center justify-center gap-4 px-4 md:px-0">
+        <div className="relative flex items-center justify-center gap-4 px-0 md:px-0">
           {/* Flèche gauche */}
           {photos.length > 1 && (
             <button
               onClick={goToPrevious}
-              className="flex-shrink-0 w-12 h-12 md:w-16 md:h-16 bg-[#E8D4B8] hover:bg-[#d4c0a4] 
+              className="flex-shrink-0 w-6 h-48 md:w-6 md:h-48 bg-[#E8D4B8] hover:bg-[#d4c0a4] 
                          flex items-center justify-center transition-colors duration-200
                          shadow-md"
               aria-label="Image précédente"
@@ -246,47 +255,41 @@ export default function ArtisanPortfolio({
                 width="24" 
                 height="24" 
                 viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="3" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-                className="text-blue"
+                fill="currentColor" 
+                className="text-black"
               >
-                <polyline points="15 18 9 12 15 6"></polyline>
+                <polygon points="20,2 3,12 21,22"></polygon>
               </svg>
             </button>
           )}
 
           {/* Container des images */}
           <div className="flex items-center justify-center gap-4 flex-1 max-w-5xl overflow-hidden">
-            {visibleImages.map((img) => (
-              <div
-                key={img.index}
-                className={`relative transition-all duration-300 ${
+          {visibleImages.map((img) => (
+            <div
+              key={img.index}
+              className={`relative transition-transform duration-300 ease-in-out
+                ${
                   img.position === "center"
-                    ? "w-[280px] h-[280px] md:w-[400px] md:h-[400px] z-20 scale-100"
-                    : "w-[200px] h-[200px] md:w-[280px] md:h-[280px] z-10 scale-90 opacity-70"
-                } ${
-                  photos.length === 1 ? "w-[320px] h-[320px] md:w-[450px] md:h-[450px]" : ""
+                    ? "w-[260px] h-[260px] md:w-[380px] md:h-[380px] z-20 scale-100"
+                    : "w-[200px] h-[200px] md:w-[280px] md:h-[280px] z-10 scale-90 opacity-70 hidden sm:block"
                 }`}
-              >
-                <Image
-                  src={img.photo.uploadedPhotoUrl || img.photo.fileUrl}
-                  alt={`Portfolio image ${img.index + 1}`}
-                  fill
-                  className="object-cover shadow-xl border-4 border-white"
-                  sizes="(max-width: 768px) 280px, 400px"
-                />
-              </div>
-            ))}
+            >
+              <Image
+                src={img.photo.uploadedPhotoUrl || img.photo.fileUrl}
+                alt={`Portfolio image ${img.index + 1}`}
+                fill
+                className="object-cover shadow-xl border-4 border-white"
+              />
+            </div>
+          ))}
           </div>
 
           {/* Flèche droite */}
           {photos.length > 1 && (
             <button
               onClick={goToNext}
-              className="flex-shrink-0 w-12 h-12 md:w-16 md:h-16 bg-[#E8D4B8] hover:bg-[#d4c0a4]
+              className="flex-shrink-0 w-6 h-48 md:w-6 md:h-48 bg-[#E8D4B8] hover:bg-[#d4c0a4]
                          flex items-center justify-center transition-colors duration-200
                          shadow-md"
               aria-label="Image suivante"
@@ -295,14 +298,10 @@ export default function ArtisanPortfolio({
                 width="24" 
                 height="24" 
                 viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="3" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-                className="text-blue"
+                fill="currentColor" 
+                className="text-black"
               >
-                <polyline points="9 18 15 12 9 6"></polyline>
+                <polygon points="4,2 21,12 3,22"></polygon>
               </svg>
             </button>
           )}
@@ -316,10 +315,10 @@ export default function ArtisanPortfolio({
             <button
               key={index}
               onClick={() => setCurrentIndex(index)}
-              className={`w-3 h-3 rounded-full transition-all duration-200 ${
+              className={`w-3 h-2 rounded-full transition-all duration-200 ${
                 index === currentIndex
                   ? "bg-gold w-8"
-                  : "bg-silver hover:bg-gold/50"
+                  : "bg-white hover:bg-gold/50"
               }`}
               aria-label={`Aller à l'image ${index + 1}`}
             />

@@ -17,6 +17,7 @@ public class ArtisanResponseDTO {
     private AvatarDTO avatar;
     private Double latitude;
     private Double longitude;
+    private UUID categoryId;
     private String categoryName;
     private LocalDate activityStartDate;
     private int recommendationsCount;
@@ -32,6 +33,7 @@ public class ArtisanResponseDTO {
         this.avatar = artisan.getAvatar() != null ? new AvatarDTO(artisan.getAvatar()) : null;
         this.latitude = artisan.getLatitude();
         this.longitude = artisan.getLongitude();
+        this.categoryId = artisan.getCategory() != null ? artisan.getCategory().getId() : null;
         this.categoryName = artisan.getCategory() != null ? artisan.getCategory().getName() : null;
         this.activityStartDate = artisan.getActivityStartDate();
         this.recommendationsCount = artisan.getRecommendations() != null ? artisan.getRecommendations().size() : 0;
@@ -68,6 +70,9 @@ public class ArtisanResponseDTO {
 
     public Double getLongitude() { return longitude; }
     public void setLongitude(Double longitude) { this.longitude = longitude; }
+
+    public UUID getCategoryId() { return categoryId; }
+    public void setCategoryId(UUID categoryId) { this.categoryId = categoryId; }
 
     public String getCategoryName() { return categoryName; }
     public void setCategoryName(String categoryName) { this.categoryName = categoryName; }

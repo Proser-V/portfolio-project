@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 export async function getUser() {
   const cookieStore = await cookies();
   const token = cookieStore.get("jwt")?.value;
-  
+
   if (!token) return null;
 
   const cookieHeader = cookieStore
@@ -22,14 +22,15 @@ export async function getUser() {
 
     if (res.ok) {
       const data = await res.json();
+
       return {
-        role: data.role?.toLowerCase(),
         ...data.user,
+        role: data.role?.toLowerCase() || data.user.role?.toLowerCase(),
       };
     }
   } catch (err) {
-    console.error("Erreur récupération user :", err);
+    console.error("Erreur lors de la récupération de l'utilisateur : ", err);
   }
-  
+
   return null;
 }

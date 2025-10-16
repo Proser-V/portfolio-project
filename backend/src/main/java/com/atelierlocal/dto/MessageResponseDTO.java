@@ -1,11 +1,13 @@
 package com.atelierlocal.dto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 import com.atelierlocal.model.Attachment;
 import com.atelierlocal.model.Message;
 import com.atelierlocal.model.MessageStatus;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class MessageResponseDTO {
     private UUID id;
@@ -15,6 +17,8 @@ public class MessageResponseDTO {
     private String messageError;
     private MessageStatus messageStatus;
     private List<Attachment> attachments;
+    @JsonProperty("timestamp")
+    private LocalDateTime createdAt;
 
     public MessageResponseDTO(Message message) {
         this.id = message.getId();
@@ -24,6 +28,7 @@ public class MessageResponseDTO {
         this.attachments = message.getAttachments();
         this.messageError = message.getMessageError();
         this.messageStatus = message.getMessageStatus();
+        this.createdAt = message.getCreatedAt();
     }
 
     public MessageResponseDTO(String errorMessage) {
@@ -50,4 +55,6 @@ public class MessageResponseDTO {
 
     public List<Attachment> getAttachment() { return attachments; }
     public void setAttachment(List<Attachment> attachments) { this.attachments = attachments; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
 }

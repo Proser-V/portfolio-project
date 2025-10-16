@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.atelierlocal.model.Artisan;
+import com.atelierlocal.model.UserRole;
 
 
 public class ArtisanResponseDTO {
@@ -22,6 +23,7 @@ public class ArtisanResponseDTO {
     private LocalDate activityStartDate;
     private int recommendationsCount;
     private List<UploadedPhotoResponseDTO> photoGallery;
+    private UserRole role;
 
     public ArtisanResponseDTO(Artisan artisan) {
         this.id = artisan.getId();
@@ -40,6 +42,7 @@ public class ArtisanResponseDTO {
         this.photoGallery = artisan.getPhotoGallery().stream()
             .map(UploadedPhotoResponseDTO::new)
             .toList();
+        this.role = artisan.getUserRole();
     }
 
     // Getters et setters
@@ -85,4 +88,7 @@ public class ArtisanResponseDTO {
 
     public List<UploadedPhotoResponseDTO> getPhotoGallery() { return photoGallery; }
     public void setPhotoGallery(List<UploadedPhotoResponseDTO> photoGallery) { this.photoGallery = photoGallery; }
+
+    public UserRole getRole() { return role; }
+    public void setRole(UserRole role) { this.role = role; }
 }

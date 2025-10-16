@@ -72,7 +72,6 @@ class MessageServiceTest {
         savedMessage.setContent(expectedContent);
         savedMessage.setSender(sender);
         savedMessage.setReceiver(receiver);
-        savedMessage.setTimestamp(LocalDateTime.now());
         savedMessage.setMessageStatus(com.atelierlocal.model.MessageStatus.DELIVERED);
         when(messageRepo.save(any(com.atelierlocal.model.Message.class))).thenReturn(savedMessage);
 
@@ -119,7 +118,6 @@ class MessageServiceTest {
         savedMessage.setContent(expectedContent);
         savedMessage.setSender(sender);
         savedMessage.setReceiver(receiver);
-        savedMessage.setTimestamp(LocalDateTime.now());
         savedMessage.setMessageStatus(com.atelierlocal.model.MessageStatus.DELIVERED);
         when(messageRepo.save(any(com.atelierlocal.model.Message.class))).thenReturn(savedMessage);
 

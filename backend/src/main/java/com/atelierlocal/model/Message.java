@@ -43,9 +43,6 @@ public class Message {
     private List<Attachment> attachments = new ArrayList<>();
 
     @Column(nullable = false)
-    private LocalDateTime timestamp;
-
-    @Column(nullable = false)
     private boolean isRead = false;
 
     private String messageError;
@@ -71,9 +68,6 @@ public class Message {
 
     public String getContent() { return content; }
     public void setContent(String content) { this.content = content; }
-
-    public LocalDateTime getTimestamp() { return timestamp; }
-    public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
 
     public boolean isRead() { return isRead; }
     public void setRead(boolean isRead) { this.isRead = isRead; }

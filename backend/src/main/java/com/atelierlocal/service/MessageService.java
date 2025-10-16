@@ -1,12 +1,11 @@
 package com.atelierlocal.service;
 
+import java.io.IOException;
 import java.io.InputStream;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.io.IOException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,8 +14,8 @@ import com.atelierlocal.dto.ConversationSummaryDTO;
 import com.atelierlocal.dto.MessageRequestDTO;
 import com.atelierlocal.dto.MessageResponseDTO;
 import com.atelierlocal.model.Artisan;
-import com.atelierlocal.model.Client;
 import com.atelierlocal.model.Attachment;
+import com.atelierlocal.model.Client;
 import com.atelierlocal.model.Message;
 import com.atelierlocal.model.S3Properties;
 import com.atelierlocal.model.User;
@@ -25,10 +24,9 @@ import com.atelierlocal.repository.UserRepo;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.core.sync.RequestBody;
 
 @Service
 public class MessageService {
@@ -63,7 +61,6 @@ public class MessageService {
             message.setSender(sender);
             message.setReceiver(receiver);
             message.setContent(dto.getContent());
-            message.setTimestamp(LocalDateTime.now());
             message.setMessageStatus(com.atelierlocal.model.MessageStatus.DELIVERED);
 
             if (dto.getFile() != null && !dto.getFile().isEmpty()) {
@@ -132,7 +129,7 @@ public class MessageService {
         try {
             validateUserIds(user1Id, user2Id);
             List<Message> messages = messageRepo
-                .findBySenderIdAndReceiverIdOrReceiverIdAndSenderIdOrderByTimestampAsc(user1Id, user2Id, user1Id, user2Id);
+                .findBySenderIdAndReceiverIdOrReceiverIdAndSenderIdOrderByCreatedAtAsc(user1Id, user2Id, user1Id, user2Id);
             return messages.stream()
                     .map(MessageResponseDTO::new)
                     .collect(Collectors.toList());
@@ -163,7 +160,7 @@ public class MessageService {
                     .collect(Collectors.toMap(
                             m -> m.getSender().getId().equals(userId) ? m.getReceiver().getId() : m.getSender().getId(),
                             m -> m,
-                            (m1, m2) -> m1.getTimestamp().isAfter(m2.getTimestamp()) ? m1 : m2
+                            (m1, m2) -> m1.getCreatedAt().isAfter(m2.getCreatedAt()) ? m1 : m2
                     ));
 
             return latestMessages.values().stream()
@@ -177,7 +174,7 @@ public class MessageService {
                                 otherUserName,
                                 otherUserRole,
                                 m.getContent(),
-                                m.getTimestamp()
+                                m.getCreatedAt()
                         );
                     })
                     .sorted((dto1, dto2) -> dto2.getLastTimestamp().compareTo(dto1.getLastTimestamp()))

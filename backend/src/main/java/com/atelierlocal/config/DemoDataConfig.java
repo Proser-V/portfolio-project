@@ -316,7 +316,6 @@ public class DemoDataConfig {
             msg1.setSender(client1);
             msg1.setReceiver(artisan1);
             msg1.setContent("Bonjour, pourriez-vous intervenir pour une fuite dans ma salle de bain ?");
-            msg1.setTimestamp(LocalDateTime.now().minusDays(2));
             msg1.setMessageStatus(MessageStatus.DELIVERED);
             msg1.setRead(true);
 
@@ -324,7 +323,6 @@ public class DemoDataConfig {
             msg2.setSender(artisan1);
             msg2.setReceiver(client1);
             msg2.setContent("Bonjour Jean, oui bien sûr. Pouvez-vous m'envoyer votre adresse exacte ?");
-            msg2.setTimestamp(LocalDateTime.now().minusDays(1).minusHours(3));
             msg2.setMessageStatus(MessageStatus.DELIVERED);
             msg2.setRead(true);
 
@@ -332,7 +330,6 @@ public class DemoDataConfig {
             msg3.setSender(client1);
             msg3.setReceiver(artisan1);
             msg3.setContent("C'est au 10 rue du Bourg, 21000 Dijon. Merci !");
-            msg3.setTimestamp(LocalDateTime.now().minusHours(6));
             msg3.setMessageStatus(MessageStatus.DELIVERED);
             msg3.setRead(false);
 
@@ -340,7 +337,6 @@ public class DemoDataConfig {
             msg4.setSender(client2);
             msg4.setReceiver(artisan2);
             msg4.setContent("Bonjour, j'aurais besoin d'un devis pour remettre aux normes mon installation électrique.");
-            msg4.setTimestamp(LocalDateTime.now().minusDays(1));
             msg4.setMessageStatus(MessageStatus.DELIVERED);
             msg4.setRead(false);
 
@@ -348,7 +344,6 @@ public class DemoDataConfig {
             msg5.setSender(artisan3);
             msg5.setReceiver(client2);
             msg5.setContent("Bonjour Sophie, je peux passer jeudi pour voir votre projet de artCat4 si vous voulez.");
-            msg5.setTimestamp(LocalDateTime.now().minusHours(12));
             msg5.setMessageStatus(MessageStatus.DELIVERED);
             msg5.setRead(false);
 

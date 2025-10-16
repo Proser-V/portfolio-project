@@ -3,7 +3,6 @@ package com.atelierlocal.controller;
 import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -15,14 +14,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.atelierlocal.dto.ConversationSummaryDTO;
 import com.atelierlocal.dto.MessageRequestDTO;
 import com.atelierlocal.dto.MessageResponseDTO;
 import com.atelierlocal.model.User;
 import com.atelierlocal.repository.UserRepo;
 import com.atelierlocal.service.MessageService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -48,23 +45,42 @@ public class MessageController {
     @MessageMapping("/chat")
     public void processMessage(@Valid MessageRequestDTO message, Principal principal) {
         try {
+            logger.info("Message reçu via WebSocket de: {}", principal.getName());
+            
             // Récupérer l'UUID de l'utilisateur authentifié à partir de son e-mail
             String email = principal.getName();
             User authenticatedUser = userRepo.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé: " + email));
             UUID authenticatedId = authenticatedUser.getId();
+            
+            // Forcer le senderId à être celui de l'utilisateur authentifié
             message.setSenderId(authenticatedId);
 
-            logger.info("Réception d'un message de {} à {}", message.getSenderId(), message.getReceiverId());
+            logger.info("Traitement message de {} à {}", message.getSenderId(), message.getReceiverId());
+            
+            // Sauvegarder le message via le service
             MessageResponseDTO response = messageService.sendMessage(message);
 
+            // Récupérer l'email du destinataire pour le routing WebSocket
+            User receiverUser = userRepo.findById(response.getReceiverId())
+                .orElseThrow(() -> new IllegalArgumentException("Destinataire non trouvé"));
+
+            // IMPORTANT: Envoyer le message au DESTINATAIRE
             messagingTemplate.convertAndSendToUser(
-                response.getReceiverId().toString(),
+                receiverUser.getEmail(), // Utiliser l'email pour le routing
                 "/queue/messages",
                 response
             );
+            logger.info("Message envoyé à {} ({})", receiverUser.getEmail(), response.getReceiverId());
 
-            logger.info("Message envoyé à {} via WebSocket", response.getReceiverId());
+            // IMPORTANT: Envoyer aussi au SENDER pour mettre à jour son interface
+            messagingTemplate.convertAndSendToUser(
+                email, // Email de l'expéditeur
+                "/queue/messages",
+                response
+            );
+            logger.info("Message confirmé à l'expéditeur {}", email);
+
         } catch (Exception e) {
             logger.error("Erreur lors du traitement du message : {}", e.getMessage(), e);
 
@@ -72,20 +88,14 @@ public class MessageController {
                 "Erreur lors de l'envoi du message : " + e.getMessage()
             );
 
-            String receiver = (message.getReceiverId() != null) ? message.getReceiverId().toString() : null;
-            if (receiver != null) {
+            // Envoyer l'erreur à l'expéditeur
+            if (principal != null) {
                 messagingTemplate.convertAndSendToUser(
-                    receiver,
+                    principal.getName(),
                     "/queue/messages",
                     errorResponse
                 );
             }
-
-            messagingTemplate.convertAndSendToUser(
-                principal.getName(),
-                "/queue/messages",
-                errorResponse
-            );
         }
     }
 
@@ -102,20 +112,19 @@ public class MessageController {
         @RequestParam UUID user2Id,
         Principal principal
     ) {
-        // Récupérer l'UUID de l'utilisateur authentifié à partir de son e-mail
         String email = principal.getName();
         User authenticatedUser = userRepo.findByEmail(email)
             .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé: " + email));
         UUID authId = authenticatedUser.getId();
 
-        // Vérifier que l'utilisateur authentifié est l'un des deux utilisateurs de la conversation
         if (!(authId.equals(user1Id) || authId.equals(user2Id))) {
-            logger.warn("Accès refusé: authId={} n'est ni user1Id={} ni user2Id={}", authId, user1Id, user2Id);
+            logger.warn("⚠️ Accès refusé: authId={} n'est ni user1Id={} ni user2Id={}", authId, user1Id, user2Id);
             return ResponseEntity.status(403).build();
         }
 
         try {
             List<MessageResponseDTO> conversation = messageService.getConversation(user1Id, user2Id);
+            logger.info("Historique récupéré: {} messages", conversation.size());
             return ResponseEntity.ok(conversation);
         } catch (Exception e) {
             logger.error("Erreur lors de la récupération de l'historique: {}", e.getMessage(), e);
@@ -141,7 +150,7 @@ public class MessageController {
         UUID authId = authenticatedUser.getId();
 
         if (!authId.equals(userId)) {
-            logger.warn("Tentative d'accès aux conversations d'un autre utilisateur = auth={}, request={}", authId, userId);
+            logger.warn("⚠️ Tentative d'accès aux conversations d'un autre utilisateur = auth={}, request={}", authId, userId);
             return ResponseEntity.status(403).build();
         }
 

@@ -1,23 +1,18 @@
 package com.atelierlocal.security;
 
-import java.util.Arrays;
 import java.util.Map;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
-import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
-import jakarta.servlet.http.Cookie;
-
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
-
 @Component
 public class JwtHandshakeInterceptor implements HandshakeInterceptor {
-
+    private static final Logger logger = LoggerFactory.getLogger(JwtHandshakeInterceptor.class);
+    
     private final JwtService jwtService;
 
     public JwtHandshakeInterceptor(JwtService jwtService) {
@@ -26,44 +21,56 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
 
     @Override
     public boolean beforeHandshake(
-        @NonNull ServerHttpRequest request,
-        @NonNull ServerHttpResponse response,
-        @NonNull WebSocketHandler wsHandler,
-        @NonNull Map<String, Object> attributes) {
-
-        if (request instanceof ServletServerHttpRequest servletRequest) {
-            var httpRequest = servletRequest.getServletRequest();
-
-            String token = httpRequest.getParameter("token");
-
-            if (token == null) {
-                String auth = httpRequest.getHeader("Authorization");
-                if (auth != null && auth.startsWith("Bearer ")) {
-                    token = auth.substring(7);
+            ServerHttpRequest request, 
+            ServerHttpResponse response,
+            WebSocketHandler wsHandler, 
+            Map<String, Object> attributes) throws Exception {
+        
+        logger.info("🤝 Handshake WebSocket - URI: {}", request.getURI());
+        
+        // Récupérer le token depuis les headers
+        String authHeader = request.getHeaders().getFirst("Authorization");
+        
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            logger.info("🔑 Token trouvé dans handshake");
+            
+            try {
+                // Vérifier la validité du token (sans UserDetails)
+                String username = jwtService.extractUsername(token);
+                
+                if (username != null && !jwtService.isTokenExpired(token)) {
+                    logger.info("✅ Token valide pour: {}", username);
+                    // Stocker le token dans les attributs pour l'utiliser plus tard
+                    attributes.put("jwt", token);
+                    attributes.put("username", username);
+                    return true;
+                } else {
+                    logger.warn("⚠️ Token invalide ou expiré");
                 }
+            } catch (Exception e) {
+                logger.error("❌ Erreur lors de la validation du token: {}", e.getMessage());
             }
-
-            if (token == null && httpRequest.getCookies() != null) {
-                token = Arrays.stream(httpRequest.getCookies())
-                    .filter(c -> "jwt".equals(c.getName()))
-                    .map(Cookie::getValue)
-                    .findFirst()
-                    .orElse(null);
-            }
-
-            if (token != null && jwtService.isTokenValid(token, null)) {
-                attributes.put("jwt", token);
-                return true;
-            }
+        } else {
+            logger.warn("⚠️ Pas de token Authorization dans le handshake");
         }
-        return false;
+        
+        // Permettre la connexion même sans token valide pour le moment
+        // Le ChannelInterceptor s'occupera de l'authentification
+        return true;
     }
 
     @Override
     public void afterHandshake(
-        @NonNull ServerHttpRequest request,
-        @NonNull ServerHttpResponse response,
-        @NonNull WebSocketHandler wsHandler,
-        @Nullable Exception exception) {
+            ServerHttpRequest request, 
+            ServerHttpResponse response,
+            WebSocketHandler wsHandler, 
+            Exception exception) {
+        
+        if (exception != null) {
+            logger.error("❌ Erreur après handshake: {}", exception.getMessage());
+        } else {
+            logger.info("✅ Handshake terminé avec succès");
         }
+    }
 }

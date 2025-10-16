@@ -37,23 +37,28 @@ class MessageControllerTest {
     private UUID authenticatedUserId;
     private Principal mockPrincipal;
     private Artisan mockUser;
+    private String userEmail = "test@mail.com";
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         authenticatedUserId = UUID.randomUUID();
-        mockPrincipal = () -> "test@mail.com";
+        mockPrincipal = () -> userEmail;
 
         mockUser = new Artisan();
         mockUser.setId(authenticatedUserId);
-        mockUser.setEmail("test@mail.com");
+        mockUser.setEmail(userEmail);
 
-        when(userRepo.findByEmail("test@mail.com")).thenReturn(Optional.of(mockUser));
+        when(userRepo.findByEmail(userEmail)).thenReturn(Optional.of(mockUser));
     }
 
     @Test
     void testProcessMessageSuccess() {
         UUID receiverId = UUID.randomUUID();
+        String receiverEmail = "receiver@mail.com";
+        Artisan receiverUser = new Artisan();
+        receiverUser.setId(receiverId);
+        receiverUser.setEmail(receiverEmail);
 
         MessageRequestDTO request = new MessageRequestDTO();
         request.setReceiverId(receiverId);
@@ -61,6 +66,9 @@ class MessageControllerTest {
 
         MessageResponseDTO response = new MessageResponseDTO("Hello");
         response.setReceiverId(receiverId);
+        response.setSenderId(authenticatedUserId);
+
+        when(userRepo.findById(receiverId)).thenReturn(Optional.of(receiverUser));
         when(messageService.sendMessage(any(MessageRequestDTO.class))).thenReturn(response);
 
         messageController.processMessage(request, mockPrincipal);
@@ -70,7 +78,9 @@ class MessageControllerTest {
         assertEquals(authenticatedUserId, captor.getValue().getSenderId());
 
         verify(messagingTemplate, times(1))
-            .convertAndSendToUser(eq(receiverId.toString()), eq("/queue/messages"), eq(response));
+            .convertAndSendToUser(eq(receiverEmail), eq("/queue/messages"), eq(response));
+        verify(messagingTemplate, times(1))
+            .convertAndSendToUser(eq(userEmail), eq("/queue/messages"), eq(response));
     }
 
     @Test
@@ -89,12 +99,11 @@ class MessageControllerTest {
         verify(messageService, times(1)).sendMessage(any(MessageRequestDTO.class));
 
         ArgumentCaptor<MessageResponseDTO> captor = ArgumentCaptor.forClass(MessageResponseDTO.class);
-        verify(messagingTemplate, times(2))
-            .convertAndSendToUser(anyString(), eq("/queue/messages"), captor.capture());
+        verify(messagingTemplate, times(1))
+            .convertAndSendToUser(eq(userEmail), eq("/queue/messages"), captor.capture());
 
-        for (MessageResponseDTO errorMsg : captor.getAllValues()) {
-            assertTrue(errorMsg.getMessageError().contains("Service down"));
-        }
+        MessageResponseDTO errorMsg = captor.getValue();
+        assertTrue(errorMsg.getMessageError().contains("Service down"));
     }
 
     @Test
@@ -126,7 +135,7 @@ class MessageControllerTest {
 
         var responseEntity = messageController.getHistory(user1, user2, mockPrincipal);
 
-        assertEquals(HttpStatus.FORBIDDEN , responseEntity.getStatusCode());
+        assertEquals(HttpStatus.FORBIDDEN, responseEntity.getStatusCode());
         assertNull(responseEntity.getBody());
 
         verify(messageService, never()).getConversation(any(), any());

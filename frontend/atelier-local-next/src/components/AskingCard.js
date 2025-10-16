@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import placeholder from "../../public/tronche.jpg";
+import Link from "next/link";
 
 async function getClient(clientId) {
   try {
@@ -113,60 +114,68 @@ export default function AskingCard({ asking, className }) {
           <>
             {/* Fond noir semi-transparent */}
             <motion.div
-              className="fixed inset-0 bg-black bg-opacity-50 z-40"
+              className="fixed inset-0 z-40 bg-black bg-opacity-50 flex items-center justify-center"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setIsOpen(false)}
-            />
-
-            {/* Carte agrandie au centre */}
-            <motion.div
-              className="fixed z-50 top-1/2 left-1/2 bg-white border-2 border-gold shadow-2xl rounded-lg w-[90%] max-w-2xl transform -translate-x-1/2 -translate-y-1/2 overflow-hidden"
-              initial={{ opacity: 0, scale: 0.9, y: 30 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 30 }}
-              transition={{ duration: 0.3 }}
+              onClick={() => setIsOpen(false)} // clic sur le fond ferme le modal
             >
-              <div className="relative w-full h-56">
-                <Image
-                  src={client?.avatar || placeholder}
-                  alt="Client avatar"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-
-              <div className="p-6">
-                <h2 className="text-2xl font-cabin text-gold mb-2">
-                  {asking?.title}
-                </h2>
-                <p className="text-silver italic text-sm mb-1">{daysAgoText}</p>
-                <p className="text-blue mb-2">
-                  {event?.name
-                    ? `${event.name} • ${asking?.eventLocalisation} • ${formattedDate}`
-                    : asking?.eventLocalisation || "Lieu inconnu"}
-                </p>
-                <p className="text-base text-silver font-cabin mb-6">
-                  {asking?.content || "Aucune description fournie."}
-                </p>
-
-                <div className="flex justify-between items-center">
-                  <button
-                    onClick={() => setIsOpen(false)}
-                    className="px-4 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition"
-                  >
-                    Fermer
-                  </button>
-                  <button
-                    onClick={() => alert(`Contact avec ${client?.firstName || "le client"}`)}
-                    className="px-5 py-2 rounded-full bg-gold text-white hover:bg-yellow-600 transition"
-                  >
-                    Contacter le client
-                  </button>
+              <motion.div
+                className="bg-white shadow-2xl w-[90%] max-w-2xl overflow-hidden relative border-2 border-gold border-solid"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.3 }}
+                onClick={(e) => e.stopPropagation()} // empêche fermeture quand on clique dedans
+              >
+                <div className="flex flox-col md:flex-row">
+                <div className="relative w-full sm:w-48 h-48 flex-shrink-0">
+                  <Image
+                    src={client?.avatar || placeholder}
+                    alt={`${client?.firstName || ""} ${client?.lastName || "Client"} avatar`}
+                    fill
+                    className="object-cover"
+                  />
                 </div>
-              </div>
+
+                {/* Contenu résumé */}
+                <div className="flex flex-col justify-start px-6 text-center sm:text-left flex-grow py-2">
+                  <p className="text-xl sm:text-2xl text-gold font-cabin my-0">
+                    {client
+                      ? `${client.firstName || ""} ${client.lastName || ""}`.trim()
+                      : "Client anonyme"}
+                  </p>
+                  <p className="text-xs sm:text-sm text-silver font-cabin italic mt-1 mb-3">
+                    {daysAgoText}
+                  </p>
+                  <p className="text-xl sm:text-lg text-blue font-cabin my-1">
+                    {asking?.title}
+                  </p>
+                  <p className="text-sm text-silver font-cabin my-0">
+                    {event?.name
+                      ? `${event.name} • ${asking?.eventLocalisation || "Lieu inconnu"} • ${formattedDate}`
+                      : asking?.eventLocalisation || "Lieu inconnu"}
+                  </p>
+                  <div className="flex items-center mt-2">
+                  <Link
+                    href="/"
+                    className="w-3/4 h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
+                  text-gold text-base font-cabin flex items-center justify-center text-center py-1"
+                  >
+                    Répondre directement à {client?.firstName}
+                  </Link>
+                </div>
+                  </div>
+                </div>
+                <div className="text-center my-8 px-8">
+                  <p className="text-sm sm:text-base text-blue font-cabin mt-2 mb-2">
+                    "
+                    {asking?.content}
+                    "
+                  </p>
+                </div>
             </motion.div>
+          </motion.div>
           </>
         )}
       </AnimatePresence>

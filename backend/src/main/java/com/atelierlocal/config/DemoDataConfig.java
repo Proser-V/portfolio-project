@@ -14,6 +14,7 @@ import com.atelierlocal.model.Artisan;
 import com.atelierlocal.model.ArtisanCategory;
 import com.atelierlocal.model.Asking;
 import com.atelierlocal.model.AskingStatus;
+import com.atelierlocal.model.Avatar;
 import com.atelierlocal.model.Client;
 import com.atelierlocal.model.EventCategory;
 import com.atelierlocal.model.Message;
@@ -26,6 +27,7 @@ import com.atelierlocal.repository.AskingRepo;
 import com.atelierlocal.repository.ClientRepo;
 import com.atelierlocal.repository.EventCategoryRepo;
 import com.atelierlocal.repository.MessageRepo;
+import com.atelierlocal.repository.AvatarRepo;
 import com.atelierlocal.service.PasswordService;
 
 @Configuration
@@ -40,7 +42,8 @@ public class DemoDataConfig {
         ArtisanCategoryRepo categoryRepo,
         AskingRepo askingRepo,
         PasswordService passwordService,
-        MessageRepo messageRepo
+        MessageRepo messageRepo,
+        AvatarRepo  avatarRepo
     ) {
         return args -> {
             if (clientRepo.count() > 0 || artisanRepo.count() > 0 || categoryRepo.count() > 0) {
@@ -51,6 +54,7 @@ public class DemoDataConfig {
             /* -----------------------------
              * Catégories d'artisans
              * ----------------------------- */
+
             ArtisanCategory plomberie = new ArtisanCategory();
             plomberie.setName("Plomberie");
             plomberie.setDescription("Travaux d'installation et de dépannage en plomberie.");
@@ -83,6 +87,7 @@ public class DemoDataConfig {
             /* -----------------------------
              * Clients (dont admin)
              * ----------------------------- */
+
             Client admin = new Client();
             admin.setEmail("admin@mail.com");
             admin.setHashedPassword(passwordService.hashPassword("password"));
@@ -121,6 +126,7 @@ public class DemoDataConfig {
             /* -----------------------------
              * Artisan 1
              * ----------------------------- */
+
             Artisan artisan1 = new Artisan();
             artisan1.setEmail("artisan1@mail.com");
             artisan1.setHashedPassword(passwordService.hashPassword("password"));
@@ -208,9 +214,10 @@ public class DemoDataConfig {
             /* -----------------------------
             * Demandes (Askings)
             * ----------------------------- */
+
             Asking asking1 = new Asking();
             asking1.setTitle("Fuite sous évier");
-            asking1.setContent("Bonjour, j'ai une petite fuite d'eau sous l'évier de ma cuisine. Pouvez-vous intervenir rapidement ?");
+            asking1.setContent("Bonjour, je rencontre actuellement un problème assez important avec ma plomberie dans ma cuisine. Une fuite d'eau s'est déclarée sous l'évier, provoquant un débordement dans le meuble inférieur et des traces d'humidité sur le sol. Je souhaite qu'un artisan qualifié intervienne rapidement pour identifier précisément la source de la fuite, remplacer ou réparer les éléments défectueux tels que les tuyaux, joints, robinets ou siphons, et vérifier l'ensemble du réseau sous l'évier afin d'éviter toute fuite supplémentaire. Je souhaiterais également recevoir un devis détaillé avant l'intervention, connaître vos disponibilités dans les prochains jours et vos conditions de travail. Je peux fournir des photos ou d'autres informations si nécessaire. Merci d'avance pour votre retour rapide et votre professionnalisme. Il est très important que l'intervention soit effectuée dans les plus brefs délais, car l'eau pourrait endommager davantage mes meubles et le sol si rien n'est fait rapidement. Merci.");
             asking1.setEventCategory(depannage);
             asking1.setEventLocalisation("Dijon");
             asking1.setEventDate(LocalDateTime.now().plusDays(2));
@@ -220,9 +227,6 @@ public class DemoDataConfig {
             Asking asking2 = new Asking();
             asking2.setTitle("Installation de chauffe-eau");
             asking2.setContent("Je souhaite remplacer mon ancien chauffe-eau par un modèle plus récent. Besoin d'un devis.");
-            asking2.setEventCategory(renovation);
-            asking2.setEventLocalisation("Chenôve");
-            asking2.setEventDate(LocalDateTime.now().plusWeeks(1));
             asking2.setClient(client2);
             asking2.setArtisanCategory(plomberie);
 
@@ -234,8 +238,43 @@ public class DemoDataConfig {
             askingRepo.saveAll(List.of(asking1, asking2));
 
             /* -----------------------------
- * Messages de démo
- * ----------------------------- */
+             * Avatars
+             * ----------------------------- */
+            Avatar avatar1 = new Avatar();
+            avatar1.setExtension(".jpeg");
+            avatar1.setAvatarUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/devenir-forgeron.jpeg");
+            avatar1.setUser(artisan1);
+
+            Avatar avatar2 = new Avatar();
+            avatar1.setExtension(".jpg");
+            avatar1.setAvatarUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/horaires-patissier.jpg");
+            avatar1.setUser(artisan2);
+
+            Avatar avatar3 = new Avatar();
+            avatar1.setExtension(".jpg");
+            avatar1.setAvatarUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/la-matriarche-de-veruschka-zarate-couture-sur-papier-foundation-paper-piecing.jpg");
+            avatar1.setUser(artisan3);
+
+            Avatar avatar4 = new Avatar();
+            avatar1.setExtension(".jpg");
+            avatar1.setAvatarUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/random2.jpg");
+            avatar1.setUser(client1);
+
+            Avatar avatar5 = new Avatar();
+            avatar1.setExtension(".jpg");
+            avatar1.setAvatarUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/random3.jpg");
+            avatar1.setUser(client2);
+
+            Avatar avatar6 = new Avatar();
+            avatar1.setExtension(".jpg");
+            avatar1.setAvatarUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/random4.jpg");
+            avatar1.setUser(admin);
+
+            avatarRepo.saveAll(Arrays.asList(avatar1, avatar2, avatar3, avatar4, avatar5, avatar6));
+            
+            /* -----------------------------
+            * Messages de démo
+            * ----------------------------- */
             Message msg1 = new Message();
             msg1.setSender(client1);
             msg1.setReceiver(artisan1);

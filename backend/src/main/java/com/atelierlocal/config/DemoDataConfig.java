@@ -68,7 +68,7 @@ public class DemoDataConfig {
             artCat3.setDescription("Installation et rénovation électrique.");
 
             ArtisanCategory artCat4 = new ArtisanCategory();
-            artCat4.setName("Manuisier");
+            artCat4.setName("Menuisier");
             artCat4.setDescription("Travail du bois et fabrication sur mesure.");
 
             categoryRepo.saveAll(Arrays.asList(artCat1, artCat2, artCat3, artCat4));
@@ -204,7 +204,7 @@ public class DemoDataConfig {
             artisan3.setHashedPassword(passwordService.hashPassword("password"));
             artisan3.setActive(true);
             artisan3.setUserRole(UserRole.ARTISAN);
-            artisan3.setName("artCat4 Sud Dijonnais");
+            artisan3.setName("Le Bois du Sud Dijonnais");
             artisan3.setBio("Fabrication sur mesure et rénovation bois.");
             artisan3.setCategory(artCat4);
             artisan3.setSiret("34567890123456");

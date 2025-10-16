@@ -39,7 +39,7 @@ export default function AskingCard({ asking, className }) {
   const [event, setEvent] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
 
-  console.log("cleitn", client);
+
   useEffect(() => {
     if (asking?.clientId) getClient(asking.clientId).then(setClient);
     if (asking?.eventCategoryId) getEventCategory(asking.eventCategoryId).then(setEvent);
@@ -72,7 +72,7 @@ export default function AskingCard({ asking, className }) {
         {/* Image client */}
         <div className="relative w-full sm:w-48 h-48 flex-shrink-0">
           <Image
-            src={client.avatar?.url || placeholder}
+            src={client?.avatar?.url || placeholder}
             alt={`${client?.firstName || ""} ${client?.lastName || "Client"} avatar`}
             fill
             className="object-cover"
@@ -129,15 +129,15 @@ export default function AskingCard({ asking, className }) {
                 transition={{ duration: 0.3 }}
                 onClick={(e) => e.stopPropagation()} // empêche fermeture quand on clique dedans
               >
-                <div className="flex flox-col md:flex-row">
-                <div className="relative w-full sm:w-48 h-48 flex-shrink-0">
-                  <Image
-                    src={client.avatar?.url || placeholder}
-                    alt={`${client?.firstName || ""} ${client?.lastName || "Client"} avatar`}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
+                <div className="flex md:flex-row">
+                  <div className="relative w-1/2 sm:w-48 h-48 flex-shrink-0">
+                    <Image
+                      src={client.avatar?.url || placeholder}
+                      alt={`${client?.firstName || ""} ${client?.lastName || "Client"} avatar`}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
 
                 {/* Contenu résumé */}
                 <div className="flex flex-col justify-start px-6 text-center sm:text-left flex-grow py-2">
@@ -149,21 +149,21 @@ export default function AskingCard({ asking, className }) {
                   <p className="text-xs sm:text-sm text-silver font-cabin italic mt-1 mb-3">
                     {daysAgoText}
                   </p>
-                  <p className="text-xl sm:text-lg text-blue font-cabin my-1">
+                  <p className="text-base md:text-xl text-blue font-cabin my-1">
                     {asking?.title}
                   </p>
-                  <p className="text-sm text-silver font-cabin my-0">
+                  <p className="text-xs md:text-sm text-silver font-cabin my-0">
                     {event?.name
-                      ? `${event.name} • ${asking?.eventLocalisation || "Lieu inconnu"} • ${formattedDate}`
-                      : asking?.eventLocalisation || "Lieu inconnu"}
+                      ? `${event.name} • ${asking?.eventLocalisation || ""} • ${formattedDate}`
+                      : asking?.eventLocalisation || ""}
                   </p>
                   <div className="flex items-center mt-2">
                   <Link
-                    href="/"
-                    className="w-3/4 h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
-                  text-gold text-base font-cabin flex items-center justify-center text-center py-1"
+                    href={`/messenger/${client.id}`}
+                    className="w-full md:w-3/4 h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
+                  text-gold md:text-base text-sm font-cabin flex items-center justify-center text-center p-1"
                   >
-                    Répondre directement à {client?.firstName}
+                    Répondre à {client?.firstName}
                   </Link>
                 </div>
                   </div>

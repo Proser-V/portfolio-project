@@ -264,15 +264,15 @@ export default function ArtisanPortfolio({
           )}
 
           {/* Container des images */}
-          <div className="flex items-center justify-center gap-4 flex-1 max-w-5xl overflow-hidden">
+          <div className="flex items-center justify-center flex-1 max-w-5xl overflow-hidden">
           {visibleImages.map((img) => (
             <div
               key={img.index}
               className={`relative transition-transform duration-300 ease-in-out
                 ${
                   img.position === "center"
-                    ? "w-[260px] h-[260px] md:w-[380px] md:h-[380px] z-20 scale-100"
-                    : "w-[200px] h-[200px] md:w-[280px] md:h-[280px] z-10 scale-90 opacity-70 hidden sm:block"
+                    ? "w-[260px] h-[260px] md:w-[600px] md:h-[400px] z-20 scale-100"
+                    : "w-[200px] h-[200px] md:w-[280px] md:h-[300px] z-10 scale-90 opacity-70 hidden sm:block -mx-16"
                 }`}
             >
               <Image

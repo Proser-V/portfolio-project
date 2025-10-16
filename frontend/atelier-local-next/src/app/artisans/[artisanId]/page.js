@@ -57,7 +57,7 @@ export default async function ArtisanProfilePage({ params }) {
         <div className="w-full flex flex-col md:flex-row items-center gap-4">
           {/* Colonne gauche - Avatar et infos */}
           <div className="flex flex-col w-[250px] items-center gap-2">
-            <div className="w-[250px] h-[250px] overflow-hidden shadow-lg border-2 border-black">
+            <div className="w-[200px] h-[200px] md:w-[250px] md:h-[250px] overflow-hidden shadow-lg border-2 border-black">
               <Image
                 src={artisan.avatar.url || placeholder}
                 alt={`${artisan.name} avatar`}
@@ -68,12 +68,12 @@ export default async function ArtisanProfilePage({ params }) {
             </div>
             <h2 className="text-gold text-xl mt-0 font-cabin">{artisan.name}</h2>
             <p className="block text-center text-sm text-silver mt-0">
-              Recommandé {artisan.recommendations} fois par les habitants pour ses réalisations
+              Recommandé {artisan.recommendations} fois par les habitants
             </p>
           </div>
 
           {/* Colonne droite - Carte principale */}
-          <div className="relative flex flex-col bg-white border-gold border-2 border-solid w-full max-w-7xl mx-auto mb-6 overflow-hidden">
+          <div className="relative flex flex-col bg-white border-gold border-2 border-solid w-full md:min-w-[700px] max-w-7xl mx-auto mb-6 overflow-hidden">
             {/* Filigrane */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="relative w-[300px] h-[300px]">

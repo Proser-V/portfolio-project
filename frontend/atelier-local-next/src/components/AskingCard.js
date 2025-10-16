@@ -39,6 +39,7 @@ export default function AskingCard({ asking, className }) {
   const [event, setEvent] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
 
+  console.log("cleitn", client);
   useEffect(() => {
     if (asking?.clientId) getClient(asking.clientId).then(setClient);
     if (asking?.eventCategoryId) getEventCategory(asking.eventCategoryId).then(setEvent);
@@ -71,7 +72,7 @@ export default function AskingCard({ asking, className }) {
         {/* Image client */}
         <div className="relative w-full sm:w-48 h-48 flex-shrink-0">
           <Image
-            src={client?.avatar || placeholder}
+            src={client.avatar?.url || placeholder}
             alt={`${client?.firstName || ""} ${client?.lastName || "Client"} avatar`}
             fill
             className="object-cover"
@@ -93,8 +94,8 @@ export default function AskingCard({ asking, className }) {
           </p>
           <p className="text-sm text-silver font-cabin my-0">
             {event?.name
-              ? `${event.name} • ${asking?.eventLocalisation || "Lieu inconnu"} • ${formattedDate}`
-              : asking?.eventLocalisation || "Lieu inconnu"}
+              ? `${event.name} • ${asking?.eventLocalisation || ""} • ${formattedDate}`
+              : asking?.eventLocalisation || ""}
           </p>
           <p className="text-sm sm:text-base text-silver font-cabin mt-2 mb-2">
             "
@@ -131,7 +132,7 @@ export default function AskingCard({ asking, className }) {
                 <div className="flex flox-col md:flex-row">
                 <div className="relative w-full sm:w-48 h-48 flex-shrink-0">
                   <Image
-                    src={client?.avatar || placeholder}
+                    src={client.avatar?.url || placeholder}
                     alt={`${client?.firstName || ""} ${client?.lastName || "Client"} avatar`}
                     fill
                     className="object-cover"

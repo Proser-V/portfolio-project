@@ -3,7 +3,6 @@ import Link from "next/link";
 import avatar from "../../public/tronche.jpg"
 
 export default function ArtisanHome({ artisan, artisans }) {
-    console.log("artisans", artisans)
     return (
         <section className="relative mx-auto px-4 sm:px-6 md:px-8">
             <h1 className="text-blue text-xl md:text-2xl text-center mt-4 font-cabin">
@@ -21,7 +20,7 @@ export default function ArtisanHome({ artisan, artisans }) {
                 <p className="text-gold -mb-1 text-lg">Bienvenue dans l'Atelier, {artisan.name} !</p>
             </div>
             <Link
-            href="/askings"
+            href={`/askings/${artisan.categoryId}`}
             className="max-w-xs h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
                         text-gold text-sm font-normal font-cabin
                         flex items-center justify-center mx-auto

@@ -129,13 +129,16 @@ export default async function MessengerPage({ searchParams }) {
                   <div className="flex-1">
                     <p className="font-medium text-blue-900">{conv.otherUserName}</p>
                     <p className="text-sm text-gray-600 truncate max-w-[250px]">
-                      {conv.lastMessage
-                        ? conv.lastMessage.includes(".pdf")
-                          ? "Pièce jointe: " + conv.lastMessage
+                      {conv.lastMessage ? (
+                        [".pdf", ".jpg", ".jpeg", ".png"].some(ext => conv.lastMessage.toLowerCase().includes(ext))
+                          ? "Pièce jointe : " + conv.lastMessage
                           : conv.lastMessage
-                        : "(Aucun message)"}
+                      ) : (
+                        "(Aucun message)"
+                      )}
                     </p>
                   </div>
+
                   <div className="text-xs text-gray-500">
                     {conv.lastTimestamp
                       ? new Date(conv.lastTimestamp).toLocaleString("fr-FR", {

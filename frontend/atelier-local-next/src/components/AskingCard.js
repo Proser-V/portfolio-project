@@ -64,40 +64,52 @@ export default function AskingCard({ asking, className }) {
 
   return (
     <>
-      {/* --- Carte compacte --- */}
       <div
         onClick={() => setIsOpen(true)}
-        className={`cursor-pointer flex flex-col sm:flex-row items-center sm:items-stretch justify-between bg-white border-2 border-gold shadow-md border-solid overflow-hidden w-full max-w-[1150px] transition-transform duration-300 hover:scale-[1.01] ${className}`}
+        className={`cursor-pointer sm:items-stretch bg-white border-2 border-gold shadow-md border-solid overflow-hidden w-full max-w-[1150px] transition-transform duration-300 hover:scale-[1.01] ${className}`}
       >
-        {/* Image client */}
-        <div className="relative w-full sm:w-48 h-48 flex-shrink-0">
-          <Image
-            src={client?.avatar?.url || placeholder}
-            alt={`${client?.firstName || ""} ${client?.lastName || "Client"} avatar`}
-            fill
-            className="object-cover"
-          />
-        </div>
+        <div className="flex flex-row">
+          <div className="relative w-1/2 sm:w-48 h-48 flex-shrink-0">
+            <Image
+              src={client?.avatar?.url || placeholder}
+              alt={`${client?.firstName || ""} ${client?.lastName || "Client"} avatar`}
+              fill
+              className="object-cover"
+            />
+          </div>
 
-        {/* Contenu résumé */}
-        <div className="flex flex-col justify-start px-6 text-center sm:text-left flex-grow py-2">
-          <p className="text-xl sm:text-2xl text-gold font-cabin my-0">
-            {client
-              ? `${client.firstName || ""} ${client.lastName || ""}`.trim()
-              : "Client anonyme"}
-          </p>
-          <p className="text-xs sm:text-sm text-silver font-cabin italic my-0">
-            {daysAgoText}
-          </p>
-          <p className="text-base sm:text-lg text-blue font-cabin my-0">
-            {asking?.title}
-          </p>
-          <p className="text-sm text-silver font-cabin my-0">
-            {event?.name
-              ? `${event.name} • ${asking?.eventLocalisation || ""} • ${formattedDate}`
-              : asking?.eventLocalisation || ""}
-          </p>
-          <p className="text-sm sm:text-base text-silver font-cabin mt-2 mb-2">
+          <div className="flex flex-col px-6 text-center sm:text-left flex-grow py-2">
+            <p className="text-xl sm:text-2xl text-gold font-cabin my-0">
+              {client
+                ? `${client.firstName || ""} ${client.lastName || ""}`.trim()
+                : "Client anonyme"}
+            </p>
+            <p className="text-xs sm:text-sm text-silver font-cabin italic mt-1 mb-3">
+              {daysAgoText}
+            </p>
+            <p className="text-base sm:text-lg text-blue font-cabin my-1">
+              {asking?.title}
+            </p>
+            <p className="text-sm text-silver font-cabin my-0">
+              {event?.name
+                ? `${event.name} • ${asking?.eventLocalisation || ""} • ${formattedDate}`
+                : asking?.eventLocalisation || ""}
+            </p>
+          <div className="hidden md:block mt-4">
+            <p className="text-sm text-silver font-cabin mt-2 mb-2">
+              "
+              {asking?.content
+                ? asking.content.length > 100
+                  ? `${asking.content.slice(0, 100)}...`
+                  : asking.content
+                : "Aucune description fournie."}
+              "
+            </p>
+          </div>
+          </div>
+        </div>
+        <div className="text-center m-4 md:hidden block">
+          <p className="text-sm text-silver font-cabin mt-2 mb-2">
             "
             {asking?.content
               ? asking.content.length > 100
@@ -160,7 +172,7 @@ export default function AskingCard({ asking, className }) {
                   <div className="flex items-center mt-2">
                   <Link
                     href={`/messenger/${client.id}`}
-                    className="w-full md:w-3/4 h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
+                    className="w-full h-10 md:w-3/4 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
                   text-gold md:text-base text-sm font-cabin flex items-center justify-center text-center p-1"
                   >
                     Répondre à {client?.firstName}

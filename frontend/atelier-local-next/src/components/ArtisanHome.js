@@ -3,6 +3,7 @@ import Link from "next/link";
 import avatar from "../../public/tronche.jpg"
 
 export default function ArtisanHome({ artisan, artisans }) {
+    console.log("artisans", artisans)
     return (
         <section className="relative mx-auto px-4 sm:px-6 md:px-8">
             <h1 className="text-blue text-xl md:text-2xl text-center mt-4 font-cabin">
@@ -35,6 +36,7 @@ export default function ArtisanHome({ artisan, artisans }) {
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 justify-items-center w-full max-w-4xl mx-auto">
+                    
                     {artisans.map((artisan, index) => (
                     <Link
                         key={artisan.id || index}
@@ -44,7 +46,7 @@ export default function ArtisanHome({ artisan, artisans }) {
                         }`}
                     >
                         <Image
-                        src={artisan.avatar?.avatarUrl || avatar}
+                        src={artisan.avatar?.url}
                         alt={artisan.name}
                         fill
                         className="object-cover"
@@ -59,8 +61,8 @@ export default function ArtisanHome({ artisan, artisans }) {
                         <div className="absolute -bottom-2 right-2 text-right text-blue font-cabin z-20">
                         <p>
                             {artisan.name} <br />
-                            {artisan.artisanCategory} <br />
-                            {artisan.phoneNumber ? `Tel: ${artisan.phoneNumer}` : ""} <br />
+                            {artisan.categoryName} <br />
+                            {artisan.phoneNumber ? `Tel: ${artisan.phoneNumber}` : ""} <br />
                             {artisan.email}
                         </p>
                         </div>

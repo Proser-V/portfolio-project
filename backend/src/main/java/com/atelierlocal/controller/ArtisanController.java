@@ -143,9 +143,12 @@ public class ArtisanController {
      * Route publique : pas besoin d'être connecté (home page)
      */
     @GetMapping("/random-top")
-    public ResponseEntity<List<Artisan>> getRandomTopArtisans() {
+    public ResponseEntity<List<ArtisanResponseDTO>> getRandomTopArtisans() {
         List<Artisan> artisans = artisanService.getRandomTopArtisans(3);
-        return ResponseEntity.ok(artisans);
+        List<ArtisanResponseDTO> dtoList = artisans.stream()
+            .map(ArtisanResponseDTO::new)
+            .toList();
+        return ResponseEntity.ok(dtoList);
     }
 
     // --------------------

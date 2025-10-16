@@ -22,19 +22,25 @@ export default function ArtisanHeader({ artisan }) {
             height={45}
           />
         </a>
-        <a href={`/artisans/${artisan.id}`} className="bg-gold text-blue flex-auto flex items-center justify-center px-2 hover:underline">
-            <span className="pt-2 md:pt-0 whitespace-nowrap">
-              Bienvenue dans l'Atelier,
-              <br className="hidden md:block" />
-              {artisan.name}
-            </span>
-          <Image
-            src={artisan.avatar}
-            alt={`${artisan.name} avatar`}
-            height={64}
-            width={64}
-            className="hidden md:block ml-2"
-          />
+        <a
+          href={`/artisans/${artisan.id}`}
+          className="bg-gold text-blue flex-auto flex items-center justify-center px-2 hover:underline gap-2"
+        >
+          <span className="pt-2 md:pt-0 whitespace-nowrap text-center">
+            Bienvenue dans l'Atelier,
+            <br className="hidden md:block" />
+            {artisan.name}
+          </span>
+
+          <div className="hidden md:block w-16 h-16 overflow-hidden">
+            <Image
+              src={artisan.avatar?.url || placeholder}
+              alt={`${artisan.name} avatar`}
+              width={64}
+              height={64}
+              className="object-cover w-full h-full"
+            />
+          </div>
         </a>
         <a href="/logout" className="bg-gold text-blue flex-auto flex items-center justify-center pr-2 py-2 hover:underline">Déconnexion</a>
       </nav>

@@ -30,7 +30,7 @@ export default function ClientHeader({ client }) {
               {client.firstName}
             </span>
           <Image
-            src={client.avatar}
+            src={client.avatar.url}
             alt={`${client.firstName} avatar`}
             height={64}
             width={64}

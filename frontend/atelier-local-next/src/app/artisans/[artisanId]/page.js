@@ -57,13 +57,15 @@ export default async function ArtisanProfilePage({ params }) {
         <div className="w-full flex flex-col md:flex-row items-center gap-4">
           {/* Colonne gauche - Avatar et infos */}
           <div className="flex flex-col w-[250px] items-center gap-2">
-            <Image
-              src={artisan.avatar || placeholder}
-              alt={`${artisan.name} avatar`}
-              height={250}
-              width={250}
-              className="shadow-lg ml-2 border-solid border-black border-2"
-            />
+            <div className="w-[250px] h-[250px] overflow-hidden shadow-lg border-2 border-black">
+              <Image
+                src={artisan.avatar.url || placeholder}
+                alt={`${artisan.name} avatar`}
+                height={250}
+                width={250}
+                className="object-cover w-full h-full"
+              />
+            </div>
             <h2 className="text-gold text-xl mt-0 font-cabin">{artisan.name}</h2>
             <p className="block text-center text-sm text-silver mt-0">
               Recommandé {artisan.recommendations} fois par les habitants pour ses réalisations

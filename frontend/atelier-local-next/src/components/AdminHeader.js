@@ -32,7 +32,7 @@ export default function AdminHeader({ admin }) {
               {admin.firstName}
             </span>
           <Image
-            src={placeholder}
+            src={admin.avatar.url}
             alt={`${admin.firstName} avatar`}
             height={64}
             width={64}

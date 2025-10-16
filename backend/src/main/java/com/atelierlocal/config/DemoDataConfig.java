@@ -55,19 +55,23 @@ public class DemoDataConfig {
              * Catégories d'artisans
              * ----------------------------- */
 
-            ArtisanCategory plomberie = new ArtisanCategory();
-            plomberie.setName("Plomberie");
-            plomberie.setDescription("Travaux d'installation et de dépannage en plomberie.");
+            ArtisanCategory artCat1 = new ArtisanCategory();
+            artCat1.setName("Plombier");
+            artCat1.setDescription("Travaux d'installation et de dépannage en plomberie.");
 
-            ArtisanCategory electricite = new ArtisanCategory();
-            electricite.setName("Électricité");
-            electricite.setDescription("Installation et rénovation électrique.");
+            ArtisanCategory artCat2 = new ArtisanCategory();
+            artCat2.setName("Forgeron");
+            artCat2.setDescription("Artisanat lié au travail du métal.");
 
-            ArtisanCategory menuiserie = new ArtisanCategory();
-            menuiserie.setName("Menuiserie");
-            menuiserie.setDescription("Travaux de menuiserie et fabrication sur mesure.");
+            ArtisanCategory artCat3 = new ArtisanCategory();
+            artCat3.setName("Électricien");
+            artCat3.setDescription("Installation et rénovation électrique.");
 
-            categoryRepo.saveAll(Arrays.asList(plomberie, electricite, menuiserie));
+            ArtisanCategory artCat4 = new ArtisanCategory();
+            artCat4.setName("Manuisier");
+            artCat4.setDescription("Travail du bois et fabrication sur mesure.");
+
+            categoryRepo.saveAll(Arrays.asList(artCat1, artCat2, artCat3, artCat4));
 
 
             /* -----------------------------
@@ -76,11 +80,11 @@ public class DemoDataConfig {
 
             EventCategory depannage = new EventCategory();
             depannage.setName("Dépannage");
-            depannage.setArtisanCategoryList(List.of(plomberie, electricite));
+            depannage.setArtisanCategoryList(List.of(artCat1, artCat3));
 
             EventCategory renovation = new EventCategory();
             renovation.setName("Rénovation");
-            renovation.setArtisanCategoryList(List.of(menuiserie, electricite));
+            renovation.setArtisanCategoryList(List.of(artCat4, artCat3));
 
             eventCategoryRepo.saveAll(List.of(depannage, renovation));
 
@@ -132,12 +136,12 @@ public class DemoDataConfig {
             artisan1.setHashedPassword(passwordService.hashPassword("password"));
             artisan1.setActive(true);
             artisan1.setUserRole(UserRole.ARTISAN);
-            artisan1.setName("Plomberie Dijon Service");
-            artisan1.setBio("Spécialiste du dépannage rapide et installations sanitaires.");
-            artisan1.setCategory(plomberie);
+            artisan1.setName("FERPLAY");
+            artisan1.setBio("J'ai choisi de me forger un avenir à Dijon en 2020, en me reconvertissant vers ma passion brûlante de toujours. Depuis, je m'efforce de marquer le marché local au fer rouge. Mon fer de lance ? Battre le fer tant qu'il est chaud, tout en évitant de me retrouver entre le marteau et l'enclume et garder la tête froide pour ne pas devenir marteau !");
+            artisan1.setCategory(artCat2);
             artisan1.setSiret("12345678901234");
-            artisan1.setLatitude(48.8700);
-            artisan1.setLongitude(2.3500);
+            artisan1.setLatitude(47.322200);
+            artisan1.setLongitude(5.039335);
             artisan1.setPhoneNumber("0600000004");
             artisan1.setActivityStartDate(LocalDate.of(2010, 5, 12));
 
@@ -188,7 +192,7 @@ public class DemoDataConfig {
             artisan2.setUserRole(UserRole.ARTISAN);
             artisan2.setName("Élec Services Dijon");
             artisan2.setBio("Installation et mise en conformité de votre réseau électrique.");
-            artisan2.setCategory(electricite);
+            artisan2.setCategory(artCat3);
             artisan2.setSiret("23456789012345");
             artisan2.setLatitude(45.7640);
             artisan2.setLongitude(4.8357);
@@ -200,9 +204,9 @@ public class DemoDataConfig {
             artisan3.setHashedPassword(passwordService.hashPassword("password"));
             artisan3.setActive(true);
             artisan3.setUserRole(UserRole.ARTISAN);
-            artisan3.setName("Menuiserie Sud Dijonnais");
+            artisan3.setName("artCat4 Sud Dijonnais");
             artisan3.setBio("Fabrication sur mesure et rénovation bois.");
-            artisan3.setCategory(menuiserie);
+            artisan3.setCategory(artCat4);
             artisan3.setSiret("34567890123456");
             artisan3.setLatitude(43.2965);
             artisan3.setLongitude(5.3698);
@@ -217,18 +221,18 @@ public class DemoDataConfig {
 
             Asking asking1 = new Asking();
             asking1.setTitle("Fuite sous évier");
-            asking1.setContent("Bonjour, je rencontre actuellement un problème assez important avec ma plomberie dans ma cuisine. Une fuite d'eau s'est déclarée sous l'évier, provoquant un débordement dans le meuble inférieur et des traces d'humidité sur le sol. Je souhaite qu'un artisan qualifié intervienne rapidement pour identifier précisément la source de la fuite, remplacer ou réparer les éléments défectueux tels que les tuyaux, joints, robinets ou siphons, et vérifier l'ensemble du réseau sous l'évier afin d'éviter toute fuite supplémentaire. Je souhaiterais également recevoir un devis détaillé avant l'intervention, connaître vos disponibilités dans les prochains jours et vos conditions de travail. Je peux fournir des photos ou d'autres informations si nécessaire. Merci d'avance pour votre retour rapide et votre professionnalisme. Il est très important que l'intervention soit effectuée dans les plus brefs délais, car l'eau pourrait endommager davantage mes meubles et le sol si rien n'est fait rapidement. Merci.");
+            asking1.setContent("Bonjour, je rencontre actuellement un problème assez important avec ma artCat1 dans ma cuisine. Une fuite d'eau s'est déclarée sous l'évier, provoquant un débordement dans le meuble inférieur et des traces d'humidité sur le sol. Je souhaite qu'un artisan qualifié intervienne rapidement pour identifier précisément la source de la fuite, remplacer ou réparer les éléments défectueux tels que les tuyaux, joints, robinets ou siphons, et vérifier l'ensemble du réseau sous l'évier afin d'éviter toute fuite supplémentaire. Je souhaiterais également recevoir un devis détaillé avant l'intervention, connaître vos disponibilités dans les prochains jours et vos conditions de travail. Je peux fournir des photos ou d'autres informations si nécessaire. Merci d'avance pour votre retour rapide et votre professionnalisme. Il est très important que l'intervention soit effectuée dans les plus brefs délais, car l'eau pourrait endommager davantage mes meubles et le sol si rien n'est fait rapidement. Merci.");
             asking1.setEventCategory(depannage);
             asking1.setEventLocalisation("Dijon");
             asking1.setEventDate(LocalDateTime.now().plusDays(2));
             asking1.setClient(client1);
-            asking1.setArtisanCategory(plomberie);
+            asking1.setArtisanCategory(artCat1);
 
             Asking asking2 = new Asking();
             asking2.setTitle("Installation de chauffe-eau");
             asking2.setContent("Je souhaite remplacer mon ancien chauffe-eau par un modèle plus récent. Besoin d'un devis.");
             asking2.setClient(client2);
-            asking2.setArtisanCategory(plomberie);
+            asking2.setArtisanCategory(artCat1);
 
             // On peut ajouter un statut si ton enum AskingStatus le permet :
             asking1.setStatus(AskingStatus.PENDING);
@@ -241,36 +245,46 @@ public class DemoDataConfig {
              * Avatars
              * ----------------------------- */
             Avatar avatar1 = new Avatar();
-            avatar1.setExtension(".jpeg");
+            avatar1.setExtension("jpeg");
             avatar1.setAvatarUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/devenir-forgeron.jpeg");
             avatar1.setUser(artisan1);
+            artisan1.setAvatar(avatar1);
+            artisanRepo.save(artisan1);
 
             Avatar avatar2 = new Avatar();
-            avatar1.setExtension(".jpg");
-            avatar1.setAvatarUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/horaires-patissier.jpg");
-            avatar1.setUser(artisan2);
+            avatar2.setExtension("jpg");
+            avatar2.setAvatarUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/horaires-patissier.jpg");
+            avatar2.setUser(artisan2);
+            artisan2.setAvatar(avatar2);
+            artisanRepo.save(artisan2);
 
             Avatar avatar3 = new Avatar();
-            avatar1.setExtension(".jpg");
-            avatar1.setAvatarUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/la-matriarche-de-veruschka-zarate-couture-sur-papier-foundation-paper-piecing.jpg");
-            avatar1.setUser(artisan3);
+            avatar3.setExtension("jpg");
+            avatar3.setAvatarUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/la-matriarche-de-veruschka-zarate-couture-sur-papier-foundation-paper-piecing.jpg");
+            avatar3.setUser(artisan3);
+            artisan3.setAvatar(avatar3);
+            artisanRepo.save(artisan3);
 
             Avatar avatar4 = new Avatar();
-            avatar1.setExtension(".jpg");
-            avatar1.setAvatarUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/random2.jpg");
-            avatar1.setUser(client1);
+            avatar4.setExtension("jpg");
+            avatar4.setAvatarUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/random2.jpg");
+            avatar4.setUser(client1);
+            client1.setAvatar(avatar4);
+            clientRepo.save(client1);
 
             Avatar avatar5 = new Avatar();
-            avatar1.setExtension(".jpg");
-            avatar1.setAvatarUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/random3.jpg");
-            avatar1.setUser(client2);
+            avatar5.setExtension("jpg");
+            avatar5.setAvatarUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/random3.jpg");
+            avatar5.setUser(client2);
+            client2.setAvatar(avatar5);
+            clientRepo.save(client2);
 
             Avatar avatar6 = new Avatar();
-            avatar1.setExtension(".jpg");
-            avatar1.setAvatarUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/random4.jpg");
-            avatar1.setUser(admin);
-
-            avatarRepo.saveAll(Arrays.asList(avatar1, avatar2, avatar3, avatar4, avatar5, avatar6));
+            avatar6.setExtension("jpg");
+            avatar6.setAvatarUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/random4.jpg");
+            avatar6.setUser(admin);
+            admin.setAvatar(avatar6);
+            clientRepo.save(admin);
             
             /* -----------------------------
             * Messages de démo
@@ -310,7 +324,7 @@ public class DemoDataConfig {
             Message msg5 = new Message();
             msg5.setSender(artisan3);
             msg5.setReceiver(client2);
-            msg5.setContent("Bonjour Sophie, je peux passer jeudi pour voir votre projet de menuiserie si vous voulez.");
+            msg5.setContent("Bonjour Sophie, je peux passer jeudi pour voir votre projet de artCat4 si vous voulez.");
             msg5.setTimestamp(LocalDateTime.now().minusHours(12));
             msg5.setMessageStatus(MessageStatus.DELIVERED);
             msg5.setRead(false);

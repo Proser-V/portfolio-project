@@ -234,12 +234,35 @@ public class DemoDataConfig {
             asking2.setClient(client2);
             asking2.setArtisanCategory(artCat1);
 
-            // On peut ajouter un statut si ton enum AskingStatus le permet :
+            Asking asking3 = new Asking();
+            asking3.setTitle("Une nouvelle épée");
+            asking3.setContent("J'ai besoin dans le cadre d'un évènement médiéval, d'une nouvelle épée de type Claymore pour des combats simulés.");
+            asking3.setClient(client2);
+            asking3.setArtisanCategory(artCat2);
+
+            Asking asking4 = new Asking();
+            asking4.setTitle("Trophé d'escalade");
+            asking4.setContent("Je souhaite réaliser un trophée véritablement unique pour notre compétition d'escalade, qui soit à la fois élégant, artistique et symbolique. L'idée est de créer une pièce en métal forgé, finement travaillée, représentant une montagne stylisée avec ses reliefs, ses crêtes et sa texture rugueuse évoquant le défi et l'aventure. Au sommet de cette montagne, une silhouette de grimpeur en plein effort serait intégrée, capturant l'instant précis où il atteint le sommet, dans une posture dynamique qui illustre la détermination, la persévérance et la passion pour l'escalade. Le socle du trophée serait massif et stable, conçu pour mettre en valeur la sculpture tout en offrant un espace personnalisable, où pourraient être gravés le nom du gagnant, la date de l'événement et éventuellement le nom de la compétition. L'ensemble doit refléter le caractère exceptionnel du défi, un trophée digne de trôner fièrement chez ceux qui l'auront remporté.");
+            asking4.setClient(client1);
+            asking4.setArtisanCategory(artCat2);
+
+            Asking asking5 = new Asking();
+            asking5.setTitle("Rénovation porte");
+            asking5.setContent("Je cherche quelqu'un pour restaurer une vieille serrure en fer sur ma porte d'entrée, avant une réception importante qui aura lieu dans 10 jours.");
+            asking5.setClient(admin);
+            asking5.setEventCategory(renovation);
+            asking5.setEventLocalisation("Messigny-et-Vantoux");
+            asking5.setEventDate(LocalDateTime.now().plusDays(10));
+            asking5.setArtisanCategory(artCat2);
+
             asking1.setStatus(AskingStatus.PENDING);
             asking2.setStatus(AskingStatus.PENDING);
+            asking3.setStatus(AskingStatus.PENDING);
+            asking4.setStatus(AskingStatus.PENDING);
+            asking5.setStatus(AskingStatus.PENDING);
 
             // Sauvegarde
-            askingRepo.saveAll(List.of(asking1, asking2));
+            askingRepo.saveAll(List.of(asking1, asking2, asking3, asking4, asking5));
 
             /* -----------------------------
              * Avatars

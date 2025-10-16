@@ -74,7 +74,7 @@ public class ClientController {
 
     // Détails d'un client par ID (ADMIN ou client lui-même)
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
+    // @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
     public ResponseEntity<ClientResponseDTO> getClientByID(@PathVariable UUID id) {
         ClientResponseDTO client = clientService.getClientById(id);
         return ResponseEntity.ok(client);

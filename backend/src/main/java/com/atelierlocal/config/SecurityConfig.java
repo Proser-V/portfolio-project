@@ -44,7 +44,7 @@ public class SecurityConfig {
         .cors(c -> c.configurationSource(corsConfigurationSource()))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/home", "/", "/api/users/logout", "/api/users/login",
-            "/api/clients/register", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**",
+            "/api/clients/register", "/api/clients/{id}", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**",
             "/api/artisans/register", "/api/artisans/", "/api/artisans/{id}", "/swagger-resources/**", "/webjars/**", "/api/artisans/random-top",
             "/api/artisan-category/**", "/api/geocode/**", "/api/avatar/upload", "/api/event-categories/",
             "/api/event-categories/{id}", "/api/event-categories/{id}/artisan-categories", "/api/askings/creation",

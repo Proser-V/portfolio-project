@@ -3,6 +3,7 @@ package com.atelierlocal.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.atelierlocal.model.Attachment;
 import com.atelierlocal.model.Message;
@@ -16,27 +17,59 @@ public class MessageResponseDTO {
     private String content;
     private String messageError;
     private MessageStatus messageStatus;
-    private List<Attachment> attachments;
+    private List<AttachmentDTO> attachments; 
     @JsonProperty("timestamp")
     private LocalDateTime createdAt;
 
+    // Constructeur pour un message
     public MessageResponseDTO(Message message) {
         this.id = message.getId();
         this.senderId = message.getSender().getId();
         this.receiverId = message.getReceiver().getId();
         this.content = message.getContent();
-        this.attachments = message.getAttachments();
-        this.messageError = message.getMessageError();
         this.messageStatus = message.getMessageStatus();
+        this.messageError = message.getMessageError();
         this.createdAt = message.getCreatedAt();
+        // Mapping des attachments vers AttachmentDTO
+        this.attachments = message.getAttachments() != null
+            ? message.getAttachments().stream()
+                .map(AttachmentDTO::new)
+                .collect(Collectors.toList())
+            : null;
     }
 
+    // Constructeur pour un message d'erreur
     public MessageResponseDTO(String errorMessage) {
         this.messageError = errorMessage;
+        this.messageStatus = MessageStatus.NOT_SENT;
+    }
+
+    // Classe interne pour représenter les pièces jointes
+    public static class AttachmentDTO {
+        private UUID id;
+        private String fileUrl;
+        private String fileType;
+
+        public AttachmentDTO(Attachment attachment) {
+            this.id = attachment.getId();
+            this.fileUrl = attachment.getFileUrl();
+            this.fileType = attachment.getFileType();
+        }
+
+        // Getters et setters
+        public UUID getId() { return id; }
+        public void setId(UUID id) { this.id = id; }
+
+        public String getFileUrl() { return fileUrl; }
+        public void setFileUrl(String fileUrl) { this.fileUrl = fileUrl; }
+
+        public String getFileType() { return fileType; }
+        public void setFileType(String fileType) { this.fileType = fileType; }
     }
 
     // Getters et setters
     public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
 
     public UUID getSenderId() { return senderId; }
     public void setSenderId(UUID senderId) { this.senderId = senderId; }
@@ -53,8 +86,9 @@ public class MessageResponseDTO {
     public MessageStatus getMessageStatus() { return messageStatus; }
     public void setMessageStatus(MessageStatus messageStatus) { this.messageStatus = messageStatus; }
 
-    public List<Attachment> getAttachment() { return attachments; }
-    public void setAttachment(List<Attachment> attachments) { this.attachments = attachments; }
+    public List<AttachmentDTO> getAttachments() { return attachments; }
+    public void setAttachments(List<AttachmentDTO> attachments) { this.attachments = attachments; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

@@ -9,11 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import com.atelierlocal.dto.ConversationSummaryDTO;
 import com.atelierlocal.dto.MessageRequestDTO;
 import com.atelierlocal.dto.MessageResponseDTO;
@@ -42,44 +39,110 @@ public class MessageController {
         this.userRepo = userRepo;
     }
 
+    // ============================================
+    // Endpoint REST pour messages avec fichiers
+    // ============================================
+    @PostMapping(consumes = {"multipart/form-data"})
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT', 'ARTISAN')")
+    @Operation(summary = "Envoie un message avec pièce jointe optionnelle")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Message envoyé avec succès"),
+        @ApiResponse(responseCode = "400", description = "Données invalides"),
+        @ApiResponse(responseCode = "403", description = "Accès refusé")
+    })
+    public ResponseEntity<MessageResponseDTO> sendMessageWithAttachment(
+            @RequestParam("receiverId") UUID receiverId,
+            @RequestParam(value = "content", required = false, defaultValue = "") String content,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            Principal principal
+    ) {
+        try {
+            // Récupérer l'utilisateur authentifié
+            String email = principal.getName();
+            User authenticatedUser = userRepo.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé: " + email));
+
+            // Créer le DTO
+            MessageRequestDTO dto = new MessageRequestDTO();
+            dto.setSenderId(authenticatedUser.getId());
+            dto.setReceiverId(receiverId);
+            dto.setContent(content);
+            dto.setFile(file);
+
+            logger.info("Envoi message REST de {} à {} avec fichier: {}", 
+                authenticatedUser.getId(), receiverId, file != null ? file.getOriginalFilename() : "aucun");
+
+            // Envoyer via le service
+            MessageResponseDTO response = messageService.sendMessage(dto);
+
+            // Diffuser via WebSocket aux deux parties
+            User receiverUser = userRepo.findById(receiverId)
+                .orElseThrow(() -> new IllegalArgumentException("Destinataire non trouvé"));
+
+            messagingTemplate.convertAndSendToUser(
+                receiverUser.getEmail(),
+                "/queue/messages",
+                response
+            );
+
+            messagingTemplate.convertAndSendToUser(
+                email,
+                "/queue/messages",
+                response
+            );
+
+            logger.info("Message envoyé avec succès");
+            return ResponseEntity.ok(response);
+
+        } catch (IllegalArgumentException e) {
+            logger.error("Erreur validation: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(
+                new MessageResponseDTO("Erreur: " + e.getMessage())
+            );
+        } catch (Exception e) {
+            logger.error("Erreur inattendue: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().body(
+                new MessageResponseDTO("Erreur serveur: " + e.getMessage())
+            );
+        }
+    }
+
+    // ============================================
+    // WebSocket pour messages SANS fichiers (texte uniquement)
+    // ============================================
     @MessageMapping("/chat")
     public void processMessage(@Valid MessageRequestDTO message, Principal principal) {
         try {
             logger.info("Message reçu via WebSocket de: {}", principal.getName());
             
-            // Récupérer l'UUID de l'utilisateur authentifié à partir de son e-mail
             String email = principal.getName();
             User authenticatedUser = userRepo.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé: " + email));
             UUID authenticatedId = authenticatedUser.getId();
             
-            // Forcer le senderId à être celui de l'utilisateur authentifié
             message.setSenderId(authenticatedId);
+            message.setFile(null); // Pas de fichier via WebSocket
 
             logger.info("Traitement message de {} à {}", message.getSenderId(), message.getReceiverId());
             
-            // Sauvegarder le message via le service
             MessageResponseDTO response = messageService.sendMessage(message);
 
-            // Récupérer l'email du destinataire pour le routing WebSocket
             User receiverUser = userRepo.findById(response.getReceiverId())
                 .orElseThrow(() -> new IllegalArgumentException("Destinataire non trouvé"));
 
-            // IMPORTANT: Envoyer le message au DESTINATAIRE
             messagingTemplate.convertAndSendToUser(
-                receiverUser.getEmail(), // Utiliser l'email pour le routing
+                receiverUser.getEmail(),
                 "/queue/messages",
                 response
             );
-            logger.info("Message envoyé à {} ({})", receiverUser.getEmail(), response.getReceiverId());
 
-            // IMPORTANT: Envoyer aussi au SENDER pour mettre à jour son interface
             messagingTemplate.convertAndSendToUser(
-                email, // Email de l'expéditeur
+                email,
                 "/queue/messages",
                 response
             );
-            logger.info("Message confirmé à l'expéditeur {}", email);
+            
+            logger.info("Message envoyé à {} et {}", receiverUser.getEmail(), email);
 
         } catch (Exception e) {
             logger.error("Erreur lors du traitement du message : {}", e.getMessage(), e);
@@ -88,7 +151,6 @@ public class MessageController {
                 "Erreur lors de l'envoi du message : " + e.getMessage()
             );
 
-            // Envoyer l'erreur à l'expéditeur
             if (principal != null) {
                 messagingTemplate.convertAndSendToUser(
                     principal.getName(),

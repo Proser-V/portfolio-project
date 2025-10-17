@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +20,7 @@ import com.atelierlocal.model.Client;
 import com.atelierlocal.model.Message;
 import com.atelierlocal.model.S3Properties;
 import com.atelierlocal.model.User;
+import com.atelierlocal.repository.AttachmentRepo;
 import com.atelierlocal.repository.MessageRepo;
 import com.atelierlocal.repository.UserRepo;
 
@@ -36,15 +38,15 @@ public class MessageService {
 
     private final MessageRepo messageRepo;
     private final UserRepo userRepo;
-    private final AttachmentService attachmentService;
+    private final AttachmentRepo attachmentRepo;
     private final S3Client s3Client;
     private final S3Properties s3Properties;
 
-    public MessageService(MessageRepo messageRepo, UserRepo userRepo, AttachmentService attachmentService, 
-                         S3Client s3Client, S3Properties s3Properties) {
+    public MessageService(MessageRepo messageRepo, UserRepo userRepo, 
+                         AttachmentRepo attachmentRepo, S3Client s3Client, S3Properties s3Properties) {
         this.messageRepo = messageRepo;
         this.userRepo = userRepo;
-        this.attachmentService = attachmentService;
+        this.attachmentRepo = attachmentRepo;
         this.s3Client = s3Client;
         this.s3Properties = s3Properties;
     }
@@ -63,18 +65,39 @@ public class MessageService {
             message.setContent(dto.getContent());
             message.setMessageStatus(com.atelierlocal.model.MessageStatus.DELIVERED);
 
+            // Sauvegarder le message
+            Message savedMessage = messageRepo.save(message);
+
+            // Gérer l'upload et la sauvegarde de l'attachment
             if (dto.getFile() != null && !dto.getFile().isEmpty()) {
-                Attachment attachment = uploadToS3(dto.getFile());
-                attachmentService.linkToMessage(attachment, message);
+                try {
+                    Attachment attachment = uploadToS3(dto.getFile());
+                    attachment.setMessage(savedMessage);
+                    attachmentRepo.save(attachment);
+                    savedMessage.getAttachments().add(attachment);
+                } catch (Exception e) {
+                    System.err.println("Erreur lors de l'upload du fichier: " + e.getMessage());
+                    e.printStackTrace();
+                }
             }
 
-            Message savedMessage = messageRepo.save(message);
+            // Initialiser les relations nécessaires
+            Hibernate.initialize(savedMessage.getSender());
+            Hibernate.initialize(savedMessage.getReceiver());
+            Hibernate.initialize(savedMessage.getAttachments());
+            // Initialiser les relations imbriquées si nécessaire
+            if (savedMessage.getReceiver() instanceof Client) {
+                Client client = (Client) savedMessage.getReceiver();
+                Hibernate.initialize(client.getAsking());
+            }
+
             return new MessageResponseDTO(savedMessage);
         } catch (IllegalArgumentException e) {
             MessageResponseDTO response = new MessageResponseDTO(e.getMessage());
             response.setMessageStatus(com.atelierlocal.model.MessageStatus.NOT_SENT);
             return response;
         } catch (Exception e) {
+            e.printStackTrace();
             MessageResponseDTO response = new MessageResponseDTO("Erreur inattendue lors de l'envoi du message: " + e.getMessage());
             response.setMessageStatus(com.atelierlocal.model.MessageStatus.NOT_SENT);
             return response;
@@ -89,7 +112,6 @@ public class MessageService {
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(s3Properties.getBucketName())
                 .key(key)
-                .acl("public-read")
                 .contentType(file.getContentType())
                 .build();
 
@@ -130,6 +152,16 @@ public class MessageService {
             validateUserIds(user1Id, user2Id);
             List<Message> messages = messageRepo
                 .findBySenderIdAndReceiverIdOrReceiverIdAndSenderIdOrderByCreatedAtAsc(user1Id, user2Id, user1Id, user2Id);
+            // Initialiser les relations pour chaque message
+            messages.forEach(message -> {
+                Hibernate.initialize(message.getSender());
+                Hibernate.initialize(message.getReceiver());
+                Hibernate.initialize(message.getAttachments());
+                if (message.getReceiver() instanceof Client) {
+                    Client client = (Client) message.getReceiver();
+                    Hibernate.initialize(client.getAsking());
+                }
+            });
             return messages.stream()
                     .map(MessageResponseDTO::new)
                     .collect(Collectors.toList());
@@ -165,6 +197,9 @@ public class MessageService {
 
             return latestMessages.values().stream()
                     .map(m -> {
+                        // Initialiser les relations
+                        Hibernate.initialize(m.getSender());
+                        Hibernate.initialize(m.getReceiver());
                         User otherUser = m.getSender().getId().equals(userId) ? m.getReceiver() : m.getSender();
                         String otherUserName = getUserDisplayName(otherUser);
                         String otherUserRole = otherUser.getUserRole().name();

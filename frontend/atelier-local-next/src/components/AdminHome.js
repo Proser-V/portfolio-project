@@ -55,9 +55,10 @@ export default function AdminHome({ admin, artisans }) {
                         }`}
                     >
                         <Image
-                        src={artisan.avatar?.avatarUrl || avatar}
+                        src={artisan?.avatar?.url || avatar}
                         alt={artisan.name}
                         fill
+                        sizes="100vw"
                         className="object-cover"
                         />
                         <div

@@ -44,7 +44,7 @@ export default function VisitorHome({ artisans }) {
                         }`}
                     >
                         <Image
-                        src={artisan.avatar?.avatarUrl || avatar}
+                        src={artisan?.avatar?.url || avatar}
                         alt={artisan.name}
                         fill
                         className="object-cover"

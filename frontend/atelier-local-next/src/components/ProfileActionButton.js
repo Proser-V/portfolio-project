@@ -35,7 +35,7 @@ export default function ProfileActionButton({ artisan, isOwner }) {
   // Sinon : bouton "Contactez-moi"
   return (
     <Link
-      href="/#"
+      href={`/messenger/${artisan.id}`}
       className="btn-primary
                  relative z-10
                  mx-auto mb-2 md:mb-0

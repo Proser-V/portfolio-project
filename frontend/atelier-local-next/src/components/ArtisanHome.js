@@ -48,6 +48,7 @@ export default function ArtisanHome({ artisan, artisans }) {
                         src={artisan.avatar?.url}
                         alt={artisan.name}
                         fill
+                        sizes="100vh"
                         className="object-cover"
                         />
                         <div

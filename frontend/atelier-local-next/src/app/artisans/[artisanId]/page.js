@@ -81,6 +81,7 @@ export default async function ArtisanProfilePage({ params }) {
                   src={artisan?.logo || placeholderIcon}
                   alt={`${artisan?.categoryName || "Artisan category"} logo`}
                   fill
+                  sizes="100vh"
                   className="object-contain opacity-5"
                 />
               </div>

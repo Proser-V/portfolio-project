@@ -203,11 +203,13 @@ public class MessageService {
                         User otherUser = m.getSender().getId().equals(userId) ? m.getReceiver() : m.getSender();
                         String otherUserName = getUserDisplayName(otherUser);
                         String otherUserRole = otherUser.getUserRole().name();
+                        String otherUserAvatarUrl = otherUser.getAvatar().getAvatarUrl();
 
                         return new ConversationSummaryDTO(
                                 otherUser.getId(),
                                 otherUserName,
                                 otherUserRole,
+                                otherUserAvatarUrl,
                                 m.getContent(),
                                 m.getCreatedAt()
                         );

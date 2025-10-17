@@ -125,19 +125,23 @@ export default function ArtisanPortfolio({
     );
   };
 
-  const getVisibleImages = () => {
-    if (photos.length === 0) return [];
-    
-    if (photos.length === 1) {
-      return [{ photo: photos[0], index: 0, position: "center" }];
-    }
-    
-    if (photos.length === 2) {
-      return [
-        { photo: photos[currentIndex], index: currentIndex, position: "left" },
-        { photo: photos[(currentIndex + 1) % photos.length], index: (currentIndex + 1) % photos.length, position: "right" },
-      ];
-    }
+const getVisibleImages = () => {
+  if (photos.length === 0) return [];
+
+  if (photos.length === 1) {
+    return [{ photo: photos[0], index: 0, position: "center" }];
+  }
+
+  if (photos.length === 2) {
+    const firstIndex = currentIndex;
+    const secondIndex = (currentIndex + 1) % 2;
+
+    return [
+      { photo: photos[secondIndex], index: secondIndex, position: "left", key: `${secondIndex}-left` },
+      { photo: photos[firstIndex], index: firstIndex, position: "center", key: `${firstIndex}-center` },
+      { photo: photos[secondIndex], index: secondIndex, position: "right", key: `${secondIndex}-right` },
+    ];
+  }
 
     const prevIndex = currentIndex === 0 ? photos.length - 1 : currentIndex - 1;
     const nextIndex = (currentIndex + 1) % photos.length;
@@ -264,27 +268,41 @@ export default function ArtisanPortfolio({
           )}
 
           {/* Container des images */}
-          <div className="flex items-center justify-center flex-1 max-w-5xl overflow-hidden">
-          {visibleImages.map((img) => (
-            <div
-              key={img.index}
-              className={`relative transition-transform duration-300 ease-in-out
-                ${
-                  img.position === "center"
-                    ? "w-[260px] h-[260px] md:w-[600px] md:h-[400px] z-20 scale-100"
-                    : "w-[200px] h-[200px] md:w-[280px] md:h-[300px] z-10 scale-90 opacity-70 hidden sm:block -mx-16"
-                }`}
-            >
-              <Image
-                src={img.photo.uploadedPhotoUrl || img.photo.fileUrl}
-                alt={`Portfolio image ${img.index + 1}`}
-                fill
-                className="object-cover shadow-xl border-4 border-white"
-              />
-            </div>
-          ))}
-          </div>
-
+<div className="flex items-center justify-center flex-1 max-w-5xl overflow-hidden">
+  {visibleImages.map((img) => (
+    <div
+      key={`${img.index}-${img.position}`}
+      className={`relative transition-transform duration-300 ease-in-out
+        ${img.position === "center"
+          ? "w-[600px] h-[450px] z-20 bg-white shadow-xl scale-100"
+          : "w-[300px] h-[250px] z-10 opacity-70 hidden sm:block bg-white shadow-md scale-90"
+        }`}
+      style={{
+        transform: img.position === "right"
+          ? "translateX(-10%) scale(0.9)"
+          : img.position === "left"
+          ? "translateX(10%) scale(0.9)"
+          : "translateX(0%) scale(1)",
+        zIndex: img.position === "center" ? 20 : 10,
+      }}
+    >
+      <Image
+        src={img.photo.uploadedPhotoUrl || img.photo.fileUrl}
+        alt={`Portfolio image ${img.index + 1}`}
+        fill
+        sizes={
+          img.position === "center"
+            ? "(min-width: 768px) 600px, 260px"
+            : "(min-width: 768px) 280px, 200px"
+        }
+        style={{
+          objectFit: "contain",
+          objectPosition: "center"
+        }}
+      />
+    </div>
+  ))}
+</div>
           {/* Flèche droite */}
           {photos.length > 1 && (
             <button

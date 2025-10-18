@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.atelierlocal.dto.*;
 import com.atelierlocal.model.*;
@@ -42,14 +43,17 @@ public class ArtisanController {
      * Enregistrement d'un nouvel artisan
      * Route publique : pas besoin d'être connecté
      */
-    @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Enregistrement d'un nouvel artisan", description = "Création d'un nouvel artisan via les données entrées")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Artisan créé avec succès"),
         @ApiResponse(responseCode = "400", description = "Requête invalide (données manquantes ou incorrectes)"),
         @ApiResponse(responseCode = "409", description = "Email déjà utilisé")
     })
-    public ResponseEntity<ArtisanResponseDTO> registerArtisan(@Valid @RequestBody ArtisanRequestDTO request) {
+    public ResponseEntity<ArtisanResponseDTO> registerArtisan(
+            @Valid @RequestPart("artisan") ArtisanRequestDTO request,
+            @RequestPart(value = "avatar", required = false) MultipartFile avatar) {
+        request.setAvatar(avatar);
         ArtisanResponseDTO artisanDto = artisanService.createArtisan(request);
         return ResponseEntity.status(201).body(artisanDto);
     }

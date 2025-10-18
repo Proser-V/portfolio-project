@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -52,6 +53,7 @@ public class ArtisanRequestDTO {
 
     private LocalDate activityStartDate;
 
+    @JsonIgnore
     private MultipartFile avatar;
 
     // Getters et setters

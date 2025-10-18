@@ -10,7 +10,7 @@ export default function LogoutPage() {
   useEffect(() => {
     const doLogout = async () => {
       await logout();
-      window.location.href ="/";
+      window.location.href = "/";
     };
 
     doLogout();

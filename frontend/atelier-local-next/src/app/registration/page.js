@@ -53,7 +53,7 @@ export default function RegistrationPage({ user }) {
     const { name, value, files } = e.target;
     if (name === "avatar" && files[0]) {
       const file = files[0];
-      const previewUrl = URL.createObjectURL(file); // URL temporaire pour la prévisualisation
+      const previewUrl = URL.createObjectURL(file);
       setClientData((prev) => ({
         ...prev,
         avatarFile: file,
@@ -65,33 +65,36 @@ export default function RegistrationPage({ user }) {
   };
 
   const handleRemoveAvatar = () => {
-    // Réinitialise le fichier et la prévisualisation
     setClientData((prev) => ({
       ...prev,
       avatarFile: null,
       avatarPreview: null,
     }));
-    // Réinitialise l'input file
+    setArtisanData((prev) => ({
+      ...prev,
+      avatarFile: null,
+      avatarPreview: null,
+    }));
     const fileInput = document.querySelector('input[name="avatar"]');
     if (fileInput) fileInput.value = "";
   };
 
-const handleClientSubmit = async (e) => {
+  const handleClientSubmit = async (e) => {
     e.preventDefault();
     try {
       const coords = await fetchCoordinates(clientData.address);
       const { address, avatarFile, avatarPreview, ...rest } = clientData;
       const payload = { ...rest, latitude: coords.latitude, longitude: coords.longitude };
-      console.log(payload)
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/clients/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-        credentials: "include"
+        credentials: "include",
       });
 
       if (!response.ok) {
-        setError("Veuillez remplir tous les champs obligatoires.");
+        const errorData = await response.json();
+        setError(errorData.message || "Veuillez remplir tous les champs obligatoires.");
         return;
       }
 
@@ -135,8 +138,13 @@ const handleClientSubmit = async (e) => {
   const handleArtisanChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "avatar" && files[0]) {
-      // Stock le fichier temporairement dans l'état
-      setArtisanData((prev) => ({ ...prev, avatarFile: files[0] }));
+      const file = files[0];
+      const previewUrl = URL.createObjectURL(file);
+      setArtisanData((prev) => ({
+        ...prev,
+        avatarFile: file,
+        avatarPreview: previewUrl,
+      }));
     } else {
       setArtisanData((prev) => ({ ...prev, [name]: value }));
     }
@@ -147,49 +155,33 @@ const handleClientSubmit = async (e) => {
     try {
       // Obtenir les coordonnées
       const coords = await fetchCoordinates(artisanData.address);
-      const { address, avatarFile, ...rest } = artisanData;
+      const { address, avatarFile, avatarPreview, ...rest } = artisanData;
       const payload = { ...rest, latitude: coords.latitude, longitude: coords.longitude };
 
-      // Créer l'artisan
+      // Créer la requête multipart/form-data
+      const formData = new FormData();
+      formData.append("artisan", new Blob([JSON.stringify(payload)], { type: "application/json" }));
+      if (artisanData.avatarFile) {
+        formData.append("avatar", artisanData.avatarFile);
+      }
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artisans/register`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-        credentials: "include"
+        body: formData,
+        credentials: "include",
       });
 
       if (!response.ok) {
-        setError("Veuillez remplir tous les champs obligatoires.");
+        const errorData = await response.json();
+        setError(errorData.message || "Veuillez remplir tous les champs obligatoires.");
         return;
-      }
-
-      const { uuid } = await response.json(); // Récupération de l'UUID
-
-      // Upload l'avatar si un fichier a été sélectionné
-      if (artisanData.avatarFile) {
-        const formData = new FormData();
-        formData.append("file", artisanData.avatarFile);
-        formData.append("userId", uuid);
-
-        const uploadResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/avatar/upload`, {
-          method: "POST",
-          body: formData,
-          credentials: "include",
-        });
-
-        if (!uploadResponse.ok) {
-          setError("Erreur lors de l'upload de l'image.");
-          return;
-        }
-        const { url } = await uploadResponse.json();
-        avatarUrl = url;
       }
 
       if (artisanData.avatarPreview) {
         URL.revokeObjectURL(artisanData.avatarPreview);
       }
 
-      setArtisanData((prev) => ({ ...prev, avatar: avatarUrl, avatarFile: null, avatarPreview: null }));
+      setArtisanData((prev) => ({ ...prev, avatarFile: null, avatarPreview: null }));
       console.log("Compte artisan créé avec succès");
       router.push("/");
     } catch (err) {
@@ -322,13 +314,13 @@ const handleClientSubmit = async (e) => {
                       type="file"
                       name="avatar"
                       accept=".jpg,.jpeg,.png"
-                      onChange={handleClientChange}
+                      onChange={handleArtisanChange} // Corrigé : utiliser handleArtisanChange
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                     />
-                    {clientData.avatarPreview ? (
+                    {artisanData.avatarPreview ? ( // Corrigé : utiliser artisanData.avatarPreview
                       <>
                         <img
-                          src={clientData.avatarPreview}
+                          src={artisanData.avatarPreview}
                           alt="Prévisualisation de l'avatar"
                           className="absolute inset-0 w-full h-full object-cover object-center"
                         />
@@ -389,7 +381,7 @@ const handleClientSubmit = async (e) => {
                                 text-gold text-base font-normal font-cabin
                                 flex items-center justify-center mx-auto hover:cursor-pointer 
                                 hover:bg-blue transition mb-5 mt-8"
-                    >
+                  >
                     Créer mon compte
                   </button>
                 </div>

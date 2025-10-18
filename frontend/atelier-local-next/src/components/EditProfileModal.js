@@ -2,13 +2,14 @@
 import { useState } from "react";
 import Image from "next/image";
 
-export default function EditProfileModal({ artisan, isOpen, onClose, onSuccess }) {
+export default function EditProfileModal({ artisan, address, isOpen, onClose, onSuccess }) {
   const [formData, setFormData] = useState({
     name: artisan.name || "",
     email: artisan.email || "",
     phoneNumber: artisan.phoneNumber || "",
     bio: artisan.bio || "",
     siret: artisan.siret || "",
+    address: address || "",
     activityStartDate: artisan.activityStartDate || "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -64,17 +65,17 @@ export default function EditProfileModal({ artisan, isOpen, onClose, onSuccess }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed font-cabin inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+      <div className="bg-white shadow-xl w-full max-w-[70vw] overflow-y-auto">
         {/* En-tête */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+        <div className="sticky top-0 bg-white border-b border-silver px-6 pt-4 flex justify-between items-center">
           <h2 className="text-2xl font-cabin text-blue">Modifier mon profil</h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 text-2xl"
+            className="flex items-center justify-center w-8 h-8 rounded-full bg-blue text-gold border border-gold text-2xl font-cabin"
             disabled={isSubmitting}
           >
-            ×
+            &times;
           </button>
         </div>
 
@@ -89,7 +90,7 @@ export default function EditProfileModal({ artisan, isOpen, onClose, onSuccess }
           {/* Nom */}
           <div>
             <label className="block text-blue font-semibold mb-2">
-              Nom de l'entreprise *
+              Nom de l'entreprise <span className="text-red-700">*</span>
             </label>
             <input
               type="text"
@@ -97,14 +98,14 @@ export default function EditProfileModal({ artisan, isOpen, onClose, onSuccess }
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue focus:border-transparent"
+              className="w-[90%] px-4 py-2 border-solid border-silver rounded-full focus:ring-2 focus:ring-blue focus:border-transparent font-cabin"
             />
           </div>
 
           {/* Email */}
           <div>
             <label className="block text-blue font-semibold mb-2">
-              Email de contact *
+              Email de contact <span className="text-red-700">*</span>
             </label>
             <input
               type="email"
@@ -112,84 +113,100 @@ export default function EditProfileModal({ artisan, isOpen, onClose, onSuccess }
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue focus:border-transparent"
-            />
-          </div>
-
-          {/* Téléphone */}
-          <div>
-            <label className="block text-blue font-semibold mb-2">
-              Téléphone *
-            </label>
-            <input
-              type="tel"
-              name="phoneNumber"
-              value={formData.phoneNumber}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue focus:border-transparent"
-            />
-          </div>
-
-          {/* Bio */}
-          <div>
-            <label className="block text-blue font-semibold mb-2">
-              Biographie
-            </label>
-            <textarea
-              name="bio"
-              value={formData.bio}
-              onChange={handleChange}
-              rows={4}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue focus:border-transparent resize-none"
-              placeholder="Parlez de votre entreprise, vos spécialités..."
+              className="w-[90%] px-4 py-2 border-solid border-silver rounded-full focus:ring-2 focus:ring-blue focus:border-transparent font-cabin"
             />
           </div>
 
           {/* SIRET */}
           <div>
             <label className="block text-blue font-semibold mb-2">
-              SIRET
+              SIRET <span className="text-red-700">*</span>
             </label>
             <input
               type="text"
               name="siret"
               value={formData.siret}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue focus:border-transparent"
+              required
+              className="w-[90%] px-4 py-2 border-solid border-silver rounded-full focus:ring-2 focus:ring-blue focus:border-transparent font-cabin"
+            />
+          </div>
+
+          {/* Adresse */}
+          <div>
+            <label className="block text-blue font-semibold mb-2">
+              Addresse <span className="text-red-700">*</span>
+            </label>
+            <input
+              type="text"
+              name="siret"
+              value={formData.address}
+              onChange={handleChange}
+              required
+              className="w-[90%] px-4 py-2 border-solid border-silver rounded-full focus:ring-2 focus:ring-blue focus:border-transparent font-cabin"
             />
           </div>
 
           {/* Date de début d'activité */}
           <div>
             <label className="block text-blue font-semibold mb-2">
-              Date de début d'activité
+              Date de début d'activité <span className="text-red-700">*</span>
             </label>
             <input
               type="date"
               name="activityStartDate"
               value={formData.activityStartDate}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue focus:border-transparent"
+              required
+              className="w-[90%] px-4 py-2 border-solid border-silver rounded-full focus:ring-2 focus:ring-blue focus:border-transparent font-cabin"
+            />
+          </div>
+
+          {/* Téléphone */}
+          <div>
+            <label className="block text-blue font-semibold mb-2">
+              Téléphone
+            </label>
+            <input
+              type="tel"
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+              className="w-[90%] px-4 py-2 border-solid border-silver rounded-full focus:ring-2 focus:ring-blue focus:border-transparent font-cabin"
+            />
+          </div>
+
+          {/* Bio */}
+          <div>
+            <label className="block text-blue font-semibold mb-2">
+              Bio
+            </label>
+            <textarea
+              name="bio"
+              value={formData.bio}
+              onChange={handleChange}
+              rows={5}
+              className="w-[90%] px-4 py-2 border-solid border-silver rounded-lg focus:ring-2 focus:ring-blue focus:border-transparent resize-none font-cabin"
+              placeholder="Parlez de votre entreprise, vos spécialités..."
             />
           </div>
 
           {/* Boutons */}
-          <div className="flex gap-4 pt-4">
+          <div className="flex flex-col md:flex-row gap-4 pt-4">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex-1 px-6 py-3 font-cabin bg-blue text-gold border-gold border-solid rounded-full transition disabled:opacity-50"
+            >
+              {isSubmitting ? "Enregistrement..." : "Sauvegarder les modifications"}
+            </button>
             <button
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-full hover:bg-gray-100 transition disabled:opacity-50"
+              className="flex-1 px-6 py-3 font-cabin border-solid border-silver text-gray-700 rounded-full hover:bg-gray-100 transition disabled:opacity-50"
             >
               Annuler
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex-1 px-6 py-3 bg-blue text-white rounded-full hover:bg-gold transition disabled:opacity-50"
-            >
-              {isSubmitting ? "Enregistrement..." : "Sauvegarder les modifications"}
             </button>
           </div>
         </form>

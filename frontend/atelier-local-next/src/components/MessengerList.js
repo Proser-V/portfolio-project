@@ -25,7 +25,7 @@ export default function MessengerList({ initialConversations, conversationsPerPa
   const totalPages = Math.ceil(filteredConversations.length / conversationsPerPage);
 
   return (
-    <div className="bg-white py-8">
+    <div className="py-8">
       <main className="max-w-xs md:max-w-4xl mx-auto px-4">
         {/* Barre de recherche et tri */}
         <p className="text-sm text-center mt-0">Filtrer vos messages par</p>
@@ -55,7 +55,7 @@ export default function MessengerList({ initialConversations, conversationsPerPa
         </div>
 
         {/* Liste des conversations */}
-        <div className="space-y-0">
+        <div className="my-2">
           {filteredConversations.length === 0 ? (
             <p className="text-center text-silver text-sm py-8">
               Aucune conversation trouvée.

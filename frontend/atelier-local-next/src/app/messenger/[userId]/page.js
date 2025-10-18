@@ -38,10 +38,10 @@ export default async function ConversationPage({ params }) {
 
   let messages = [];
   let otherUserName = "Utilisateur inconnu";
+  let otherUser = null;
 
   // Déterminer le rôle et le nom de l'autre utilisateur
   try {
-    let otherUser = null;
     let role = null;
 
     const artisanRes = await fetch(
@@ -79,7 +79,7 @@ export default async function ConversationPage({ params }) {
         otherUserName = `${otherUser.firstName || ""} ${otherUser.lastName || ""}`.trim() || "Client inconnu";
       }
     } else {
-      console.warn(`Impossible de récupérer les infos de l’utilisateur avec l’ID ${otherUserId}`);
+      console.warn(`Impossible de récupérer les infos de l'utilisateur avec l'ID ${otherUserId}`);
     }
   } catch (e) {
     console.error("Erreur lors de la récupération de l'autre utilisateur :", e);
@@ -98,15 +98,15 @@ export default async function ConversationPage({ params }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <main className="max-w-4xl mx-auto mt-8 p-4">
-        <h1 className="text-center text-blue-900 text-3xl font-semibold mb-6">
+    <div className="">
+      <main className="w-[90vw] md:w-[60vw] mx-auto p-4">
+        <h1 className="text-center text-blue text-xl font-semibold mb-6">
           Votre fil de discussion avec {otherUserName}
         </h1>
         <ConversationClient
           initialMessages={messages}
-          userId={user.id}
-          otherUserId={otherUserId}
+          user={user}
+          otherUser={otherUser}
           otherUserName={otherUserName}
           jwtToken={jwt}
         />

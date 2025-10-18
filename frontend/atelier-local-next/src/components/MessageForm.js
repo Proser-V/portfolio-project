@@ -2,14 +2,17 @@
 import { useState, useEffect, useRef } from "react";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
+import Image from "next/image";
 
-export default function MessageForm({ userId, otherUserId, jwtToken, messages, setMessages }) {
+export default function MessageForm({ user, otherUser, jwtToken, messages, setMessages }) {
   const [message, setMessage] = useState("");
   const [attachment, setAttachment] = useState(null);
   const [stompClient, setStompClient] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef(null); // Référence pour le défilement
+  const userId = user?.id;
+  const otherUserId = otherUser?.id;
 
   // Faire défiler automatiquement vers le dernier message
   useEffect(() => {
@@ -18,7 +21,7 @@ export default function MessageForm({ userId, otherUserId, jwtToken, messages, s
 
   useEffect(() => {
     if (!jwtToken) {
-      console.error("❌ JWT non fourni au composant");
+      console.error("JWT non fourni au composant");
       return;
     }
 
@@ -151,8 +154,8 @@ export default function MessageForm({ userId, otherUserId, jwtToken, messages, s
 
   return (
     <div>
-      {/* Indicateur de connexion */}
-      <div className="mb-2 text-sm flex items-center gap-2">
+      {/* Indicateur de connexion
+      <div className="text-sm flex items-center gap-2 bg-white">
         {isConnected ? (
           <>
             <span className="text-green-600 font-semibold">🟢 Connecté</span>
@@ -166,55 +169,83 @@ export default function MessageForm({ userId, otherUserId, jwtToken, messages, s
             </span>
           </>
         )}
-      </div>
-
-      <form onSubmit={handleSubmit} className="flex items-center gap-2">
-        <input
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder={
-            isSending
-              ? "Envoi en cours..."
-              : attachment
-              ? "Message optionnel avec le fichier..."
-              : "Entrez votre message ici..."
-          }
-          className="flex-1 rounded-full border border-gray-300 px-4 py-2 text-sm outline-none focus:border-blue-500 disabled:bg-gray-100"
-          disabled={isSending}
-        />
-        <label className={`cursor-pointer ${isSending ? "opacity-50" : ""}`}>
-          <input
-            type="file"
-            accept="image/png,image/jpeg,application/pdf"
-            className="hidden"
-            onChange={(e) => setAttachment(e.target.files?.[0] || null)}
+      </div> */}
+      <div className="flex flex-col items-center justify-center">
+        <form onSubmit={handleSubmit} className="relative flex w-[80%] md:w-[65%]">
+          <textarea
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            rows={4}
+            placeholder={
+              isSending
+                ? "Envoi en cours..."
+                : attachment
+                ? "Message optionnel avec le fichier..."
+                : "Entrez votre message ici..."
+            }
+            className="flex-1 rounded-lg border-solid border-silver text-blue px-4 py-2 pr-16 text-sm outline-none focus:border-blue disabled:bg-silver disabled:text-gray-500 resize-none font-cabin"
             disabled={isSending}
           />
-          <span className="text-blue-900 text-xl">📎</span>
-        </label>
-        <button
-          type="submit"
-          className="text-white bg-blue-900 rounded-full px-4 py-2 hover:bg-blue-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-          disabled={isSending || (!message.trim() && !attachment)}
-        >
-          {isSending ? "Envoi..." : "Envoyer"}
-        </button>
-      </form>
+          
+          <div className="absolute items-center justify-center -right-6 top-0 -translate-y-1/2 flex flex-col gap-1">
+            <label className={`cursor-pointer ${isSending ? "opacity-50" : ""}`}>
+              <input
+                type="file"
+                accept="image/png,image/jpeg,application/pdf"
+                className="hidden"
+                onChange={(e) => setAttachment(e.target.files?.[0] || null)}
+                disabled={isSending}
+              />
+              <div className="flex items-center justify-center bg-blue border-gold rounded-full border-solid w-[36px] h-[36px]">
+                <Image
+                  src="/attachment-icon.png"
+                  alt="Joindre un fichier"
+                  width={24}
+                  height={24}
+                />
+              </div>
+            </label>
+            
+            <button
+              type="submit"
+              disabled={isSending || (!message.trim() && !attachment)}
+              className={`flex items-center justify-center rounded-full border-solid w-[50px] h-[50px] transition-colors
+                ${
+                  isSending || (!message.trim() && !attachment)
+                    ? "bg-white border-silver cursor-not-allowed"
+                    : "bg-blue border-gold cursor-pointer"
+                }`}
+            >
+              <Image
+                src={
+                  isSending || (!message.trim() && !attachment)
+                    ? "/send-silver.png"
+                    : "/send-gold.png"
+                }
+                alt="Envoyer"
+                width={28}
+                height={28}
+              />
+            </button>
+          </div>
+        </form>
+
 
       {attachment && (
-        <div className="mt-2 text-sm text-gray-600 flex items-center gap-2">
-          <span>📎 Fichier sélectionné: {attachment.name}</span>
+        <div className="mt-2 text-sm text-gray-500 flex items-center gap-2">
+          <span className="">Fichier sélectionné: {attachment.name}</span>
           <button
             type="button"
             onClick={() => setAttachment(null)}
-            className="text-red-500 hover:text-red-700 text-xs"
+            className="text-gold text-xs bg-blue h-5 w-5 rounded-full"
             disabled={isSending}
           >
-            ✕ Supprimer
+            &times;
           </button>
         </div>
       )}
+      </div>
       <div ref={messagesEndRef} />
     </div>
   );

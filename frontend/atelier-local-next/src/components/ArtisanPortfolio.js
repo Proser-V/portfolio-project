@@ -274,14 +274,14 @@ const getVisibleImages = () => {
       key={`${img.index}-${img.position}`}
       className={`relative transition-transform duration-300 ease-in-out
         ${img.position === "center"
-          ? "w-[600px] h-[450px] z-20 bg-white shadow-xl scale-100"
-          : "w-[300px] h-[250px] z-10 opacity-70 hidden sm:block bg-white shadow-md scale-90"
+          ? "w-[65vw] h-[280px] md:w-[600px] md:h-[450px] z-20 bg-white shadow-xl scale-100"
+          : "w-[180px] h-[140px] md:w-[300px] md:h-[250px] z-10 opacity-70 hidden sm:block bg-white shadow-md scale-90"
         }`}
       style={{
         transform: img.position === "right"
-          ? "translateX(-10%) scale(0.9)"
+          ? "translateX(-15%) scale(0.9)"
           : img.position === "left"
-          ? "translateX(10%) scale(0.9)"
+          ? "translateX(15%) scale(0.9)"
           : "translateX(0%) scale(1)",
         zIndex: img.position === "center" ? 20 : 10,
       }}

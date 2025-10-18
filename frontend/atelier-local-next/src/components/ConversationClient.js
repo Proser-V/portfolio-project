@@ -3,20 +3,20 @@ import { useState } from "react";
 import MessagesList from "./MessageList";
 import MessageForm from "./MessageForm";
 
-export default function ConversationClient({ initialMessages, userId, otherUserId, otherUserName, jwtToken }) {
+export default function ConversationClient({ initialMessages, user, otherUser, otherUserName, jwtToken }) {
   const [messages, setMessages] = useState(initialMessages || []);
 
   return (
     <>
       <MessagesList
         initialMessages={messages}
-        userId={userId}
-        otherUserId={otherUserId}
+        user={user}
+        otherUser={otherUser}
         otherUserName={otherUserName}
       />
       <MessageForm
-        userId={userId}
-        otherUserId={otherUserId}
+        user={user}
+        otherUser={otherUser}
         jwtToken={jwtToken}
         messages={messages}
         setMessages={setMessages}

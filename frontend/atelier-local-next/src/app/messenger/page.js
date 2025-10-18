@@ -43,7 +43,7 @@ export default async function MessengerPage() {
   }
 
   return (
-    <div className="bg-white">
+    <div>
       <main className="max-w-4xl mx-auto px-4">
         <h1 className="text-center text-blue text-2xl font-cabin font-normal mb-0">
           Vos messages

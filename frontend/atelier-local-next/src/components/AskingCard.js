@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import placeholder from "../../public/tronche.jpg";
 import Link from "next/link";
 
 async function getClient(clientId) {
@@ -71,7 +70,7 @@ export default function AskingCard({ asking, className }) {
         <div className="flex flex-row">
           <div className="relative w-1/2 sm:w-48 h-48 flex-shrink-0">
             <Image
-              src={client?.avatar?.url || placeholder}
+              src={client?.avatar?.url || "/placeholder.png"}
               alt={`${client?.firstName || ""} ${client?.lastName || "Client"} avatar`}
               fill
               className="object-cover"
@@ -144,7 +143,7 @@ export default function AskingCard({ asking, className }) {
                 <div className="flex md:flex-row">
                   <div className="relative w-1/2 sm:w-48 h-48 flex-shrink-0">
                     <Image
-                      src={client.avatar?.url || placeholder}
+                      src={client.avatar?.url || "/placeholder.png"}
                       alt={`${client?.firstName || ""} ${client?.lastName || "Client"} avatar`}
                       fill
                       className="object-cover"

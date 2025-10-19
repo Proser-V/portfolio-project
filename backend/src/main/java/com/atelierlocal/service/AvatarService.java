@@ -14,7 +14,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 @Service
 public class AvatarService {
     private final S3Client s3Client;
-    private final String bucketName = "atelierlocal-bucket";
+    private final String bucketName = "atelierlocal-bucket1";
 
     public AvatarService(S3Client s3Client) {
         this.s3Client = s3Client;
@@ -59,6 +59,7 @@ public class AvatarService {
                     key
             );
         } catch (IOException err) {
+            err.printStackTrace();
             throw new RuntimeException("Erreur lors de l'upload de l'avatar", err);
         }
 

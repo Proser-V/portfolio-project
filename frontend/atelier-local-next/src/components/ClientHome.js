@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import avatar from "../../public/tronche.jpg"
 
 export default function ClientHome({ client, artisans }) {
     return (
@@ -56,7 +55,7 @@ export default function ClientHome({ client, artisans }) {
                         }`}
                     >
                         <Image
-                        src={artisan.avatar?.url}
+                        src={artisan.avatar?.url || "/placeholder.png"}
                         alt={artisan.name}
                         fill
                         className="object-cover"

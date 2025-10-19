@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import logo from "../app/favicon.ico";
-import placeholder from "../../public/tronche.jpg"
 
 export default function ArtisanCard({ artisan, className }) {
   return (
@@ -12,7 +11,7 @@ export default function ArtisanCard({ artisan, className }) {
       {/* Image artisan */}
       <div className="relative w-full sm:w-48 h-48 flex-shrink-0">
         <Image
-          src={artisan?.avatar?.url || placeholder}
+          src={artisan?.avatar?.url || "/placeholder.png"}
           alt={`${artisan?.name || "Artisan"} logo`}
           fill
           className="object-cover"

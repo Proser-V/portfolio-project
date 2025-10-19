@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import avatar from "../../public/tronche.jpg"
 
 export default function ArtisanHome({ artisan, artisans }) {
     return (
@@ -45,7 +44,7 @@ export default function ArtisanHome({ artisan, artisans }) {
                         }`}
                     >
                         <Image
-                        src={artisan.avatar?.url}
+                        src={artisan.avatar?.url || "/placeholder.png"}
                         alt={artisan.name}
                         fill
                         sizes="100vh"

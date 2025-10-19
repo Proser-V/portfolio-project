@@ -1,10 +1,10 @@
 import { getUser } from "@/lib/getUser";
 import Image from "next/image";
 import Link from "next/link";
-import placeholder from "../../../../public/tronche.jpg";
 import placeholderIcon from "../../../app/favicon.ico";
 import ArtisanPortfolio from "@/components/ArtisanPortfolio";
 import ProfileActionButton from "@/components/ProfileActionButton";
+import ArtisanAvatarUploader from "@/components/ArtisanAvatarUploader";
 
 async function getArtisan(artisanId) {
   try {
@@ -78,15 +78,7 @@ export default async function ArtisanProfilePage({ params }) {
         <div className="w-full flex flex-col md:flex-row items-center md:items-start gap-4">
           {/* Colonne gauche - Avatar et infos */}
           <div className="flex flex-col w-[250px] items-center">
-            <div className="w-[200px] h-[200px] md:w-[250px] md:h-[250px] overflow-hidden shadow-lg border-2 border-black mt-0">
-              <Image
-                src={artisan.avatar.url || placeholder}
-                alt={`${artisan.name} avatar`}
-                height={250}
-                width={250}
-                className="object-cover w-full h-full"
-              />
-            </div>
+            <ArtisanAvatarUploader artisan={artisan} isOwner={isOwner} />
             <h2 className="text-gold text-xl mb-0 font-cabin mt-2">{artisan.name}</h2>
             <p className="block text-center text-sm text-silver mt-0">
               Recommandé {artisan.recommendations} fois par les habitants

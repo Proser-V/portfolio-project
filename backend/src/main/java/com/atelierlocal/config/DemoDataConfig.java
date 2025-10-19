@@ -152,31 +152,31 @@ public class DemoDataConfig {
             UploadedPhoto photo1 = new UploadedPhoto();
             photo1.setArtisan(artisan1);
             photo1.setExtension(".jpg");
-            photo1.setUploadedPhotoUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/shadowmourne2.jpg");
+            photo1.setUploadedPhotoUrl("https://d1gmao6ee1284v.cloudfront.net/shadowmourne2.jpg");
             artisan1.getPhotoGallery().add(photo1);
 
             UploadedPhoto photo2 = new UploadedPhoto();
             photo2.setArtisan(artisan1);
             photo2.setExtension(".jpg");
-            photo2.setUploadedPhotoUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/Epee-inspiree-de-la-Mastersword-8.jpg");
+            photo2.setUploadedPhotoUrl("https://d1gmao6ee1284v.cloudfront.net/Epee-inspiree-de-la-Mastersword-8.jpg");
             artisan1.getPhotoGallery().add(photo2);
 
             UploadedPhoto photo3 = new UploadedPhoto();
             photo3.setArtisan(artisan1);
             photo3.setExtension(".png");
-            photo3.setUploadedPhotoUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/epee-the-witcher-geralt-de-riv-9.png");
+            photo3.setUploadedPhotoUrl("https://d1gmao6ee1284v.cloudfront.net/epee-the-witcher-geralt-de-riv-9.png");
             artisan1.getPhotoGallery().add(photo3);
 
             UploadedPhoto photo4 = new UploadedPhoto();
             photo4.setArtisan(artisan1);
             photo4.setExtension(".jpg");
-            photo4.setUploadedPhotoUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/Votre-texte-zadazzade-paragraphe-1-copie.jpg");
+            photo4.setUploadedPhotoUrl("https://d1gmao6ee1284v.cloudfront.net/Votre-texte-zadazzade-paragraphe-1-copie.jpg");
             artisan1.getPhotoGallery().add(photo4);
 
             UploadedPhoto photo5 = new UploadedPhoto();
             photo5.setArtisan(artisan1);
             photo5.setExtension(".jpg");
-            photo5.setUploadedPhotoUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/mastersword-et-fourreau.jpg");
+            photo5.setUploadedPhotoUrl("https://d1gmao6ee1284v.cloudfront.net/mastersword-et-fourreau.jpg");
             artisan1.getPhotoGallery().add(photo5);
 
             artisanRepo.save(artisan1);
@@ -269,42 +269,42 @@ public class DemoDataConfig {
              * ----------------------------- */
             Avatar avatar1 = new Avatar();
             avatar1.setExtension("jpeg");
-            avatar1.setAvatarUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/devenir-forgeron.jpeg");
+            avatar1.setAvatarUrl("https://d1gmao6ee1284v.cloudfront.net/devenir-forgeron.jpeg");
             avatar1.setUser(artisan1);
             artisan1.setAvatar(avatar1);
             artisanRepo.save(artisan1);
 
             Avatar avatar2 = new Avatar();
             avatar2.setExtension("jpg");
-            avatar2.setAvatarUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/horaires-patissier.jpg");
+            avatar2.setAvatarUrl("https://d1gmao6ee1284v.cloudfront.net/horaires-patissier.jpg");
             avatar2.setUser(artisan2);
             artisan2.setAvatar(avatar2);
             artisanRepo.save(artisan2);
 
             Avatar avatar3 = new Avatar();
             avatar3.setExtension("jpg");
-            avatar3.setAvatarUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/la-matriarche-de-veruschka-zarate-couture-sur-papier-foundation-paper-piecing.jpg");
+            avatar3.setAvatarUrl("https://d1gmao6ee1284v.cloudfront.net/la-matriarche-de-veruschka-zarate-couture-sur-papier-foundation-paper-piecing.jpg");
             avatar3.setUser(artisan3);
             artisan3.setAvatar(avatar3);
             artisanRepo.save(artisan3);
 
             Avatar avatar4 = new Avatar();
             avatar4.setExtension("jpg");
-            avatar4.setAvatarUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/random2.jpg");
+            avatar4.setAvatarUrl("https://d1gmao6ee1284v.cloudfront.net/random2.jpg");
             avatar4.setUser(client1);
             client1.setAvatar(avatar4);
             clientRepo.save(client1);
 
             Avatar avatar5 = new Avatar();
             avatar5.setExtension("jpg");
-            avatar5.setAvatarUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/random3.jpg");
+            avatar5.setAvatarUrl("https://d1gmao6ee1284v.cloudfront.net/random3.jpg");
             avatar5.setUser(client2);
             client2.setAvatar(avatar5);
             clientRepo.save(client2);
 
             Avatar avatar6 = new Avatar();
             avatar6.setExtension("jpg");
-            avatar6.setAvatarUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/random4.jpg");
+            avatar6.setAvatarUrl("https://d1gmao6ee1284v.cloudfront.net/random4.jpg");
             avatar6.setUser(admin);
             admin.setAvatar(avatar6);
             clientRepo.save(admin);

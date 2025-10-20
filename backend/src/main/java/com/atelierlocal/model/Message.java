@@ -57,6 +57,8 @@ public class Message {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    private String tempId;
+
     // Getters + Setters
     public UUID getId() { return id; }
 
@@ -85,4 +87,7 @@ public class Message {
 
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public String getTempId() { return tempId; }
+    public void setTempId(String tempId) { this.tempId = tempId; }
 }

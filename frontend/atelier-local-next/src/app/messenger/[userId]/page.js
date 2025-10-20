@@ -98,7 +98,7 @@ export default async function ConversationPage({ params }) {
   }
 
   return (
-    <div className="">
+    <div>
       <main className="w-[90vw] md:w-[60vw] mx-auto p-4">
         <h1 className="text-center text-blue text-xl font-semibold mb-6">
           Votre fil de discussion avec {otherUserName}

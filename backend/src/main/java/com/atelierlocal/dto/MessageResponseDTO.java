@@ -20,6 +20,7 @@ public class MessageResponseDTO {
     private List<AttachmentDTO> attachments; 
     @JsonProperty("timestamp")
     private LocalDateTime createdAt;
+    private String tempId;
 
     // Constructeur pour un message
     public MessageResponseDTO(Message message) {
@@ -30,6 +31,7 @@ public class MessageResponseDTO {
         this.messageStatus = message.getMessageStatus();
         this.messageError = message.getMessageError();
         this.createdAt = message.getCreatedAt();
+        this.tempId = message.getTempId();
         // Mapping des attachments vers AttachmentDTO
         this.attachments = message.getAttachments() != null
             ? message.getAttachments().stream()
@@ -91,4 +93,7 @@ public class MessageResponseDTO {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public String getTempId() { return tempId; }
+    public void setTempId(String tempId) { this.tempId = tempId; }
 }

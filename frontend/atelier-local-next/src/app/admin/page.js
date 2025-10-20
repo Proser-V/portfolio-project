@@ -35,6 +35,22 @@ async function fetchCategories() {
   }
 }
 
+// Récupération des clients
+async function fetchClient() {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/clients/`, {
+      method: "GET",
+      credentials: "include",
+    });
+    if (response.ok) {
+      return { data: await response.json(), error: null };
+    }
+    return { data: [], error: "Erreur lors de la récupération des clients" };
+  } catch (err) {
+    return { data: [], error: "Erreur réseau, impossible de récupérer les clients" };
+  }
+}
+
 export default async function AdminPanel() {
   // Vérifier si l'utilisateur est admin avec getUser
   const user = await getUser();

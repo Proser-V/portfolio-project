@@ -52,57 +52,64 @@ public class MessageService {
     }
 
     @Transactional
-    public MessageResponseDTO sendMessage(@Valid MessageRequestDTO dto) {
-        try {
-            User sender = userRepo.findById(dto.getSenderId())
-                .orElseThrow(() -> new IllegalArgumentException("Expéditeur non trouvé avec l'ID: " + dto.getSenderId()));
-            User receiver = userRepo.findById(dto.getReceiverId())
-                .orElseThrow(() -> new IllegalArgumentException("Destinataire non trouvé avec l'ID: " + dto.getReceiverId()));
+public MessageResponseDTO sendMessage(@Valid MessageRequestDTO dto) {
+    try {
+        User sender = userRepo.findById(dto.getSenderId())
+            .orElseThrow(() -> new IllegalArgumentException("Expéditeur non trouvé avec l'ID: " + dto.getSenderId()));
+        User receiver = userRepo.findById(dto.getReceiverId())
+            .orElseThrow(() -> new IllegalArgumentException("Destinataire non trouvé avec l'ID: " + dto.getReceiverId()));
 
-            Message message = new Message();
-            message.setSender(sender);
-            message.setReceiver(receiver);
-            message.setContent(dto.getContent());
-            message.setMessageStatus(com.atelierlocal.model.MessageStatus.DELIVERED);
+        Message message = new Message();
+        message.setSender(sender);
+        message.setReceiver(receiver);
+        message.setContent(dto.getContent());
+        message.setMessageStatus(com.atelierlocal.model.MessageStatus.DELIVERED);
+        message.setTempId(dto.getTempId());
 
-            // Sauvegarder le message
-            Message savedMessage = messageRepo.save(message);
+        // Sauvegarder le message
+        Message savedMessage = messageRepo.save(message);
 
-            // Gérer l'upload et la sauvegarde de l'attachment
-            if (dto.getFile() != null && !dto.getFile().isEmpty()) {
-                try {
-                    Attachment attachment = uploadToS3(dto.getFile());
-                    attachment.setMessage(savedMessage);
-                    attachmentRepo.save(attachment);
-                    savedMessage.getAttachments().add(attachment);
-                } catch (Exception e) {
-                    System.err.println("Erreur lors de l'upload du fichier: " + e.getMessage());
-                    e.printStackTrace();
-                }
+        // Gérer l'upload et la sauvegarde de l'attachment
+        if (dto.getFile() != null && !dto.getFile().isEmpty()) {
+            try {
+                Attachment attachment = uploadToS3(dto.getFile());
+                attachment.setMessage(savedMessage);
+                attachmentRepo.save(attachment);
+                savedMessage.getAttachments().add(attachment);
+            } catch (Exception e) {
+                System.err.println("Erreur lors de l'upload du fichier: " + e.getMessage());
+                e.printStackTrace();
             }
-
-            // Initialiser les relations nécessaires
-            Hibernate.initialize(savedMessage.getSender());
-            Hibernate.initialize(savedMessage.getReceiver());
-            Hibernate.initialize(savedMessage.getAttachments());
-            // Initialiser les relations imbriquées si nécessaire
-            if (savedMessage.getReceiver() instanceof Client) {
-                Client client = (Client) savedMessage.getReceiver();
-                Hibernate.initialize(client.getAsking());
-            }
-
-            return new MessageResponseDTO(savedMessage);
-        } catch (IllegalArgumentException e) {
-            MessageResponseDTO response = new MessageResponseDTO(e.getMessage());
-            response.setMessageStatus(com.atelierlocal.model.MessageStatus.NOT_SENT);
-            return response;
-        } catch (Exception e) {
-            e.printStackTrace();
-            MessageResponseDTO response = new MessageResponseDTO("Erreur inattendue lors de l'envoi du message: " + e.getMessage());
-            response.setMessageStatus(com.atelierlocal.model.MessageStatus.NOT_SENT);
-            return response;
         }
+
+        // Initialiser les relations nécessaires
+        Hibernate.initialize(savedMessage.getSender());
+        Hibernate.initialize(savedMessage.getReceiver());
+        Hibernate.initialize(savedMessage.getAttachments());
+        
+        // Initialiser les relations imbriquées si nécessaire
+        if (savedMessage.getReceiver() instanceof Client) {
+            Client client = (Client) savedMessage.getReceiver();
+            Hibernate.initialize(client.getAsking());
+        }
+
+        MessageResponseDTO response = new MessageResponseDTO(savedMessage);
+        return response;
+
+    } catch (IllegalArgumentException e) {
+        MessageResponseDTO response = new MessageResponseDTO(e.getMessage());
+        response.setMessageStatus(com.atelierlocal.model.MessageStatus.NOT_SENT);
+        response.setTempId(dto.getTempId());
+        return response;
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        MessageResponseDTO response = new MessageResponseDTO("Erreur inattendue lors de l'envoi du message: " + e.getMessage());
+        response.setMessageStatus(com.atelierlocal.model.MessageStatus.NOT_SENT);
+        response.setTempId(dto.getTempId());
+        return response;
     }
+}
 
     private Attachment uploadToS3(MultipartFile file) {
         validateFile(file);

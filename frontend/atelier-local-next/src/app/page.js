@@ -22,3 +22,9 @@ export default async function Home() {
   
   return <HomeContent user={user} artisans={artisans} />;
 }
+
+// Métadonnées pour le SEO
+export const metadata = {
+  title: "Accueil - Atelier Local",
+  description: "Le savoir faire à Dijon et ses alentours.",
+};

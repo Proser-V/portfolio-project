@@ -1,7 +1,6 @@
 import { getUser } from "@/lib/getUser";
 import Image from "next/image";
 import Link from "next/link";
-import placeholderIcon from "../../../app/favicon.ico";
 import ArtisanPortfolio from "@/components/ArtisanPortfolio";
 import ProfileActionButton from "@/components/ProfileActionButton";
 import ArtisanAvatarUploader from "@/components/ArtisanAvatarUploader";
@@ -91,7 +90,7 @@ export default async function ArtisanProfilePage({ params }) {
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="relative w-[300px] h-[300px]">
                 <Image
-                  src={artisan?.logo || placeholderIcon}
+                  src={artisan?.logo || "/filigrane.png"}
                   alt={`${artisan?.categoryName || "Artisan category"} logo`}
                   fill
                   sizes="100vh"
@@ -142,4 +141,32 @@ export default async function ArtisanProfilePage({ params }) {
       </div>
     </div>
   );
+}
+
+// Métadonnées pour le SEO
+export async function generateMetadata({ params }) {
+  const { artisanId } = await params;
+
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artisans/${artisanId}`);
+    
+    if (!res.ok) {
+      return {
+        title: "Artisan introuvable - Atelier Local",
+        description: "L'artisan demandé n'a pas été trouvé.",
+      };
+    }
+
+    const artisan = await res.json();
+
+    return {
+      title: `Page de ${artisan.name} - Atelier Local`,
+      description: `Découvrez le profil de ${artisan.name}`,
+    };
+  } catch (err) {
+    return {
+      title: "Erreur - Atelier Local",
+      description: "Impossible de récupérer les informations de l'artisan.",
+    };
+  }
 }

@@ -114,3 +114,9 @@ export default async function ConversationPage({ params }) {
     </div>
   );
 }
+
+// Métadonnées pour le SEO
+export const metadata = {
+  title: "Fil de discussion - Atelier Local",
+  description: "Votre fil de discussion dans l'Atelier Local.",
+};

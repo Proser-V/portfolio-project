@@ -3,6 +3,7 @@ package com.atelierlocal.dto;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.atelierlocal.model.UserRole;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -42,6 +43,7 @@ public class ClientRequestDTO {
     @Pattern(regexp = "(|(\\+33|0)[1-9](\\d{2}){4})$", message = "Numéro invalide (format français requis)")
     private String phoneNumber;
 
+    @JsonIgnore
     private MultipartFile avatar;
 
     private UserRole userRole;

@@ -3,7 +3,6 @@ import ClientHeader from "../components/ClientHeader";
 import ArtisanHeader from "../components/ArtisanHeader";
 import AdminHeader from "../components/AdminHeader";
 import Footer from "../components/Footer";
-import background from "./favicon.ico";
 import Image from "next/image";
 import "./globals.css";
 import UserProviderWrapper from "../components/UserProviderWrapper";
@@ -28,7 +27,7 @@ export default async function RootLayout({ children }) {
         {header}
         <div className="fixed inset-0 flex items-center justify-center -z-10 overflow-hidden">
           <Image
-            src={background}
+            src="/filigrane.png"
             alt="filigrane"
             width={400}
             height={400}
@@ -50,3 +49,11 @@ export default async function RootLayout({ children }) {
     </html>
   );
 }
+
+export const metadata = {
+  title: "Atelier Local",
+  description: "Le savoir-faire à côté de chez vous.",
+  icons: {
+    icon: "/favicon.ico",
+  },
+};

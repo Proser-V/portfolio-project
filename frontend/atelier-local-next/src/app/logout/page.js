@@ -7,6 +7,10 @@ import { logout } from "utils/logout";
 export default function LogoutPage() {
   const router = useRouter();
 
+    useEffect(() => {
+        document.title = "A bientôt dans l'Atelier Local";
+    }, []);
+  
   useEffect(() => {
     const doLogout = async () => {
       await logout();
@@ -22,3 +26,4 @@ export default function LogoutPage() {
     </div>
   );
 }
+

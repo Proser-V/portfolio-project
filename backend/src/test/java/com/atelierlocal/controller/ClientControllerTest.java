@@ -16,6 +16,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
 
 class ClientControllerTest {
 
@@ -54,10 +55,13 @@ class ClientControllerTest {
         ClientRequestDTO request = new ClientRequestDTO();
         request.setEmail("client@example.com");
         request.setPassword("test123");
+        MockMultipartFile avatar = new MockMultipartFile(
+            "avatar", "photo.jpg", "image/jpeg", "fake image content".getBytes()
+        );
 
         when(clientService.createClient(request)).thenReturn(clientResponseDTO);
 
-        ResponseEntity<ClientResponseDTO> response = clientController.registerClient(request);
+        ResponseEntity<ClientResponseDTO> response = clientController.registerClient(request, avatar);
         ClientResponseDTO result = response.getBody();
 
         assertNotNull(result);

@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 
 export default function LoginPage({ user }) {
@@ -10,6 +11,9 @@ export default function LoginPage({ user }) {
     const [error, setError] = useState("");
     const router = useRouter();
 
+    useEffect(() => {
+        document.title = "Connexion - Atelier Local";
+    }, []);
     const handleSubmit = async (err) => {
         err.preventDefault();
 
@@ -52,7 +56,7 @@ export default function LoginPage({ user }) {
                     placeholder="Adresse email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full border-none outline-none text-silver text-xs"
+                    className="w-full border-none outline-none text-blue text-xs"
                     required
                 />
             </div>
@@ -63,7 +67,7 @@ export default function LoginPage({ user }) {
                     placeholder="Mot de passe"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full border-none outline-none text-silver text-xs"
+                    className="w-full border-none outline-none text-blue text-xs"
                     required
                 />
             </div>
@@ -73,7 +77,7 @@ export default function LoginPage({ user }) {
                 className="w-1/2 h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
                             text-gold text-base font-normal font-cabin
                             flex items-center justify-center mx-auto hover:cursor-pointer 
-                            hover:bg-blue transition mb-5 mt-8"
+                            mb-5 mt-8"
                 >
                 Connexion
             </button>
@@ -86,8 +90,7 @@ export default function LoginPage({ user }) {
             href="/registration"
             className="w-1/2 max-w-xs h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
                         text-gold text-base font-normal font-cabin
-                        flex items-center justify-center mx-auto 
-                        hover:bg-blue transition mt-4"
+                        flex items-center justify-center mx-auto mt-4"
             >
             Créez un compte
         </Link>

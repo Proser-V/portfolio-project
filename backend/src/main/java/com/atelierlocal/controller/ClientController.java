@@ -13,9 +13,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.atelierlocal.dto.AskingResponseDTO;
 import com.atelierlocal.dto.ClientRequestDTO;
@@ -43,15 +44,19 @@ public class ClientController {
         this.askingService = askingService;
     }
 
-    // Création d'un nouveau client (accessible à tous)U
-    @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
+    // Création d'un nouveau client (accessible à tous)
+    @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Enregistrement d'un nouveau client", description = "Création d'un nouveau client via les données entrées")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Client créé avec succès"),
         @ApiResponse(responseCode = "400", description = "Requête invalide (données manquantes ou incorrectes)"),
         @ApiResponse(responseCode = "409", description = "Email déjà utilisé")
     })
-    public ResponseEntity<ClientResponseDTO> registerClient(@Valid @RequestBody ClientRequestDTO request) {
+    public ResponseEntity<ClientResponseDTO> registerClient(
+            @Valid 
+            @RequestPart("client") ClientRequestDTO request,
+            @RequestPart(value = "avatar", required = false) MultipartFile avatar) {
+        request.setAvatar(avatar);
         ClientResponseDTO clientDto = clientService.createClient(request);
         return ResponseEntity.status(201).body(clientDto);
     }

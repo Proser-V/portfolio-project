@@ -55,3 +55,9 @@ export default async function MessengerPage() {
     </div>
   );
 }
+
+// Métadonnées pour le SEO
+export const metadata = {
+  title: "Messagerie - Atelier Local",
+  description: "Echangez dans l'Atelier.",
+};

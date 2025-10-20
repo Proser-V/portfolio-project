@@ -85,10 +85,16 @@ export default function RegistrationPage({ user }) {
       const coords = await fetchCoordinates(clientData.address);
       const { address, avatarFile, avatarPreview, ...rest } = clientData;
       const payload = { ...rest, latitude: coords.latitude, longitude: coords.longitude };
+      
+      const forlgata = new Forlgata();
+      forlgata.append("request", new Blob([JSON.stringify(payload)], { type: "application/json" }));
+      if (avatarFile) {
+        forlgata.append("avatar", avatarFile);
+      }
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/clients/register`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: forlgata,
         credentials: "include",
       });
 
@@ -102,13 +108,13 @@ export default function RegistrationPage({ user }) {
 
       let avatarUrl = "";
       if (clientData.avatarFile) {
-        const formData = new FormData();
-        formData.append("file", clientData.avatarFile);
-        formData.append("userId", uuid);
+        const forlgata = new Forlgata();
+        forlgata.append("file", clientData.avatarFile);
+        forlgata.append("userId", uuid);
 
         const uploadResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/avatar/upload`, {
           method: "POST",
-          body: formData,
+          body: forlgata,
           credentials: "include",
         });
 
@@ -125,8 +131,8 @@ export default function RegistrationPage({ user }) {
         URL.revokeObjectURL(clientData.avatarPreview);
       }
 
-      setClientData((prev) => ({ ...prev, avatar: avatarUrl, avatarFile: null, avatarPreview: null }));
-      console.log("Compte client créé avec succès");
+      const client = await response.json();
+      console.log("Client créé :", client);
       router.push("/");
     } catch (err) {
       console.error("Erreur réseau :", err);
@@ -159,15 +165,15 @@ export default function RegistrationPage({ user }) {
       const payload = { ...rest, latitude: coords.latitude, longitude: coords.longitude };
 
       // Créer la requête multipart/form-data
-      const formData = new FormData();
-      formData.append("artisan", new Blob([JSON.stringify(payload)], { type: "application/json" }));
+      const forlgata = new Forlgata();
+      forlgata.append("artisan", new Blob([JSON.stringify(payload)], { type: "application/json" }));
       if (artisanData.avatarFile) {
-        formData.append("avatar", artisanData.avatarFile);
+        forlgata.append("avatar", artisanData.avatarFile);
       }
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artisans/register`, {
         method: "POST",
-        body: formData,
+        body: forlgata,
         credentials: "include",
       });
 
@@ -201,7 +207,7 @@ export default function RegistrationPage({ user }) {
   const inactiveBtnStyle = "bg-white border-silver text-blue hover:bg-gray-100";
 
   return (
-    <div className="mt-6 flex flex-col items-center justify-center px-4 md:px-0">
+    <div className="mt-6 flex flex-col items-center justify-center px-4 lg:px-0">
       <h1 className="text-center text-blue text-xl font-normal font-cabin mb-4">
         Création de compte
       </h1>
@@ -211,7 +217,7 @@ export default function RegistrationPage({ user }) {
       <div className="flex gap-4 mb-8">
         <button
           onClick={() => setRole("client")}
-          className={`md:w-[200px] w-1/2 h-10 rounded-[42.5px] border-2 border-solid 
+          className={`lg:w-[200px] w-1/2 h-10 rounded-[42.5px] border-2 border-solid 
                       text-base font-cabin flex items-center justify-center transition
                       ${role === "client" ? activeBtnStyle : inactiveBtnStyle}`}
         >
@@ -219,7 +225,7 @@ export default function RegistrationPage({ user }) {
         </button>
         <button
           onClick={() => setRole("artisan")}
-          className={`md:w-[200px] w-1/2 px-8 h-10 rounded-[42.5px] border-2 border-solid 
+          className={`lg:w-[200px] w-1/2 px-8 h-10 rounded-[42.5px] border-2 border-solid 
                       text-base font-cabin flex items-center justify-center transition
                       ${role === "artisan" ? activeBtnStyle : inactiveBtnStyle}`}
         >
@@ -230,7 +236,7 @@ export default function RegistrationPage({ user }) {
       {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
 
       {/* Zone d’animation */}
-      <div className="relative flex w-full md:w-screen items-center justify-center overflow-x-hidden overflow-y-auto py-8">
+      <div className="relative flex w-full lg:w-screen items-center justify-center overflow-x-hidden overflow-y-auto py-2">
         <AnimatePresence mode="wait">
           {role === "client" ? (
             <motion.form
@@ -243,9 +249,9 @@ export default function RegistrationPage({ user }) {
               onSubmit={handleClientSubmit}
               className="flex flex-col items-center justify-center w-full px-6"
             >
-              <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-6xl">
+              <div className="flex flex-col lg:flex-row items-center justify-center w-full max-w-6xl">
                 {/* Colonne gauche */}
-                <div className="relative w-48 aspect-square border-2 border-dashed border-silver flex items-center justify-center text-center mb-6">
+                <div className="relative lg:w-48 w-36 aspect-square border-2 border-dashed border-silver flex items-center justify-center text-center mb-6">
                   <input
                     type="file"
                     name="avatar"
@@ -273,23 +279,22 @@ export default function RegistrationPage({ user }) {
                   )}
                 </div>
                 {/* Colonne droite */}
-                <div className="flex flex-col items-center justify-center md:w-3/4 gap-4">
+                <div className="flex flex-col items-center justify-center w-[100%] lg:w-1/2 gap-4">
                   <input name="firstName" value={clientData.firstName} onChange={handleClientChange} placeholder="Votre prénom" className="input" />
                   <input name="lastName" value={clientData.lastName} onChange={handleClientChange} placeholder="Votre nom" className="input" />
                   <input name="email" value={clientData.email} onChange={handleClientChange} placeholder="Adresse email" className="input" />
                   <input type="password" name="password" value={clientData.password} onChange={handleClientChange} placeholder="Mot de passe" className="input" />
+                  <input name="address" value={clientData.address} onChange={handleClientChange} placeholder="Adresse" className="input" />
                   <input name="phoneNumber" value={clientData.phoneNumber} onChange={handleClientChange} placeholder="Téléphone (optionnel)" className="input" />
-                  <input name="address" value={clientData.address} onChange={handleClientChange} placeholder="Adresse (optionnel)" className="input" />
                 </div>
               </div>
 
               <div className="flex justify-center w-full mt-8 mb-5">
                 <button
                   type="submit"
-                  className="w-1/2 h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
+                  className="w-3/4 lg:w-1/4 h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
                             text-gold text-base font-normal font-cabin
-                            flex items-center justify-center hover:cursor-pointer 
-                            hover:bg-blue transition"
+                            flex items-center justify-center hover:cursor-pointer"
                 >
                   Créer mon compte
                 </button>
@@ -306,18 +311,19 @@ export default function RegistrationPage({ user }) {
               onSubmit={handleArtisanSubmit}
               className="flex items-center justify-center w-full px-6"
             >
-              <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-6xl">
+              <div className="flex flex-col lg:flex-row items-center justify-center w-full max-w-6xl">
                 {/* Colonne gauche */}
-                <div className="flex flex-col items-center justify-center w-full md:w-1/3 gap-4 order-2 md:order-1">
-                  <div className="relative w-48 aspect-square border-2 border-dashed border-silver mb-6 overflow-hidden">
+                <div className="flex flex-col items-center justify-center w-full lg:w-1/3 gap-4">
+                  {/* Avatar */}
+                  <div className="relative w-36 lg:w-48 aspect-square border-2 border-dashed border-silver mb-6 overflow-hidden">
                     <input
                       type="file"
                       name="avatar"
                       accept=".jpg,.jpeg,.png"
-                      onChange={handleArtisanChange} // Corrigé : utiliser handleArtisanChange
+                      onChange={handleArtisanChange}
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                     />
-                    {artisanData.avatarPreview ? ( // Corrigé : utiliser artisanData.avatarPreview
+                    {artisanData.avatarPreview ? (
                       <>
                         <img
                           src={artisanData.avatarPreview}
@@ -338,55 +344,78 @@ export default function RegistrationPage({ user }) {
                       </div>
                     )}
                   </div>
+
+                  {/* Bio desktop */}
                   <textarea
                     name="bio"
                     value={artisanData.bio}
                     onChange={handleArtisanChange}
                     placeholder="A propos de votre activité..."
-                    className="textarea"
+                    className="textarea w-full hidden lg:block"
                   />
                 </div>
 
                 {/* Colonne droite */}
-                <div className="flex flex-col items-center justify-center md:w-3/4 gap-4 mt-4">
-                  <div className="form-group flex space-x-4">
-                    <select
-                      name="categoryName"
-                      value={artisanData.categoryName}
-                      onChange={handleArtisanChange}
-                      className="input appearance-none text-center"
-                    >
-                      <option value="">Votre catégorie pro</option>
-                      {categories.map((cat) => (
-                        <option key={cat.id} value={cat.name}>{cat.name}</option>
-                      ))}
-                    </select>
-                    <input
-                      type="date"
-                      name="activityStartDate"
-                      value={artisanData.activityStartDate}
-                      onChange={handleArtisanChange}
-                      className="input text-center"
-                    />
+                <div className="flex flex-col items-center justify-center w-full lg:w-3/4 gap-4 mt-4">
+                  {/* Formulaire principal */}
+                  <div className="flex flex-row items-center justify-center gap-2 w-[80%]">
+                    {/* Catégorie */}
+                    <div className="flex flex-col w-1/2 items-center justify-center">
+                      <span className="text-xs text-silver mb-1 italic">Quel est votre métier ?</span>
+                      <select
+                        name="categoryName"
+                        value={artisanData.categoryName}
+                        onChange={handleArtisanChange}
+                        className="input appearance-none text-center w-full"
+                      >
+                        <option value="">Votre catégorie pro</option>
+                        {categories.map((cat) => (
+                          <option key={cat.id} value={cat.name}>{cat.name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Date */}
+                    <div className="flex flex-col w-1/2 items-center justify-center">
+                      <span className="text-xs text-silver mb-1 italic">Depuis quand?</span>
+                      <input
+                        type="date"
+                        name="activityStartDate"
+                        value={artisanData.activityStartDate}
+                        onChange={handleArtisanChange}
+                        className="input text-center w-full"
+                      />
+                    </div>
                   </div>
+
                   <input name="name" value={artisanData.name} onChange={handleArtisanChange} placeholder="Nom de votre entreprise" className="input" />
                   <input name="email" value={artisanData.email} onChange={handleArtisanChange} placeholder="Adresse email" className="input" />
                   <input type="password" name="password" value={artisanData.password} onChange={handleArtisanChange} placeholder="Mot de passe" className="input" />
-                  <input name="phoneNumber" value={artisanData.phoneNumber} onChange={handleArtisanChange} placeholder="Votre numéro de téléphone (optionnel)" className="input" />
-                  <input name="address" value={artisanData.address} onChange={handleArtisanChange} placeholder="Votre adresse (optionnel)" className="input" />
+                  <input name="address" value={artisanData.address} onChange={handleArtisanChange} placeholder="Votre adresse" className="input" />
                   <input name="siret" value={artisanData.siret} onChange={handleArtisanChange} placeholder="SIRET" className="input" />
+                  <input name="phoneNumber" value={artisanData.phoneNumber} onChange={handleArtisanChange} placeholder="Votre numéro de téléphone (optionnel)" className="input" />
+
+                  {/* Bio mobile */}
+                  <textarea
+                    name="bio"
+                    value={artisanData.bio}
+                    onChange={handleArtisanChange}
+                    placeholder="A propos de votre activité..."
+                    className="textarea w-full lg:hidden"
+                  />
+
                   <button
                     type="submit"
-                    className="w-1/2 h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
+                    className="w-full lg:w-1/2 h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
                                 text-gold text-base font-normal font-cabin
                                 flex items-center justify-center mx-auto hover:cursor-pointer 
-                                hover:bg-blue transition mb-5 mt-8"
+                                mb-5 mt-8"
                   >
                     Créer mon compte
                   </button>
                 </div>
               </div>
-            </motion.form>
+              </motion.form>
           )}
         </AnimatePresence>
       </div>

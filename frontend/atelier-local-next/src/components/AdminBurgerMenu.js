@@ -11,7 +11,14 @@ export default function AdminBurgerMenu({ admin }) {
   return (
     <>
     {/* Navigation Desktop */}
-    <nav className="hidden md:flex flex-row items-stretch text-sm h-full">
+    <nav className="hidden lg:flex flex-row items-stretch text-sm h-full">
+      <Link
+        href="/admin"
+        className="flex items-center justify-center px-4 py-2 text-gold hover:underline whitespace-nowrap"
+      >
+        Admin panel
+      </Link>
+
       <Link
         href="/new-asking"
         className="flex items-center justify-center px-4 py-2 text-gold hover:underline whitespace-nowrap"
@@ -62,9 +69,9 @@ export default function AdminBurgerMenu({ admin }) {
       </div>
     </nav>
 
-      {/* Bouton Burger (mobile uniquement) */}
+      {/* Bouton Burger */}
       <button
-        className="md:hidden text-gold border border-gold rounded-lg p-2 bg-blue z-50"
+      className="lg:hidden text-gold border border-gold rounded-lg p-2 bg-blue z-50 mr-2"
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Toggle menu"
       >
@@ -81,12 +88,12 @@ export default function AdminBurgerMenu({ admin }) {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="absolute left-0 right-0 top-full w-full bg-blue text-gold flex flex-col text-center shadow-lg md:hidden border-t border-gold z-40 overflow-hidden"
+            className="absolute left-0 right-0 top-full w-full bg-blue text-gold flex flex-col text-center shadow-lg lg:hidden border-t border-gold z-40 overflow-hidden"
           >
             <Link
               href="/admin"
               onClick={() => setIsOpen(false)}
-              className="py-4 hover:bg-gold hover:text-blue transition-colors duration-200"
+              className="py-4 transition-colors duration-200"
             >
               Admin panel
             </Link>
@@ -94,7 +101,7 @@ export default function AdminBurgerMenu({ admin }) {
             <Link
               href="/new-asking"
               onClick={() => setIsOpen(false)}
-              className="py-4 hover:bg-gold hover:text-blue transition-colors duration-200"
+              className="py-4 transition-colors duration-200"
             >
               Demande de prestation
             </Link>
@@ -102,7 +109,7 @@ export default function AdminBurgerMenu({ admin }) {
             <Link
               href="/artisans"
               onClick={() => setIsOpen(false)}
-              className="py-4 hover:bg-gold hover:text-blue transition-colors duration-200"
+              className="py-4 transition-colors duration-200"
             >
               Artisans
             </Link>
@@ -110,7 +117,7 @@ export default function AdminBurgerMenu({ admin }) {
             <Link
               href="/messenger"
               onClick={() => setIsOpen(false)}
-              className="pb-2 hover:bg-gold hover:text-blue transition-colors duration-200 flex items-center justify-center"
+              className="pb-2 transition-colors duration-200 flex items-center justify-center"
             >
               <Image
                 src={messengerLogo}

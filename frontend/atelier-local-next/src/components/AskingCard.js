@@ -146,6 +146,7 @@ export default function AskingCard({ asking, className }) {
                       src={client.avatar?.url || "/placeholder.png"}
                       alt={`${client?.firstName || ""} ${client?.lastName || "Client"} avatar`}
                       fill
+                      sizes="100vw"
                       className="object-cover"
                     />
                   </div>

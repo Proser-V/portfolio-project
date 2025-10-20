@@ -24,7 +24,7 @@ export default function AdminHome({ admin, artisans }) {
                 className="max-w-xs h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
                             text-gold text-sm font-normal font-cabin
                             flex items-center justify-center mx-2 
-                            hover:bg-blue transition mt-5 px-4"
+                            mt-5 px-4"
                 >
                 Postez une demande de prestation
                 </Link>
@@ -33,31 +33,32 @@ export default function AdminHome({ admin, artisans }) {
                 className="max-w-xs h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
                             text-gold text-sm font-normal font-cabin
                             flex items-center justify-center mx-2
-                            hover:bg-blue transition md:mt-5 px-4"
+                            mt-5 px-4"
                 >
                 Parcourez les artisans autour de chez vous
                 </Link>
             </div>
 
             <div className="relative flex flex-col items-center w-full">
-                <p className="text-blue text-center font-cabin text-sm mb-4 md:absolute md:top-10 md:mb-0">
+                <p className="text-blue text-center font-cabin text-sm mb-4 lg:absolute lg:top-10 lg:mb-0">
                 Vos voisins les recommandent :
                 </p>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 justify-items-center w-full max-w-4xl mx-auto">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 justify-items-center">
                     {artisans.map((artisan, index) => (
                     <Link
                         key={artisan.id || index}
                         href={`/artisans/${artisan.id}`}
                         className={`relative w-[250px] h-[250px] border-2 border-solid border-gold shadow-lg overflow-hidden ${
-                        index === 1 ? "md:mt-24" : "md:mt-12"
+                        index === 1 ? "lg:mt-24" : "lg:mt-12"
                         }`}
                     >
                         <Image
                         src={artisan?.avatar?.url || "/placeholder.png"}
                         alt={artisan.name}
-                        fill
-                        sizes="100vw"
+                        height={250}
+                        width={250}
+                        sizes="(max-width: 768px) 200px, 250px"
                         className="object-cover"
                         />
                         <div
@@ -83,7 +84,7 @@ export default function AdminHome({ admin, artisans }) {
                 className="w-full max-w-xs h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
                             text-gold text-base font-normal font-cabin
                             flex items-center justify-center mx-auto 
-                            hover:bg-blue transition mt-5"
+                            mt-5"
                 >
                 Découvrez les artisans dijonnais
                 </Link>

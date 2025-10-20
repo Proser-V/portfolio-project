@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import logo from "../app/favicon.ico";
 
 export default function ArtisanCard({ artisan, className }) {
   return (
@@ -36,7 +35,7 @@ export default function ArtisanCard({ artisan, className }) {
       {/* Icône métier */}
       <div className="hidden sm:block relative w-40 h-40 my-auto mr-4">
         <Image
-          src={logo}
+          src="/filigrane.png"
           alt="icone"
           fill
           className="object-cover opacity-5"

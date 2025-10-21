@@ -6,6 +6,7 @@ import { useEffect } from "react";
 export default function AdminClient({ initialArtisans, initialArtisanCategories, initialEventCategories }) {
   const [artisans, setArtisans] = useState(initialArtisans);
   const [clients, setClients] = useState([]);
+  const [askings, setAskings] = useState([]);
   const [artisanCategories, setArtisanCategories] = useState(initialArtisanCategories);
   const [eventCategories, setEventCategories] = useState(initialEventCategories);
   const [selectedId, setSelectedId] = useState("");
@@ -15,11 +16,13 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
   const [isOpenClient, setIsOpenClient] = useState(false);
   const [isOpenArtisanCategories, setIsOpenArtisanCategories] = useState(false);
   const [isOpenEventCategories, setIsOpenEventCategories] = useState(false);
+  const [isOpenAsking, setIsOpenAsking] = useState(false);
   
   const toggleOpenArtisan = () => setIsOpenArtisan(!isOpenArtisan);
   const toggleOpenClient = () => setIsOpenClient(!isOpenClient);
   const toggleOpenArtisanCategories = () => setIsOpenArtisanCategories(!isOpenArtisanCategories);
   const toggleOpenEventCategories = () => setIsOpenEventCategories(!isOpenEventCategories);
+  const toggleOpenAsking = () => setIsOpenAsking(!isOpenAsking);
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -40,6 +43,39 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
     fetchClients();
   }, [])
 
+  useEffect(() => {
+    const fetchAskings = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/askings/`, {
+          method: "GET",
+          credentials: "include",
+        });
+        if (!res.ok) throw new Error("Erreur lors de la récupération des demandes client");
+        const data = await res.json();
+        setAskings(data);
+        setError("");
+      } catch (err) {
+        setError(err.message || "Erreur réseau, impossible de récupérer les demandes client");
+      }
+    };
+
+    fetchAskings();
+  }, [])
+
+  function getClientName(clientId) {
+    const c = clients.find(cl => cl.id === clientId);
+    return c ? `${c.firstName} ${c.lastName}` : "—";
+  }
+
+  function getArtisanCategoryName(categoryId) {
+    const cat = artisanCategories.find(c => c.id === categoryId);
+    return cat ? cat.name : "—";
+  }
+
+  function getEventCategoryName(categoryId) {
+    const cat = eventCategories.find(c => c.id === categoryId);
+    return cat ? cat.name : "—";
+  }
   const handleDeleteClient = async (id) => {
     if (!confirm("Voulez-vous vraiment supprimer ce client ?")) return;
 
@@ -167,7 +203,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
           setError("Erreur réseau, impossible de supprimer la catégorie d'évènement");
       }
   };
-console.log("clients", clients);
+console.log("askings", askings);
   return (
     <>
       {error && (
@@ -537,6 +573,76 @@ console.log("clients", clients);
                       </Link>
                       <button
                         onClick={() => handleDeleteClient(client.id)}
+                        className="text-red-500 text-xs hover:underline border-none bg-inherit font-cabin"
+                      >
+                        Supprimer
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Section Askings */}
+      <div className="mb-4">
+        <h2
+          className="text-blue text-lg text-center mb-4 cursor-pointer select-none flex items-center justify-center gap-2"
+          onClick={toggleOpenAsking}
+        >
+          Gestion des demandes client
+          <span
+            style={{
+              display: "inline-block",
+              transform: isOpenAsking ? "rotate(90deg)" : "rotate(0deg)",
+              transition: "transform 0.3s",
+              transformOrigin: "center",
+            }}
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </span>
+        </h2>
+
+        {isOpenAsking && (
+          <div className="overflow-x-auto transition-all duration-300">
+            <table className="w-[90%] max-w-4xl mx-auto">
+              <thead>
+                <tr className="text-blue text-sm">
+                  <th className="p-4">Titre</th>
+                  <th className="p-4">Contenu</th>
+                  <th className="p-4">Emetteur</th>
+                  <th className="p-4">Artisans</th>
+                  <th className="p-4">Evènement</th>
+                  <th className="p-4">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {askings.map((asking) => (
+                  <tr key={asking.id} className="text-blue text-xs border-t border-silver">
+                    <td className="p-4 text-center">{asking.title}</td>
+                    <td className="p-4 text-center">{asking.content}</td>
+                    <td className="p-4 text-center">{getClientName(asking.clientId)}</td>
+                    <td className="p-4 text-center">{getArtisanCategoryName(asking.artisanCategoryId)}</td>
+                    <td className="p-4 text-center">
+                      {getEventCategoryName(asking.eventCategoryId)}<br/>
+                      {asking.eventDate
+                        ? new Date(asking.eventDate).toLocaleDateString("fr-FR")
+                        : ""}<br/>
+                      {asking.eventLocalisation}
+                    </td>
+                    <td className="p-4 text-center">
+                      <button
+                        onClick={() => handleDeleteAsking(asking.id)}
                         className="text-red-500 text-xs hover:underline border-none bg-inherit font-cabin"
                       >
                         Supprimer

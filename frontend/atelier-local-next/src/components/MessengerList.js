@@ -10,7 +10,7 @@ export default function MessengerList({ initialConversations, conversationsPerPa
 
   // Filtrage et tri côté client
   const filteredConversations = useMemo(() => {
-    let convs = initialConversations;
+    let convs = initialConversations.filter(conv => conv.lastTimestamp);
     if (search) {
       convs = convs.filter(c => c.otherUserName.toLowerCase().includes(search.toLowerCase()));
     }

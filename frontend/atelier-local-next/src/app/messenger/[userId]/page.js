@@ -98,7 +98,7 @@ export default async function ConversationPage({ params }) {
   }
 
   return (
-    <div>
+    <div className="">
       <main className="w-[90vw] md:w-[60vw] mx-auto p-4">
         <h1 className="text-center text-blue text-xl font-semibold mb-6">
           Votre fil de discussion avec {otherUserName}
@@ -114,9 +114,3 @@ export default async function ConversationPage({ params }) {
     </div>
   );
 }
-
-// Métadonnées pour le SEO
-export const metadata = {
-  title: "Fil de discussion - Atelier Local",
-  description: "Votre fil de discussion dans l'Atelier Local.",
-};

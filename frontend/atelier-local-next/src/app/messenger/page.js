@@ -5,7 +5,7 @@ import MessengerList from "@/components/MessengerList"
 export const dynamic = "force-dynamic";
 
 export default async function MessengerPage() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const jwt = cookieStore.get("jwt")?.value;
 
   const user = await getUser();
@@ -55,9 +55,3 @@ export default async function MessengerPage() {
     </div>
   );
 }
-
-// Métadonnées pour le SEO
-export const metadata = {
-  title: "Messagerie - Atelier Local",
-  description: "Echangez dans l'Atelier.",
-};

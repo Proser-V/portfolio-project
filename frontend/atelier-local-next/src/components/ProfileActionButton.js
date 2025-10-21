@@ -3,11 +3,12 @@ import { useState } from "react";
 import Link from "next/link";
 import EditProfileModal from "./EditProfileModal";
 
-export default function ProfileActionButton({ artisan, isOwner, address }) {
+export default function ProfileActionButton({ artisan, isOwner, address, isAdmin }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const canEdit = isAdmin || isOwner;
 
   // Si c'est le propriétaire : bouton "Modifier mon profil"
-  if (isOwner) {
+  if (canEdit) {
     return (
       <>
         <button

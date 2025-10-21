@@ -53,7 +53,6 @@ export default function VisitorHome({ artisans }) {
                         alt={artisan.name}
                         height={250}
                         width={250}
-                        sizes="(max-width: 768px) 200px, 250px"
                         className="object-cover"
                         />
                         <div

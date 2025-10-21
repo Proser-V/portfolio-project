@@ -46,9 +46,10 @@ export default function ClientBurgerMenu({ client }) {
             <Image
               src={client.avatar?.url}
               alt={`${client.name} avatar`}
-              width={48}
-              height={48}
+              width={56}
+              height={56}
               className="object-cover w-full h-full"
+              quality={100}
             />
           </div>
         </Link>

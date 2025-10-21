@@ -39,9 +39,10 @@ export default function ArtisanBurgerMenu({ artisan }) {
             <Image
               src={artisan.avatar?.url}
               alt={`${artisan.name} avatar`}
-              width={48}
-              height={48}
+              width={56}
+              height={56}
               className="object-cover w-full h-full"
+              quality={100}
             />
           </div>
         </Link>

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import AdminClient from "@/components/AdminClient";
-import { getUser } from "@/lib/getUser"; // Import de ton utilitaire
+import { getUser } from "@/lib/getUser";
 
 // Récupérer les artisans
 async function fetchArtisans() {
@@ -19,8 +19,8 @@ async function fetchArtisans() {
   }
 }
 
-// Récupérer les catégories
-async function fetchCategories() {
+// Récupérer les catégories d'artisan
+async function fetchArtisanCategories() {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artisan-category/`, {
       method: "GET",
@@ -35,8 +35,24 @@ async function fetchCategories() {
   }
 }
 
+// Récupérer les catégories d'évènement
+async function fetchEventCategories() {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/event-categories/`, {
+      method: "GET",
+      credentials: "include",
+    });
+    if (response.ok) {
+      return { data: await response.json(), error: null };
+    }
+    return { data: [], error: "Erreur lors de la récupération des catégories" };
+  } catch (err) {
+    return { data: [], error: "Erreur réseau, impossible de récupérer les catégories" };
+  }
+}
+
 // Récupération des clients
-async function fetchClient() {
+async function fetchClients() {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/clients/`, {
       method: "GET",
@@ -60,13 +76,15 @@ export default async function AdminPanel() {
 
   // Récupérer les données côté serveur
   const { data: artisans, error: artisansError } = await fetchArtisans();
-  const { data: categories, error: categoriesError } = await fetchCategories();
+  const { data: clients, error: clientsError } = await fetchClients();
+  const { data: artisanCategories, error: artisanCategoriesError } = await fetchArtisanCategories();
+  const { data: eventCategories, error: eventCategoriesError } = await fetchEventCategories();
 
-  const error = artisansError || categoriesError;
+  const error = artisansError || clientsError || artisanCategoriesError || eventCategoriesError;
 
   return (
-    <div className="mt-20 items-center justify-center">
-      <div className="text-center text-blue text-xl mb-6">Panneau d’administration</div>
+    <div className="mt-4 items-center justify-center">
+      <div className="text-center text-blue text-xl mb-4">Panneau d'administration</div>
 
       {error && (
         <div className="h-5 flex justify-center items-center mb-6">
@@ -74,7 +92,12 @@ export default async function AdminPanel() {
         </div>
       )}
 
-      <AdminClient initialArtisans={artisans} initialCategories={categories} />
+      <AdminClient
+        initialArtisans={artisans}
+        initialClients={clients}
+        initialArtisanCategories={artisanCategories}
+        initialEventCategories={eventCategories}
+        />
     </div>
   );
 }

@@ -2,12 +2,14 @@
 import { useState } from "react";
 import Image from "next/image";
 
-export default function ArtisanAvatarUploader({ artisan, isOwner }) {
+export default function ArtisanAvatarUploader({ artisan, isOwner, isAdmin }) {
   const [preview, setPreview] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  const canEdit = isAdmin || isOwner;
 
   const handleFileChange = (e) => {
+    if (!canEdit) return;
     const file = e.target.files[0];
     if (!file) return;
     setSelectedFile(file);
@@ -15,7 +17,7 @@ export default function ArtisanAvatarUploader({ artisan, isOwner }) {
   };
 
   const handleUpload = async () => {
-    if (!selectedFile) return;
+    if (!canEdit || !selectedFile) return;
     setIsUploading(true);
     const formData = new FormData();
     formData.append("file", selectedFile);
@@ -50,14 +52,18 @@ export default function ArtisanAvatarUploader({ artisan, isOwner }) {
   };
 
   return (
-    <div className="relative group w-[200px] h-[200px] md:w-[250px] md:h-[250px] overflow-hidden shadow-lg border-2 border-black">
-      <label htmlFor="avatarUpload" className="cursor-pointer block w-full h-full">
+    <div className="relative group w-[200px] h-[200px] md:w-[250px] md:h-[250px] overflow-hidden shadow-lg border-solid border-black">
+      <label
+        htmlFor={canEdit ? "avatarUpload" : undefined} 
+        className={`block w-full h-full ${canEdit ? "cursor-pointer" : "cursor-default"}`}
+      >
         <Image
           src={preview || artisan.avatar?.url || "/placeholder.png"}
           alt={`${artisan.name} avatar`}
-          height={250}
-          width={250}
-          className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+          fill
+          sizes="(max-width: 768px) 200px, 250px"
+          quality={100}
+          className="object-cover"
         />
       </label>
 

@@ -43,13 +43,17 @@ public class SecurityConfig {
         .csrf(csrf -> csrf.disable())
         .cors(c -> c.configurationSource(corsConfigurationSource()))
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/home", "/", "/api/users/logout", "/api/users/login",
-            "/api/clients/register", "/api/clients/{id}", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**",
-            "/api/artisans/register", "/api/artisans/", "/api/artisans/{id}", "/swagger-resources/**", "/webjars/**", "/api/artisans/random-top",
-            "/api/artisan-category/**", "/api/geocode/**", "/api/avatar/upload", "/api/event-categories/",
-            "/api/event-categories/{id}", "/api/event-categories/{id}/artisan-categories", "/api/askings/creation",
-            "/api/artisans/{id}/portfolio/upload", "/api/artisans/{id}/portfolio/delete", "/api/artisan-category/{id}/askings",
-            "/api/artisan-category/{id}").permitAll()
+            .requestMatchers(
+                "/home", "/", "/api/users/logout", "/api/users/login",
+                "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**",
+                "/api/artisans/**",
+                "/api/clients/**", 
+                "/api/artisan-category/**",
+                "/api/geocode/**",
+                "/api/avatar/**",
+                "/api/event-categories/**",
+                "/api/askings/**"
+            ).permitAll()
             .anyRequest().authenticated()
         )
         .userDetailsService(userDetailsService)

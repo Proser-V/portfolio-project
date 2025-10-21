@@ -54,8 +54,9 @@ export default async function ArtisanProfilePage({ params }) {
     );
   }
 
-  // Détermine si l'utilisateur est propriétaire de cette page
+  // Détermine si l'utilisateur est propriétaire de cette page ou admin
   const isOwner = user?.id === artisan.id && user?.role === "artisan";
+  const isAdmin = user?.role === "admin";
 
   // Calcul de l'expérience
   const experienceYears = artisan.activityStartDate
@@ -77,7 +78,7 @@ export default async function ArtisanProfilePage({ params }) {
         <div className="w-full flex flex-col md:flex-row items-center md:items-start gap-4">
           {/* Colonne gauche - Avatar et infos */}
           <div className="flex flex-col w-[250px] items-center">
-            <ArtisanAvatarUploader artisan={artisan} isOwner={isOwner} />
+            <ArtisanAvatarUploader artisan={artisan} isOwner={isOwner} isAdmin={isAdmin}/>
             <h2 className="text-gold text-xl mb-0 font-cabin mt-2">{artisan.name}</h2>
             <p className="block text-center text-sm text-silver mt-0">
               Recommandé {artisan.recommendations} fois par les habitants
@@ -128,7 +129,7 @@ export default async function ArtisanProfilePage({ params }) {
             </div>
 
             {/* Bouton conditionnel : Contact OU Modifier */}
-            <ProfileActionButton artisan={artisan} isOwner={isOwner} address={address} />
+            <ProfileActionButton artisan={artisan} isOwner={isOwner} isAdmin={isAdmin} address={address} />
           </div>
         </div>
 

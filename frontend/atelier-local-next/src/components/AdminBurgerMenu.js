@@ -53,9 +53,10 @@ export default function AdminBurgerMenu({ admin }) {
             <Image
               src={admin.avatar?.url}
               alt={`${admin.name} avatar`}
-              width={48}
-              height={48}
+              width={56}
+              height={56}
               className="object-cover w-full h-full"
+              quality={100}
             />
           </div>
         </Link>

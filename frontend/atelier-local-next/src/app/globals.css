@@ -18,7 +18,7 @@ a {
 
 .input {
   @apply w-full lg:w-3/4 h-10 rounded-[42.5px] bg-white shadow-[0px_4px_4px_rgba(0,0,0,0.25)] font-cabin
-         border-2 border-solid border-silver px-4 text-xs text-silver outline-none;
+         border-2 border-solid border-silver px-4 text-xs text-blue outline-none;
   box-sizing: border-box;
   display: block;
 }

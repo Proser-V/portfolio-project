@@ -79,15 +79,6 @@ export default function AdminHome({ admin, artisans }) {
                     </Link>
                     ))}
                 </div>
-                <Link
-                href="/artisans"
-                className="w-full max-w-xs h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
-                            text-gold text-base font-normal font-cabin
-                            flex items-center justify-center mx-auto 
-                            mt-5"
-                >
-                Découvrez les artisans dijonnais
-                </Link>
             </div>
         </section>
     );

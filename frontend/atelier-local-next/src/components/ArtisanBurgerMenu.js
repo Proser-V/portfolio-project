@@ -32,8 +32,8 @@ export default function ArtisanBurgerMenu({ artisan }) {
           href={`/artisans/${artisan.id}`}
           className="flex items-center justify-center pl-4 pr-2 hover:underline gap-2 h-full"
         >
-          <span className="whitespace-nowrap pr-2">
-            Bienvenue dans l'Atelier, {artisan.name}
+          <span className="whitespace-nowrap text-center pr-2">
+            Bienvenue dans l'Atelier,<br/>{artisan.name}
           </span>
           <div className="w-14 h-14 overflow-hidden">
             <Image

@@ -16,6 +16,7 @@ public class ClientResponseDTO {
     private String phoneNumber;
     private int recommendationsCount;
     public UserRole role;
+    private Boolean isActive;
 
     public ClientResponseDTO(Client client) {
         this.id = client.getId();
@@ -28,6 +29,7 @@ public class ClientResponseDTO {
         this.phoneNumber = client.getPhoneNumber();
         this.recommendationsCount = client.getRecommendations() != null ? client.getRecommendations().size() : 0;
         this.role = client.getUserRole();
+        this.isActive = client.getActive();
     }
 
     // Getters et setters
@@ -60,4 +62,7 @@ public class ClientResponseDTO {
 
     public UserRole getRole() { return role; }
     public void setRole(UserRole role) { this.role = role; }
+
+    public Boolean getActive() { return isActive; }
+    public void setActive(Boolean isActive) { this.isActive = isActive; }
 }

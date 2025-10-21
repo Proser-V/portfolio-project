@@ -46,8 +46,8 @@ export default function AdminBurgerMenu({ admin }) {
           href={`/clients/${admin.id}`}
           className="flex items-center justify-center pl-4 pr-2 hover:underline gap-2 h-full"
         >
-          <span className="whitespace-nowrap pr-2">
-            Bienvenue dans l'Atelier, {admin.firstName}
+          <span className="whitespace-nowrap text-center pr-2">
+            Bienvenue dans l'Atelier,<br/>{admin.firstName}
           </span>
           <div className="w-14 h-14 overflow-hidden">
             <Image

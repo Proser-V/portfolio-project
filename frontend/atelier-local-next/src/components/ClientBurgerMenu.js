@@ -39,8 +39,8 @@ export default function ClientBurgerMenu({ client }) {
           href={`/clients/${client.id}`}
           className="flex items-center justify-center pl-4 pr-2 hover:underline gap-2 h-full"
         >
-          <span className="whitespace-nowrap pr-2">
-            Bienvenue dans l'Atelier, {client.firstName}
+          <span className="whitespace-nowrap text-center pr-2">
+            Bienvenue dans l'Atelier,<br/>{client.firstName}
           </span>
           <div className="w-14 h-14 overflow-hidden">
             <Image

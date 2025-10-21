@@ -51,22 +51,6 @@ async function fetchEventCategories() {
   }
 }
 
-// Récupération des clients
-async function fetchClients() {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/clients/`, {
-      method: "GET",
-      credentials: "include",
-    });
-    if (response.ok) {
-      return { data: await response.json(), error: null };
-    }
-    return { data: [], error: "Erreur lors de la récupération des clients" };
-  } catch (err) {
-    return { data: [], error: "Erreur réseau, impossible de récupérer les clients" };
-  }
-}
-
 export default async function AdminPanel() {
   // Vérifier si l'utilisateur est admin avec getUser
   const user = await getUser();
@@ -76,11 +60,10 @@ export default async function AdminPanel() {
 
   // Récupérer les données côté serveur
   const { data: artisans, error: artisansError } = await fetchArtisans();
-  const { data: clients, error: clientsError } = await fetchClients();
   const { data: artisanCategories, error: artisanCategoriesError } = await fetchArtisanCategories();
   const { data: eventCategories, error: eventCategoriesError } = await fetchEventCategories();
 
-  const error = artisansError || clientsError || artisanCategoriesError || eventCategoriesError;
+  const error = artisansError || artisanCategoriesError || eventCategoriesError;
 
   return (
     <div className="mt-4 items-center justify-center">
@@ -94,7 +77,6 @@ export default async function AdminPanel() {
 
       <AdminClient
         initialArtisans={artisans}
-        initialClients={clients}
         initialArtisanCategories={artisanCategories}
         initialEventCategories={eventCategories}
         />

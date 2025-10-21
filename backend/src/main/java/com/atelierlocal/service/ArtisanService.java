@@ -69,13 +69,6 @@ public class ArtisanService {
         if (dto.getLongitude() == null) {
             throw new IllegalArgumentException("La longitude ne peut être vide.");
         }
-        Avatar avatar = null;
-        if (dto.getAvatar() != null) {
-            String avatarUrl = avatarService.uploadAvatar(dto.getAvatar(), null);
-            avatar = new Avatar();
-            avatar.setAvatarUrl(avatarUrl);
-            avatar.setExtension(avatarService.getFileExtension(dto.getAvatar()));
-        }
         ArtisanCategory category = artisanCategoryRepo.findByNameIgnoreCase(dto.getCategoryName())
             .orElseThrow(() -> new IllegalArgumentException("Catégorie invalide"));
 
@@ -87,6 +80,14 @@ public class ArtisanService {
         artisan.setLatitude(dto.getLatitude());
         artisan.setLongitude(dto.getLongitude());
         artisan.setSiret(dto.getSiret());
+        Avatar avatar = null;
+        if (dto.getAvatar() != null) {
+            String avatarUrl = avatarService.uploadAvatar(dto.getAvatar(), null);
+            avatar = new Avatar();
+            avatar.setAvatarUrl(avatarUrl);
+            avatar.setExtension(avatarService.getFileExtension(dto.getAvatar()));
+            avatar.setUser(artisan);
+        }
         artisan.setAvatar(avatar);
         artisan.setCategory(category);
         artisan.setUserRole(UserRole.ARTISAN);

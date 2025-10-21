@@ -38,6 +38,7 @@ export default function ArtisanCard({ artisan, className }) {
           src="/filigrane.png"
           alt="icone"
           fill
+          sizes="100vw"
           className="object-cover opacity-5"
         />
       </div>

@@ -66,8 +66,8 @@ export default function VisitorHome({ artisans }) {
                         <div className="absolute -bottom-2 right-2 text-right text-blue font-cabin z-20">
                         <p>
                             {artisan.name} <br />
-                            {artisan.artisanCategory} <br />
-                            {artisan.phoneNumber ? `Tel: ${artisan.phoneNumer}` : ""} <br />
+                            {artisan.categoryName} <br />
+                            {artisan.phoneNumber ? `Tel: ${artisan.phoneNumber}` : ""} <br />
                             {artisan.email}
                         </p>
                         </div>

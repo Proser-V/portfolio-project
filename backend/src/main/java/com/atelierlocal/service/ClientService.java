@@ -73,6 +73,7 @@ public class ClientService {
             avatar = new Avatar();
             avatar.setAvatarUrl(avatarUrl);
             avatar.setExtension(avatarService.getFileExtension(dto.getAvatar()));
+            avatar.setUser(client);
         }
         client.setAvatar(avatar);
         String hashed = passwordService.hashPassword(dto.getPassword());

@@ -86,53 +86,47 @@ export default function RegistrationPage({ user }) {
       const { address, avatarFile, avatarPreview, ...rest } = clientData;
       const payload = { ...rest, latitude: coords.latitude, longitude: coords.longitude };
       
-      const forlgata = new Forlgata();
-      forlgata.append("request", new Blob([JSON.stringify(payload)], { type: "application/json" }));
+      const formData = new FormData();
+      formData.append("client", new Blob([JSON.stringify(payload)], { type: "application/json" }));
       if (avatarFile) {
-        forlgata.append("avatar", avatarFile);
+        formData.append("avatar", avatarFile);
+        console.log("Avatar ajouté au FormData:", avatarFile.name, avatarFile.type);
       }
+
+      console.log("FormData envoyé:", Array.from(formData.entries()).map(([k, v]) => [k, v instanceof Blob ? `Blob(${v.size} bytes)` : v]));
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/clients/register`, {
         method: "POST",
-        body: forlgata,
+        body: formData,
         credentials: "include",
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        setError(errorData.message || "Veuillez remplir tous les champs obligatoires.");
+        let errorMessage = "Veuillez remplir tous les champs obligatoires.";
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch {
+          errorMessage = `Erreur ${response.status}: ${response.statusText}`;
+        }
+        setError(errorMessage);
         return;
       }
 
-      const { uuid } = await response.json();
-
-      let avatarUrl = "";
-      if (clientData.avatarFile) {
-        const forlgata = new Forlgata();
-        forlgata.append("file", clientData.avatarFile);
-        forlgata.append("userId", uuid);
-
-        const uploadResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/avatar/upload`, {
-          method: "POST",
-          body: forlgata,
-          credentials: "include",
-        });
-
-        if (!uploadResponse.ok) {
-          setError("Erreur lors de l'upload de l'image.");
-          return;
-        }
-
-        const { url } = await uploadResponse.json();
-        avatarUrl = url;
+      const result = await response.json();
+      console.log("Client créé avec succès:", result);
+      
+      // Vérifier si l'avatar a été enregistré
+      if (avatarFile && result.avatar) {
+        console.log("Avatar enregistré:", result.avatar);
+      } else if (avatarFile && !result.avatar) {
+        console.warn("⚠️ Avatar non enregistré côté backend");
       }
 
       if (clientData.avatarPreview) {
         URL.revokeObjectURL(clientData.avatarPreview);
       }
 
-      const client = await response.json();
-      console.log("Client créé :", client);
       router.push("/");
     } catch (err) {
       console.error("Erreur réseau :", err);
@@ -165,15 +159,15 @@ export default function RegistrationPage({ user }) {
       const payload = { ...rest, latitude: coords.latitude, longitude: coords.longitude };
 
       // Créer la requête multipart/form-data
-      const forlgata = new Forlgata();
-      forlgata.append("artisan", new Blob([JSON.stringify(payload)], { type: "application/json" }));
+      const formData = new FormData();
+      formData.append("artisan", new Blob([JSON.stringify(payload)], { type: "application/json" }));
       if (artisanData.avatarFile) {
-        forlgata.append("avatar", artisanData.avatarFile);
+        formData.append("avatar", artisanData.avatarFile);
       }
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artisans/register`, {
         method: "POST",
-        body: forlgata,
+        body: formData,
         credentials: "include",
       });
 

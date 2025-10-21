@@ -57,7 +57,8 @@ export default function ClientHome({ client, artisans }) {
                         <Image
                         src={artisan.avatar?.url || "/placeholder.png"}
                         alt={artisan.name}
-                        fill
+                        width={250}
+                        height={250}
                         className="object-cover"
                         />
                         <div

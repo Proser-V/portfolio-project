@@ -1,6 +1,25 @@
 package com.atelierlocal.controller;
 
-import com.atelierlocal.dto.*;
+import java.util.List;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
+
+import com.atelierlocal.dto.ArtisanRequestDTO;
+import com.atelierlocal.dto.ArtisanResponseDTO;
+import com.atelierlocal.dto.RecommendationRequestDTO;
+import com.atelierlocal.dto.RecommendationResponseDTO;
+import com.atelierlocal.dto.UploadedPhotoRequestDTO;
+import com.atelierlocal.dto.UploadedPhotoResponseDTO;
 import com.atelierlocal.model.Artisan;
 import com.atelierlocal.model.Client;
 import com.atelierlocal.model.UploadedPhoto;
@@ -8,16 +27,6 @@ import com.atelierlocal.model.User;
 import com.atelierlocal.service.ArtisanService;
 import com.atelierlocal.service.PortfolioService;
 import com.atelierlocal.service.RecommendationService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mock.web.MockMultipartFile;
-
-import java.util.List;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 class ArtisanControllerTest {
 
@@ -63,7 +72,7 @@ class ArtisanControllerTest {
 
         assertNotNull(result);
         assertEquals("Jean Dupont", result.getName());
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatusCode().value());
         verify(artisanService).getArtisanById(artisanId);
     }
 
@@ -77,7 +86,7 @@ class ArtisanControllerTest {
 
         assertNotNull(result);
         assertEquals("artisan@example.com", result.getEmail());
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatusCode().value());
         verify(artisanService).getArtisanById(artisanId);
     }
 
@@ -92,7 +101,7 @@ class ArtisanControllerTest {
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals("Jean Dupont", result.get(0).getName());
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatusCode().value());
         verify(artisanService).getAllArtisans(client);
     }
 
@@ -112,7 +121,7 @@ class ArtisanControllerTest {
 
         assertNotNull(result);
         assertEquals("artisan@example.com", result.getEmail());
-        assertEquals(201, response.getStatusCode());
+        assertEquals(201, response.getStatusCode().value());
         verify(artisanService).createArtisan(request);
     }
 
@@ -129,7 +138,7 @@ class ArtisanControllerTest {
 
         assertNotNull(result);
         assertEquals("Jean Dupont", result.getName());
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatusCode().value());
         verify(artisanService).updateArtisan(artisanId, request, user);
     }
 
@@ -139,7 +148,7 @@ class ArtisanControllerTest {
         doNothing().when(artisanService).deleteArtisan(artisanId, client);
 
         ResponseEntity<Void> response = artisanController.deleteArtisan(artisanId, client);
-        assertEquals(204, response.getStatusCode());
+        assertEquals(204, response.getStatusCode().value());
         verify(artisanService).deleteArtisan(artisanId, client);
     }
 
@@ -167,7 +176,7 @@ class ArtisanControllerTest {
         assertEquals(recommendationId, result.getId());
         assertEquals(clientId, result.getClientId());
         assertEquals(artisanId, result.getArtisanId());
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatusCode().value());
         verify(recommendationService).createRecommendation(artisanId, request, client);
     }
 
@@ -183,7 +192,7 @@ class ArtisanControllerTest {
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals("Jean Dupont", result.get(0).getName());
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatusCode().value());
         verify(artisanService).getRandomTopArtisans(3);
     }
 
@@ -206,7 +215,7 @@ class ArtisanControllerTest {
 
         assertNotNull(result);
         assertEquals("https://s3.aws/test.jpg", result.getFileUrl());
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatusCode().value());
         verify(portfolioService).addPhoto(artisanId, file, artisan);
     }
 
@@ -217,7 +226,7 @@ class ArtisanControllerTest {
         doNothing().when(portfolioService).removePhoto(artisanId, photoId, user);
 
         ResponseEntity<Void> response = artisanController.deletePortfolioPhoto(artisanId, photoId, user);
-        assertEquals(204, response.getStatusCode());
+        assertEquals(204, response.getStatusCode().value());
         verify(portfolioService).removePhoto(artisanId, photoId, user);
     }
 }

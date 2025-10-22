@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useEffect } from "react";
+import fetchCoordinates from "utils/fetchCoordinates";
 
 export default function AdminClient({ initialArtisans, initialArtisanCategories, initialEventCategories }) {
   const [artisans, setArtisans] = useState(initialArtisans);
@@ -65,17 +66,92 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
   function getClientName(clientId) {
     const c = clients.find(cl => cl.id === clientId);
     return c ? `${c.firstName} ${c.lastName}` : "—";
-  }
+  };
 
   function getArtisanCategoryName(categoryId) {
     const cat = artisanCategories.find(c => c.id === categoryId);
     return cat ? cat.name : "—";
-  }
+  };
 
   function getEventCategoryName(categoryId) {
     const cat = eventCategories.find(c => c.id === categoryId);
     return cat ? cat.name : "—";
-  }
+  };
+
+  const handleAddAdmin = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      const formData = new FormData(e.target);
+
+      const address = formData.get("address");
+      const coords = await fetchCoordinates(address);
+
+      const clientData = {
+        firstName: formData.get("firstName"),
+        lastName: formData.get("lastName"),
+        email: formData.get("email"),
+        password: formData.get("password"),
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+        role: "ADMIN"
+      };
+
+      const multipartFormData = new FormData();
+      multipartFormData.append(
+        "client",
+        new Blob([JSON.stringify(clientData)], { type: "application/json" })
+      );
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/clients/register`, {
+        method: "POST",
+        body: multipartFormData,
+        credentials: "include"
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Erreur lors de la création de l'administrateur.");
+      }
+
+      alert("Administrateur créé avec succès !");
+      e.target.reset();
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Erreur réseau, veuillez réessayer.");
+    }
+  };
+
+  const handleBanClient = async (id) => {
+    const confirmAction = window.confirm("Voulez-vous vraiment modifier le statut de ce client ?");
+    if (!confirmAction) return;
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/clients/${id}/moderate`,{
+        method: "PATCH",
+        credentials: "include"
+      });
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || "Erreur lors de la création de l'administrateur.");
+      }
+      const patchedClient = await response.json();
+      setClients((prevClients) =>
+        prevClients.map((client) =>
+          client.id === patchedClient.id
+            ? { ...client, active: patchedClient.active }
+            : client
+        )
+      );
+
+      alert(`Le client ${patchedClient.firstName} ${patchedClient.lastName} est maintenant ${patchedClient.active ? "actif" : "banni"}`);
+      setError("");
+    } catch(err) {
+      setError("Erreur réseau, impossible de mettre à jour le client.");
+    }
+  };
+
   const handleDeleteClient = async (id) => {
     if (!confirm("Voulez-vous vraiment supprimer ce client ?")) return;
 
@@ -203,7 +279,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
           setError("Erreur réseau, impossible de supprimer la catégorie d'évènement");
       }
   };
-console.log("askings", askings);
+
   return (
     <>
       {error && (
@@ -212,7 +288,7 @@ console.log("askings", askings);
         </div>
       )}
       {/* Section catégorie d'artisan */}
-      <div className="mb-4">
+      <div className="mb-4 w-[90%] mx-auto">
         <h2 className="text-blue text-lg text-center mb-4 cursor-pointer select-none flex items-center justify-center gap-2"
                         onClick={toggleOpenArtisanCategories}
         >
@@ -246,7 +322,7 @@ console.log("askings", askings);
               onSubmit={handleAddArtisanCategory}
               className="flex flex-col md:flex-row items-center justify-center"
             >
-              <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:w-full w-full">
+              <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:w-full w-3/4">
                 <input
                   type="text"
                   name="categoryName"
@@ -255,7 +331,7 @@ console.log("askings", askings);
                   required
                 />
                 <textarea
-                  className="w-full h-10 rounded-lg bg-white shadow-[0px_4px_4px_rgba(0,0,0,0.25)] font-cabin
+                  className="w-3/4 h-10 rounded-lg bg-white shadow-[0px_4px_4px_rgba(0,0,0,0.25)] font-cabin
                     border-2 border-solid border-silver px-4 py-2 text-xs text-blue outline-none resize-none"
                   placeholder="Courte description de la catégorie..."
                   name="description"
@@ -303,7 +379,7 @@ console.log("askings", askings);
       </div>
 
       {/* Section catégorie d'évènement */}
-      <div className="mb-4">
+      <div className="mb-4 w-[90%] mx-auto">
         <h2 className="text-blue text-lg text-center mb-4 cursor-pointer select-none flex items-center justify-center gap-2"
                         onClick={toggleOpenEventCategories}
         >
@@ -404,7 +480,7 @@ console.log("askings", askings);
               {/* Bouton d’ajout */}
               <button
                 type="submit"
-                className="w-3/4 h-10 rounded-full bg-blue border-2 border-solid border-gold text-gold text-base font-normal font-cabin flex items-center justify-center hover:cursor-pointer mt-4"
+                className="w-1/2 h-10 rounded-full bg-blue border-2 border-solid border-gold text-gold text-base font-normal font-cabin flex items-center justify-center hover:cursor-pointer mt-4"
               >
                 Ajouter une catégorie
               </button>
@@ -453,7 +529,7 @@ console.log("askings", askings);
       </div>
 
       {/* Section Artisans */}
-      <div className="mb-4">
+      <div className="mb-4 w-[90%] mx-auto">
         <h2
           className="text-blue text-lg text-center mb-4 cursor-pointer select-none flex items-center justify-center gap-2"
           onClick={toggleOpenArtisan}
@@ -517,7 +593,7 @@ console.log("askings", askings);
       </div>
 
       {/* Section Clients */}
-      <div className="mb-4">
+      <div className="mb-4 w-[90%] mx-auto">
         <h2
           className="text-blue text-lg text-center mb-4 cursor-pointer select-none flex items-center justify-center gap-2"
           onClick={toggleOpenClient}
@@ -545,6 +621,60 @@ console.log("askings", askings);
 
         {isOpenClient && (
           <div className="overflow-x-auto transition-all duration-300">
+            <h3 className="text-gold text-base mb-4 text-center">
+              Création d'un administrateur
+            </h3>
+            <form
+              onSubmit={handleAddAdmin}
+              className="flex flex-col md:flex-row items-center justify-center"
+            >
+              <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:w-full w-3/4">
+                <input
+                  type="text"
+                  name="firstName"
+                  placeholder="Prénom"
+                  className="input text-xs self-center"
+                  required
+                />
+                <input
+                  type="text"
+                  name="lastName"
+                  placeholder="Nom"
+                  className="input text-xs self-center"
+                  required
+                />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  className="input text-xs self-center"
+                  required
+                />
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Mot de passe"
+                  className="input text-xs self-center"
+                  required
+                />
+                <input
+                  type="text"
+                  name="address"
+                  placeholder="Addresse"
+                  className="input text-xs self-center"
+                  required
+                />
+                <button
+                  type="submit"
+                  className="w-full h-10 rounded-full bg-blue border-2 border-solid border-gold text-gold text-base font-normal font-cabin flex items-center justify-center hover:cursor-pointer"
+                >
+                  Créer un administrateur
+                </button>
+              </div>
+            </form>
+            <h3 className="text-gold text-base mb-4 text-center">
+              Liste des clients
+            </h3>
             <table className="w-[90%] max-w-4xl mx-auto">
               <thead>
                 <tr className="text-blue text-sm">
@@ -573,9 +703,15 @@ console.log("askings", askings);
                       </Link>
                       <button
                         onClick={() => handleDeleteClient(client.id)}
-                        className="text-red-500 text-xs hover:underline border-none bg-inherit font-cabin"
+                        className="text-red-500 text-xs hover:underline border-none bg-inherit font-cabin cursor-pointer"
                       >
                         Supprimer
+                      </button>
+                      <button
+                        onClick={() => handleBanClient(client.id)}
+                        className="text-blue text-xs hover:underline border-none bg-inherit font-cabin cursor-pointer"
+                      >
+                        Ban / Unban
                       </button>
                     </td>
                   </tr>
@@ -587,7 +723,7 @@ console.log("askings", askings);
       </div>
 
       {/* Section Askings */}
-      <div className="mb-4">
+      <div className="mb-4 w-[90%] mx-auto">
         <h2
           className="text-blue text-lg text-center mb-4 cursor-pointer select-none flex items-center justify-center gap-2"
           onClick={toggleOpenAsking}

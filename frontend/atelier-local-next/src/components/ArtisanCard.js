@@ -13,6 +13,7 @@ export default function ArtisanCard({ artisan, className }) {
           src={artisan?.avatar?.url || "/placeholder.png"}
           alt={`${artisan?.name || "Artisan"} logo`}
           fill
+          sizes="100vw"
           className="object-cover"
         />
       </div>

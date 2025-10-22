@@ -74,8 +74,14 @@ public class ClientService {
             avatar.setAvatarUrl(avatarUrl);
             avatar.setExtension(avatarService.getFileExtension(dto.getAvatar()));
             avatar.setUser(client);
+        } else {
+            avatar = new Avatar();
+            avatar.setAvatarUrl("https://d1gmao6ee1284v.cloudfront.net/avatar-placeholder.png");
+            avatar.setExtension("png");
+            avatar.setUser(client);
         }
         client.setAvatar(avatar);
+
         String hashed = passwordService.hashPassword(dto.getPassword());
         client.setHashedPassword(hashed);
         client.setUserRole(dto.getRole() != null ? dto.getRole() : UserRole.CLIENT); // Possibilité de créer un admin en passant le bon role
@@ -151,11 +157,17 @@ public class ClientService {
                                 .collect(Collectors.toList());
     }
 
-    public void banClient(UUID clientId, Client currentClient) {
+    public ClientResponseDTO banClient(UUID clientId, Client currentClient) {
         securityService.checkAdminOnly(currentClient);
         Client client = clientRepo.findById(clientId)
             .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé."));
-        client.setActive(false);
+        if (client.getActive()) {
+            client.setActive(false);
+        } else {
+            client.setActive(true);
+        }
+        
         clientRepo.save(client);
+        return new ClientResponseDTO(client);
     }
 }

@@ -242,8 +242,8 @@ public class DemoDataConfig {
             artisan3.setBio("Fabrication sur mesure et rénovation bois.");
             artisan3.setCategory(menuisier);
             artisan3.setSiret("34567890123456");
-            artisan3.setLatitude(47.316489);
-            artisan3.setLongitude(5.093911);
+            artisan3.setLatitude(47.313124);
+            artisan3.setLongitude(5.036413);
             artisan3.setPhoneNumber("0634867511");
             artisan3.setActivityStartDate(LocalDate.of(2012, 9, 20));
 
@@ -270,8 +270,8 @@ public class DemoDataConfig {
             artisan5.setBio("Les fleurs ça nous connait et on aime ça. N'hésitez pas à nous contacter pour tous vos évènements.");
             artisan5.setCategory(fleuriste);
             artisan5.setSiret("34567890167945");
-            artisan5.setLatitude(47.347558);
-            artisan5.setLongitude(5.003767);
+            artisan5.setLatitude(47.350117);
+            artisan5.setLongitude(5.037830);
             artisan5.setPhoneNumber("0637988425");
             artisan5.setActivityStartDate(LocalDate.of(2001, 4, 21));
 
@@ -284,8 +284,8 @@ public class DemoDataConfig {
             artisan6.setBio("Brasseur dijonnais fier de sa région, je crée des bières artisanales inspirées du terroir bourguignon, à partager entre amis autour d'un bon moment.");
             artisan6.setCategory(brasseur);
             artisan6.setSiret("34567890167945");
-            artisan6.setLatitude(47.347558);
-            artisan6.setLongitude(5.003767);
+            artisan6.setLatitude(47.284530);
+            artisan6.setLongitude(5.057619);
             artisan6.setPhoneNumber("0637988425");
             artisan6.setActivityStartDate(LocalDate.of(2001, 4, 21));
 
@@ -294,7 +294,7 @@ public class DemoDataConfig {
             artisan7.setHashedPassword(passwordService.hashPassword("password"));
             artisan7.setActive(true);
             artisan7.setUserRole(UserRole.ARTISAN);
-            artisan7.setName("Effet Mirroir");
+            artisan7.setName("Effet Miroir");
             artisan7.setBio("Photographe à Dijon, je capture les émotions et les instants vrais, qu'il s'agisse d'un mariage, d'un portrait ou d'un projet professionnel. Chaque image raconte une histoire unique.");
             artisan7.setCategory(photographe);
             artisan7.setSiret("34567890176813");

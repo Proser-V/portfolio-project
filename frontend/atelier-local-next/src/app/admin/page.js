@@ -66,7 +66,7 @@ export default async function AdminPanel() {
   const error = artisansError || artisanCategoriesError || eventCategoriesError;
 
   return (
-    <div className="mt-4 items-center justify-center">
+    <div className="mt-4 items-center justify-center w-full">
       <div className="text-center text-blue text-xl mb-4">Panneau d'administration</div>
 
       {error && (

@@ -30,7 +30,7 @@ public class Client extends User {
     @JsonIgnore
     private List<Asking> askingsList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "client")
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Recommendation> recommendations = new ArrayList<>();
 

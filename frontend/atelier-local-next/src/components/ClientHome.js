@@ -70,10 +70,8 @@ export default function ClientHome({ client, artisans }) {
                         ></div>
                         <div className="absolute -bottom-2 right-2 text-right text-blue font-cabin z-20">
                         <p>
-                            {artisan.name} <br />
-                            {artisan.categoryName} <br />
-                            {artisan.phoneNumber ? `Tel: ${artisan.phoneNumber}` : ""} <br />
-                            {artisan.email}
+                            <span className="text-lg font-bold">{artisan.name}</span><br />
+                            <span className="text-base font-semibold">{artisan.categoryName}</span><br />
                         </p>
                         </div>
                     </Link>

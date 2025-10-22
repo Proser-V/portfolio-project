@@ -70,10 +70,8 @@ export default function AdminHome({ admin, artisans }) {
                         ></div>
                         <div className="absolute -bottom-2 right-2 text-right text-blue font-cabin z-20">
                         <p>
-                            {artisan.name} <br />
-                            {artisan.artisanCategory} <br />
-                            {artisan.phoneNumber ? `Tel: ${artisan.phoneNumer}` : ""} <br />
-                            {artisan.email}
+                            <span className="text-lg font-bold">{artisan.name}</span><br />
+                            <span className="text-base font-semibold">{artisan.categoryName}</span><br />
                         </p>
                         </div>
                     </Link>

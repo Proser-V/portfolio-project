@@ -7,8 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function AdminBurgerMenu({ admin }) {
   const [isOpen, setIsOpen] = useState(false);
-
-  const messageCount = 5;
+  const messageCount = 0;
   return (
     <>
     {/* Navigation Desktop */}
@@ -138,13 +137,7 @@ export default function AdminBurgerMenu({ admin }) {
               className="py-2 transition-colors duration-200 flex items-center justify-center"
             >
               {messageCount > 0 ?(
-              <div className={`absolute flex items-center justify-center border-gold border-solid bg-white rounded-full ${messageCount < 10 ? "h-4 w-4 mb-8" : "h-2 w-2 mb-8 ml-10"}`}>
-                {messageCount < 10 ?(
-                  <span className="relative flex text-[13px] items-center justify-center text-center">{messageCount}</span>
-                ) : (
-                  ""
-                )}
-              </div>
+              <div className={`absolute flex items-center justify-center border-gold border-solid bg-white rounded-full h-2 w-2 mb-8 ml-10`}></div>
               ) : (
                 ""
               )}

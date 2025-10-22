@@ -46,7 +46,7 @@ public class Artisan extends User {
 
     private LocalDate activityStartDate;
 
-    @OneToMany(mappedBy = "artisan")
+    @OneToMany(mappedBy = "artisan", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Recommendation> recommendations = new ArrayList<>();
 

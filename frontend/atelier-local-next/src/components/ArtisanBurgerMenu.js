@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function ArtisanBurgerMenu({ artisan }) {
   const [isOpen, setIsOpen] = useState(false);
-
+  const messageCount = 5;
   return (
     <>
     {/* Navigation Desktop */}
@@ -21,9 +21,25 @@ export default function ArtisanBurgerMenu({ artisan }) {
 
       <Link
         href="/messenger"
-        className="flex items-center justify-center px-4"
+        className="flex flex-col items-center px-4"
       >
-        <Image src={messengerLogo} alt="Messenger" height={45} />
+        {messageCount > 0 ?(
+        <div className={`absolute flex items-center justify-center border-gold border-solid bg-white rounded-full ${messageCount < 10 ? "h-3 w-3 mt-1" : "h-2 w-2 mt-3 ml-10"}`}>
+          {messageCount < 10 ?(
+            <span className="relative flex text-[12px] items-center justify-center text-center">{messageCount}</span>
+          ) : (
+            ""
+          )}
+        </div>
+        ) : (
+          ""
+        )}
+        <Image
+        src={messengerLogo}
+        alt="Messenger"
+        height={30}
+        className={`${messageCount > 0 ? "lg:mt-5" : "lg:mt-4"} w-auto`}
+        />
       </Link>
 
       {/* Bloc doré qui prend toute la hauteur */}
@@ -88,12 +104,18 @@ export default function ArtisanBurgerMenu({ artisan }) {
             <Link
               href="/messenger"
               onClick={() => setIsOpen(false)}
-              className="pb-2 hover:bg-gold hover:text-blue transition-colors duration-200 flex items-center justify-center"
+              className="py-2 transition-colors duration-200 flex items-center justify-center"
             >
+              {messageCount > 0 ?(
+              <div className={`absolute flex items-center justify-center border-gold border-solid bg-white rounded-full h-2 w-2 mb-8 ml-10`}></div>
+              ) : (
+                ""
+              )}
               <Image
                 src={messengerLogo}
                 alt="Messenger"
-                height={45}
+                height={30}
+                className="w-auto"
               />
             </Link>
 

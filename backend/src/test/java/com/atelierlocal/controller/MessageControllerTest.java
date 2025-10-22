@@ -1,24 +1,36 @@
 package com.atelierlocal.controller;
 
-import com.atelierlocal.dto.MessageRequestDTO;
-import com.atelierlocal.dto.MessageResponseDTO;
-import com.atelierlocal.model.Artisan;
-import com.atelierlocal.repository.UserRepo;
-import com.atelierlocal.service.MessageService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.*;
-import org.springframework.http.HttpStatus;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+
+import com.atelierlocal.dto.MessageRequestDTO;
+import com.atelierlocal.dto.MessageResponseDTO;
+import com.atelierlocal.model.Artisan;
+import com.atelierlocal.model.UserRole;
+import com.atelierlocal.repository.UserRepo;
+import com.atelierlocal.service.MessageService;
 
 class MessageControllerTest {
 
@@ -86,6 +98,23 @@ class MessageControllerTest {
     @Test
     void testProcessMessageException() {
         UUID receiverId = UUID.randomUUID();
+        String receiverEmail = "receiver@mail.com";
+        String senderEmail = "sender@mail.com";
+
+        Artisan senderUser = new Artisan();
+        senderUser.setId(UUID.randomUUID());
+        senderUser.setEmail(senderEmail);
+        senderUser.setUserRole(UserRole.ARTISAN);
+        when(userRepo.findByEmail(senderEmail)).thenReturn(Optional.of(senderUser));
+
+        Artisan receiverUser = new Artisan();
+        receiverUser.setId(receiverId);
+        receiverUser.setEmail(receiverEmail);
+        receiverUser.setUserRole(UserRole.CLIENT);
+        when(userRepo.findById(receiverId)).thenReturn(Optional.of(receiverUser));
+
+        Principal principal = mock(Principal.class);
+        when(principal.getName()).thenReturn(senderEmail);
 
         MessageRequestDTO request = new MessageRequestDTO();
         request.setReceiverId(receiverId);
@@ -94,16 +123,17 @@ class MessageControllerTest {
         when(messageService.sendMessage(any(MessageRequestDTO.class)))
             .thenThrow(new RuntimeException("Service down"));
 
-        messageController.processMessage(request, mockPrincipal);
-
-        verify(messageService, times(1)).sendMessage(any(MessageRequestDTO.class));
+        messageController.processMessage(request, principal);
 
         ArgumentCaptor<MessageResponseDTO> captor = ArgumentCaptor.forClass(MessageResponseDTO.class);
         verify(messagingTemplate, times(1))
-            .convertAndSendToUser(eq(userEmail), eq("/queue/messages"), captor.capture());
+            .convertAndSendToUser(eq(senderEmail), eq("/queue/messages"), captor.capture());
 
-        MessageResponseDTO errorMsg = captor.getValue();
-        assertTrue(errorMsg.getMessageError().contains("Service down"));
+        MessageResponseDTO capturedResponse = captor.getValue();
+        assertTrue(capturedResponse.getMessageError().contains("Service down"));
+
+        verify(messagingTemplate, never())
+            .convertAndSendToUser(eq(receiverEmail), eq("/queue/messages"), any(MessageResponseDTO.class));
     }
 
     @Test

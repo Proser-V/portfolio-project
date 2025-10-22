@@ -14,6 +14,7 @@ import com.atelierlocal.dto.ArtisanResponseDTO;
 import com.atelierlocal.dto.ClientResponseDTO;
 import com.atelierlocal.model.Artisan;
 import com.atelierlocal.model.Client;
+import com.atelierlocal.repository.UserRepo;
 import com.atelierlocal.service.ArtisanService;
 import com.atelierlocal.service.ClientService;
 
@@ -23,10 +24,12 @@ public class UserController {
 
     private final ClientService clientService;
     private final ArtisanService artisanService;
+    private final UserRepo userRepo;
 
-    public UserController(ClientService clientService, ArtisanService artisanService) {
+    public UserController(ClientService clientService, ArtisanService artisanService, UserRepo userRepo) {
         this.clientService = clientService;
         this.artisanService = artisanService;
+        this.userRepo = userRepo;
     }
 
     @GetMapping("/me")
@@ -52,4 +55,5 @@ public class UserController {
                 .body(Map.of("error", "Type d'utilisateur inconnu"));
         }
     }
+
 }

@@ -3,20 +3,29 @@ package com.atelierlocal.controller;
 import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
 import com.atelierlocal.dto.ConversationSummaryDTO;
 import com.atelierlocal.dto.MessageRequestDTO;
 import com.atelierlocal.dto.MessageResponseDTO;
 import com.atelierlocal.model.User;
+import com.atelierlocal.model.UserRole;
 import com.atelierlocal.repository.UserRepo;
 import com.atelierlocal.service.MessageService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -39,6 +48,23 @@ public class MessageController {
         this.userRepo = userRepo;
     }
 
+    // Vérifie si l’envoi est autorisé selon les rôles
+    private void checkMessageAuthorization(User sender, User receiver) {
+        UserRole senderRole = sender.getUserRole();
+        UserRole receiverRole = receiver.getUserRole();
+
+        if (senderRole == UserRole.ARTISAN) {
+            if (!(receiverRole == UserRole.ADMIN || receiverRole == UserRole.CLIENT)) {
+                throw new IllegalArgumentException("Les artisans ne peuve contacter que des clients ou des administrateurs.");
+            }
+        }
+        else if (senderRole == UserRole.CLIENT) {
+            if (!(receiverRole == UserRole.ADMIN || receiverRole == UserRole.ARTISAN)) {
+                throw new IllegalArgumentException("Les clients ne peuvent contacter que des artisans ou des administrateurs.");
+            }
+        }
+    }
+
     // ============================================
     // Endpoint REST pour messages avec fichiers
     // ============================================
@@ -57,10 +83,17 @@ public class MessageController {
             Principal principal
     ) {
         try {
-            // Récupérer l'utilisateur authentifié
+            // Récupérer l’utilisateur authentifié
             String email = principal.getName();
             User authenticatedUser = userRepo.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé: " + email));
+
+            // Récupérer le destinataire
+            User receiverUser = userRepo.findById(receiverId)
+                .orElseThrow(() -> new IllegalArgumentException("Destinataire non trouvé: " + receiverId));
+
+            // Vérifier les autorisations
+            checkMessageAuthorization(authenticatedUser, receiverUser);
 
             // Créer le DTO
             MessageRequestDTO dto = new MessageRequestDTO();
@@ -76,9 +109,6 @@ public class MessageController {
             MessageResponseDTO response = messageService.sendMessage(dto);
 
             // Diffuser via WebSocket aux deux parties
-            User receiverUser = userRepo.findById(receiverId)
-                .orElseThrow(() -> new IllegalArgumentException("Destinataire non trouvé"));
-
             messagingTemplate.convertAndSendToUser(
                 receiverUser.getEmail(),
                 "/queue/messages",
@@ -120,15 +150,19 @@ public class MessageController {
                 .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé: " + email));
             UUID authenticatedId = authenticatedUser.getId();
             
+            // Récupérer le destinataire
+            User receiverUser = userRepo.findById(message.getReceiverId())
+                .orElseThrow(() -> new IllegalArgumentException("Destinataire non trouvé: " + message.getReceiverId()));
+
+            // Vérifier les autorisations
+            checkMessageAuthorization(authenticatedUser, receiverUser);
+
             message.setSenderId(authenticatedId);
             message.setFile(null); // Pas de fichier via WebSocket
 
             logger.info("Traitement message de {} à {}", message.getSenderId(), message.getReceiverId());
             
             MessageResponseDTO response = messageService.sendMessage(message);
-
-            User receiverUser = userRepo.findById(response.getReceiverId())
-                .orElseThrow(() -> new IllegalArgumentException("Destinataire non trouvé"));
 
             messagingTemplate.convertAndSendToUser(
                 receiverUser.getEmail(),
@@ -144,13 +178,23 @@ public class MessageController {
             
             logger.info("Message envoyé à {} et {}", receiverUser.getEmail(), email);
 
-        } catch (Exception e) {
-            logger.error("Erreur lors du traitement du message : {}", e.getMessage(), e);
-
+        } catch (IllegalArgumentException e) {
+            logger.error("Erreur lors du traitement du message : {}", e.getMessage());
             MessageResponseDTO errorResponse = new MessageResponseDTO(
                 "Erreur lors de l'envoi du message : " + e.getMessage()
             );
-
+            if (principal != null) {
+                messagingTemplate.convertAndSendToUser(
+                    principal.getName(),
+                    "/queue/messages",
+                    errorResponse
+                );
+            }
+        } catch (Exception e) {
+            logger.error("Erreur inattendue: {}", e.getMessage(), e);
+            MessageResponseDTO errorResponse = new MessageResponseDTO(
+                "Erreur serveur : " + e.getMessage()
+            );
             if (principal != null) {
                 messagingTemplate.convertAndSendToUser(
                     principal.getName(),

@@ -7,7 +7,7 @@ export default function Footer() {
         <a href="/legal" className="hover:underline">Mentions légales</a>
       </div>
       <div className="mt-1 text-center">
-        L'Atelier Local © - Projet Portfolio - HolbertonSchool Dijon<br/><span className="text-[10px]">Icons made by Freepik and Pixel perfect from www.flaticon.com</span>
+        L'Atelier Local © - Projet Portfolio - HolbertonSchool Dijon<span className="text-[10px]"> - Icons made by Freepik and Pixel perfect from www.flaticon.com</span>
       </div>
     </footer>
   );

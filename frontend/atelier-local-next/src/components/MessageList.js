@@ -68,7 +68,7 @@ export default function MessagesList({ initialMessages, user, otherUser, otherUs
           return (
             <motion.div
               key={msg.id || msg.tempId || `${msg.senderId}-${msg.content}-${index}`}
-              className={`flex ${isSentByUser ? "justify-end" : "justify-start"} mb-6 items-end`}
+              className={`flex ${isSentByUser ? "justify-end" : "justify-start"} mb-2 items-end`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
@@ -78,7 +78,7 @@ export default function MessagesList({ initialMessages, user, otherUser, otherUs
                 <img
                   src={otherUser?.avatar?.url}
                   alt={otherUserName}
-                  className="w-10 h-10 rounded-full mr-2"
+                  className="w-10 h-10 rounded-full mr-2 object-cover"
                 />
               )}
 

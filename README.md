@@ -4,7 +4,6 @@
 <center>
 <h1>Portfolio Project</h1>
 <em>Atelier Local</em>
-
 </center>
 
 ## 📖 Project Overview
@@ -65,11 +64,6 @@ docker-compose up --build
 4️⃣ Access Home page:
 
 [http://localhost:3000/](http://localhost:3000/)
-
-
-## 🤝 Contributions
-
-Contributions are welcome! Open an issue or submit a PR to suggest features or improvements.
 
 ## 📄 License
 

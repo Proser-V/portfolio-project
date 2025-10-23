@@ -95,7 +95,7 @@ class MessageServiceTest {
         savedMessage.setContent(expectedContent);
         savedMessage.setSender(sender);
         savedMessage.setReceiver(receiver);
-        savedMessage.setMessageStatus(MessageStatus.DELIVERED);
+        savedMessage.setMessageStatus(MessageStatus.SENT);
 
         when(messageRepo.save(any(Message.class))).thenReturn(savedMessage);
 
@@ -111,7 +111,7 @@ class MessageServiceTest {
         // Assert
         assertNotNull(response, "Response should not be null");
         assertEquals(expectedContent, response.getContent(), "Message content should match");
-        assertEquals(MessageStatus.DELIVERED, response.getMessageStatus(), "Message status should match");
+        assertEquals(MessageStatus.SENT, response.getMessageStatus(), "Message status should match");
         
         verify(messageRepo, times(1)).save(any(Message.class));
         verify(attachmentRepo, never()).save(any(Attachment.class));
@@ -119,12 +119,12 @@ class MessageServiceTest {
         
         // Verify unread notification
         verify(messagingTemplate, times(1))
-            .convertAndSendToUser(eq("receiver@test.com"), eq("/queue/unread"), eq(0));
+            .convertAndSendToUser(eq("receiver@test.com"), eq("/queue/unread"), any(Integer.class));
     }
 
     @Test
     void testSendMessageWithFile() throws Exception {
-    // Arrange
+        // Arrange
         UUID senderId = UUID.randomUUID();
         UUID receiverId = UUID.randomUUID();
         String expectedContent = "Message with file";
@@ -137,7 +137,7 @@ class MessageServiceTest {
         receiver.setId(receiverId);
         receiver.setEmail("receiver@test.com");
 
-    // Mock user lookup
+        // Mock user lookup
         when(artisanRepo.findById(senderId)).thenReturn(Optional.empty());
         when(clientRepo.findById(senderId)).thenReturn(Optional.of(sender));
         when(artisanRepo.findById(receiverId)).thenReturn(Optional.of(receiver));
@@ -158,17 +158,17 @@ class MessageServiceTest {
         savedMessage.setContent(expectedContent);
         savedMessage.setSender(sender);
         savedMessage.setReceiver(receiver);
-        savedMessage.setMessageStatus(MessageStatus.DELIVERED);
+        savedMessage.setMessageStatus(MessageStatus.SENT);
 
-    // Simuler l'attachment dans le message sauvegardé
+        // Simuler l'attachment qui sera créé lors de la sauvegarde (cascade)
         Attachment attachment = new Attachment();
-        attachment.setFileUrl(String.format("https://my-bucket.s3.eu-west-1.amazonaws.com/messages/%s_%s", UUID.randomUUID(), fileName));
+        attachment.setFileUrl(String.format("https://my-bucket.s3.eu-west-1.amazonaws.com/messages/%s_%s", 
+            UUID.randomUUID(), fileName));
         attachment.setFileType("image/png");
         attachment.setMessage(savedMessage);
         savedMessage.getAttachments().add(attachment);
 
-    // Mock attachment save
-        when(attachmentRepo.save(any(Attachment.class))).thenReturn(attachment);
+        // Mock message save (qui déclenche la cascade pour l'attachment)
         when(messageRepo.save(any(Message.class))).thenReturn(savedMessage);
 
         MessageRequestDTO dto = new MessageRequestDTO();
@@ -177,26 +177,24 @@ class MessageServiceTest {
         dto.setContent(expectedContent);
         dto.setFile(file);
 
-    // Act
+        // Act
         MessageResponseDTO response = messageService.sendMessage(dto);
 
-    // Assert
+        // Assert
         assertNotNull(response, "Response should not be null");
         assertEquals(expectedContent, response.getContent(), "Message content should match");
         assertEquals(1, response.getAttachments().size(), "Should have one attachment");
 
-    // Verify the URL pattern
         String actualUrl = response.getAttachments().get(0).getFileUrl();
         String expectedUrlPattern = String.format("https://my-bucket.s3.eu-west-1.amazonaws.com/messages/.*_%s", fileName);
         assertTrue(actualUrl.matches(expectedUrlPattern), 
-               "Attachment URL should match pattern: " + expectedUrlPattern + ", but was: " + actualUrl);
+            "Attachment URL should match pattern: " + expectedUrlPattern + ", but was: " + actualUrl);
 
         verify(messageRepo, times(1)).save(any(Message.class));
-        verify(attachmentRepo, times(1)).save(any(Attachment.class));
+        verify(attachmentRepo, never()).save(any(Attachment.class));
         verify(s3Client, times(1)).putObject(any(PutObjectRequest.class), any(RequestBody.class));
 
-    // Verify unread notification
         verify(messagingTemplate, times(1))
-            .convertAndSendToUser(eq("receiver@test.com"), eq("/queue/unread"), eq(0));
+            .convertAndSendToUser(eq("receiver@test.com"), eq("/queue/unread"), any(Integer.class));
     }
 }

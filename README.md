@@ -32,6 +32,7 @@ By the end of this development phase, the functionnalities are:
 
 ## 🧩 The next steps
 
++ Improve front (icons for categories, footer's pages, ...)
 + Client's page,
 + Mailing system,
 + Mapping system,

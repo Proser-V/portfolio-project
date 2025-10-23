@@ -62,7 +62,6 @@ export default function ArtisanAvatarUploader({ artisan, isOwner, isAdmin }) {
           alt={`${artisan.name} avatar`}
           fill
           sizes="(max-width: 768px) 200px, 250px"
-          quality={100}
           className="object-cover"
         />
       </label>

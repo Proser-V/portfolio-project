@@ -204,7 +204,7 @@ const getVisibleImages = () => {
               <p className="text-red-500 text-sm mt-2">{uploadError}</p>
             )}
             <p className="text-xs text-silver mt-2">
-              Format accepté : PNG, JPEG • Taille max : 5 Mo
+              Format accepté : PNG, JPEG, JPG • Taille max : 5 Mo
             </p>
           </div>
 

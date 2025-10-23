@@ -45,10 +45,9 @@ export default function ArtisanHome({ artisan, artisans }) {
                         <Image
                         src={artisan.avatar?.url || "/placeholder.png"}
                         alt={artisan.name}
-                        width={300}
-                        height={300}
-                        className="object-cover"
-                        quality={100}
+                        width={250}
+                        height={250}
+                        className="object-center object-cover"
                         />
                         <div
                         className="absolute inset-0 z-10"

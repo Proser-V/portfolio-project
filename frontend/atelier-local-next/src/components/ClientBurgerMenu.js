@@ -65,7 +65,6 @@ export default function ClientBurgerMenu({ client }) {
               width={56}
               height={56}
               className="object-cover w-full h-full"
-              quality={100}
             />
           </div>
         </Link>

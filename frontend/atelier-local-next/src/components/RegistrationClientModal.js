@@ -122,12 +122,12 @@ export default function RegistrationClientModal({ isOpen, onClose, onSuccess }) 
             </div>
             {/* Colonne droite */}
             <div className="flex flex-col items-center justify-center md:w-3/4 gap-4">
-              <input name="firstName" value={clientData.firstName} onChange={handleChange} placeholder="Votre prénom" className="input" />
-              <input name="lastName" value={clientData.lastName} onChange={handleChange} placeholder="Votre nom" className="input" />
-              <input name="email" value={clientData.email} onChange={handleChange} placeholder="Adresse email" className="input" />
+              <input name="firstName" value={clientData.firstName} onChange={handleChange} placeholder="Votre prénom" className="input" maxLength={50}/>
+              <input name="lastName" value={clientData.lastName} onChange={handleChange} placeholder="Votre nom" className="input" maxLength={50}/>
+              <input name="email" value={clientData.email} onChange={handleChange} placeholder="Adresse email" className="input" maxLength={100}/>
               <input type="password" name="password" value={clientData.password} onChange={handleChange} placeholder="Mot de passe" className="input" />
-              <input name="phoneNumber" value={clientData.phoneNumber} onChange={handleChange} placeholder="Téléphone (optionnel)" className="input" />
-              <input name="address" value={clientData.address} onChange={handleChange} placeholder="Adresse (optionnel)" className="input" />
+              <input name="address" value={clientData.address} onChange={handleChange} placeholder="Adresse" className="input" />
+              <input name="phoneNumber" value={clientData.phoneNumber} onChange={handleChange} placeholder="Téléphone (optionnel)" className="input" maxLength={12}/>
             </div>
           </div>
 
@@ -136,8 +136,7 @@ export default function RegistrationClientModal({ isOpen, onClose, onSuccess }) 
               type="submit"
               className="w-1/2 h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
                         text-gold text-base font-normal font-cabin
-                        flex items-center justify-center hover:cursor-pointer 
-                        hover:bg-blue transition"
+                        flex items-center justify-center hover:cursor-pointer"
             >
               Créer mon compte
             </button>

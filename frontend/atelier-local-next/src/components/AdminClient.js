@@ -328,6 +328,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
                   name="categoryName"
                   placeholder="Nom de la catégorie"
                   className="input text-xs self-center"
+                  maxLength={50}
                   required
                 />
                 <textarea
@@ -335,6 +336,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
                     border-2 border-solid border-silver px-4 py-2 text-xs text-blue outline-none resize-none"
                   placeholder="Courte description de la catégorie..."
                   name="description"
+                  maxLength={200}
                 ></textarea>
                 <button
                   type="submit"

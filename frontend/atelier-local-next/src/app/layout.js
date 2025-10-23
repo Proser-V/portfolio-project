@@ -32,7 +32,6 @@ export default async function RootLayout({ children }) {
             width={400}
             height={400}
             className="object-contain opacity-5 max-w-[80vw] max-h-[80vh]"
-            priority
           />
         </div>
         <main className="flex-grow w-full flex justify-center items-start mb-8">

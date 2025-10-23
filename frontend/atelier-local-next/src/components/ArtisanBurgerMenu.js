@@ -58,7 +58,6 @@ export default function ArtisanBurgerMenu({ artisan }) {
               width={56}
               height={56}
               className="object-cover w-full h-full"
-              quality={100}
             />
           </div>
         </Link>

@@ -59,7 +59,7 @@ export default function ClientHome({ client, artisans }) {
                         alt={artisan.name}
                         width={250}
                         height={250}
-                        className="object-cover"
+                        className="object-center object-cover"
                         />
                         <div
                         className="absolute inset-0 z-10"

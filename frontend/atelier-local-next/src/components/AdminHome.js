@@ -56,10 +56,9 @@ export default function AdminHome({ admin, artisans }) {
                         <Image
                         src={artisan?.avatar?.url || "/placeholder.png"}
                         alt={artisan.name}
-                        height={250}
                         width={250}
-                        sizes="(max-width: 768px) 200px, 250px"
-                        className="object-cover"
+                        height={250}
+                        className="object-center object-cover"
                         />
                         <div
                         className="absolute inset-0 z-10"

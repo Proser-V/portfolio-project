@@ -274,12 +274,12 @@ export default function RegistrationPage({ user }) {
                 </div>
                 {/* Colonne droite */}
                 <div className="flex flex-col items-center justify-center w-[100%] lg:w-1/2 gap-4">
-                  <input name="firstName" value={clientData.firstName} onChange={handleClientChange} placeholder="Votre prénom" className="input" />
-                  <input name="lastName" value={clientData.lastName} onChange={handleClientChange} placeholder="Votre nom" className="input" />
-                  <input name="email" value={clientData.email} onChange={handleClientChange} placeholder="Adresse email" className="input" />
+                  <input name="firstName" value={clientData.firstName} onChange={handleClientChange} placeholder="Votre prénom" className="input" maxLength={50}/>
+                  <input name="lastName" value={clientData.lastName} onChange={handleClientChange} placeholder="Votre nom" className="input" maxLength={50}/>
+                  <input name="email" value={clientData.email} onChange={handleClientChange} placeholder="Adresse email" className="input" maxLength={100}/>
                   <input type="password" name="password" value={clientData.password} onChange={handleClientChange} placeholder="Mot de passe" className="input" />
                   <input name="address" value={clientData.address} onChange={handleClientChange} placeholder="Adresse" className="input" />
-                  <input name="phoneNumber" value={clientData.phoneNumber} onChange={handleClientChange} placeholder="Téléphone (optionnel)" className="input" />
+                  <input name="phoneNumber" value={clientData.phoneNumber} onChange={handleClientChange} placeholder="Téléphone (optionnel)" className="input" maxLength={12}/>
                 </div>
               </div>
 
@@ -339,14 +339,19 @@ export default function RegistrationPage({ user }) {
                     )}
                   </div>
 
-                  {/* Bio desktop */}
-                  <textarea
-                    name="bio"
-                    value={artisanData.bio}
-                    onChange={handleArtisanChange}
-                    placeholder="A propos de votre activité..."
-                    className="textarea w-full hidden lg:block"
-                  />
+                  <div className="relative w-full flex justify-center">
+                    <textarea
+                      name="bio"
+                      value={artisanData.bio}
+                      onChange={handleArtisanChange}
+                      placeholder="A propos de votre activité..."
+                      className="textarea w-full hidden lg:block"
+                      maxLength={500}
+                    />
+                    <p className="absolute -bottom-8 right-8 text-xs text-silver hidden lg:block">
+                      {artisanData.bio.length}/500
+                    </p>
+                  </div>
                 </div>
 
                 {/* Colonne droite */}
@@ -382,21 +387,27 @@ export default function RegistrationPage({ user }) {
                     </div>
                   </div>
 
-                  <input name="name" value={artisanData.name} onChange={handleArtisanChange} placeholder="Nom de votre entreprise" className="input" />
-                  <input name="email" value={artisanData.email} onChange={handleArtisanChange} placeholder="Adresse email" className="input" />
+                  <input name="name" value={artisanData.name} onChange={handleArtisanChange} placeholder="Nom de votre entreprise" className="input" maxLength={50}/>
+                  <input name="email" value={artisanData.email} onChange={handleArtisanChange} placeholder="Adresse email" className="input" maxLength={100}/>
                   <input type="password" name="password" value={artisanData.password} onChange={handleArtisanChange} placeholder="Mot de passe" className="input" />
                   <input name="address" value={artisanData.address} onChange={handleArtisanChange} placeholder="Votre adresse" className="input" />
-                  <input name="siret" value={artisanData.siret} onChange={handleArtisanChange} placeholder="SIRET" className="input" />
-                  <input name="phoneNumber" value={artisanData.phoneNumber} onChange={handleArtisanChange} placeholder="Votre numéro de téléphone (optionnel)" className="input" />
+                  <input name="siret" value={artisanData.siret} onChange={handleArtisanChange} placeholder="SIRET" className="input" maxLength={14}/>
+                  <input name="phoneNumber" value={artisanData.phoneNumber} onChange={handleArtisanChange} placeholder="Votre numéro de téléphone (optionnel)" className="input" maxLength={12}/>
 
                   {/* Bio mobile */}
-                  <textarea
-                    name="bio"
-                    value={artisanData.bio}
-                    onChange={handleArtisanChange}
-                    placeholder="A propos de votre activité..."
-                    className="textarea w-full lg:hidden"
-                  />
+                  <div className="relative w-full flex justify-center">
+                    <textarea
+                      name="bio"
+                      value={artisanData.bio}
+                      onChange={handleArtisanChange}
+                      placeholder="A propos de votre activité..."
+                      className="textarea w-full lg:hidden block"
+                      maxLength={500}
+                    />
+                    <p className="absolute -bottom-8 right-8 text-xs text-silver lg:hidden block">
+                      {artisanData.bio.length}/500
+                    </p>
+                  </div>
 
                   <button
                     type="submit"

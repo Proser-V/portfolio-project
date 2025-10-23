@@ -13,6 +13,7 @@ public class ConversationSummaryDTO {
     private String lastMessage;
     @JsonProperty("timestamp")
     private LocalDateTime createdAt;
+    private long unreadCount;
 
     public ConversationSummaryDTO(
                                 UUID otherUserId,
@@ -20,7 +21,8 @@ public class ConversationSummaryDTO {
                                 String otherUserRole,
                                 String otherUserAvatarUrl,
                                 String lastMessage,
-                                LocalDateTime createdAt
+                                LocalDateTime createdAt,
+                                Long unreadCount
                                 ) {
         this.otherUserId = otherUserId;
         this.otherUserName = otherUserName;
@@ -28,6 +30,7 @@ public class ConversationSummaryDTO {
         this.otherUserAvatarUrl = otherUserAvatarUrl;
         this.lastMessage = lastMessage;
         this.createdAt = createdAt;
+        this.unreadCount = unreadCount;
     }
 
     public UUID getOtherUserId() { return otherUserId; }
@@ -36,4 +39,7 @@ public class ConversationSummaryDTO {
     public String getOtherUserAvatar() { return otherUserAvatarUrl; }
     public String getLastMessage() { return lastMessage; }
     public LocalDateTime getLastTimestamp() { return createdAt; }
+
+    public long getUnreadCount() { return unreadCount; }
+    public void setUnreadCount(long unreadCount) { this.unreadCount = unreadCount; }
 }

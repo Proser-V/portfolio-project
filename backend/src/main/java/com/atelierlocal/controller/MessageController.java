@@ -21,9 +21,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.atelierlocal.dto.ConversationSummaryDTO;
 import com.atelierlocal.dto.MessageRequestDTO;
 import com.atelierlocal.dto.MessageResponseDTO;
+import com.atelierlocal.model.Message;
 import com.atelierlocal.model.User;
 import com.atelierlocal.model.UserRole;
-import com.atelierlocal.repository.UserRepo;
+import com.atelierlocal.repository.ArtisanRepo;
+import com.atelierlocal.repository.ClientRepo;
 import com.atelierlocal.service.MessageService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,12 +42,15 @@ public class MessageController {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final MessageService messageService;
-    private final UserRepo userRepo;
+    private final ArtisanRepo artisanRepo;
+    private final ClientRepo clientRepo;
 
-    public MessageController(SimpMessagingTemplate messagingTemplate, MessageService messageService, UserRepo userRepo) {
+    public MessageController(SimpMessagingTemplate messagingTemplate, MessageService messageService, 
+                             ArtisanRepo artisanRepo, ClientRepo clientRepo) {
         this.messagingTemplate = messagingTemplate;
         this.messageService = messageService;
-        this.userRepo = userRepo;
+        this.artisanRepo = artisanRepo;
+        this.clientRepo = clientRepo;
     }
 
     // Vérifie si l’envoi est autorisé selon les rôles
@@ -55,7 +60,7 @@ public class MessageController {
 
         if (senderRole == UserRole.ARTISAN) {
             if (!(receiverRole == UserRole.ADMIN || receiverRole == UserRole.CLIENT)) {
-                throw new IllegalArgumentException("Les artisans ne peuve contacter que des clients ou des administrateurs.");
+                throw new IllegalArgumentException("Les artisans ne peuvent contacter que des clients ou des administrateurs.");
             }
         }
         else if (senderRole == UserRole.CLIENT) {
@@ -65,9 +70,17 @@ public class MessageController {
         }
     }
 
-    // ============================================
+    // Récupérer l'utilisateur authentifié
+    private User getAuthenticatedUser(Principal principal) {
+        String email = principal.getName();
+        return artisanRepo.findByEmail(email)
+            .map(User.class::cast)
+            .orElseGet(() -> clientRepo.findByEmail(email)
+                .map(User.class::cast)
+                .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé: " + email)));
+    }
+
     // Endpoint REST pour messages avec fichiers
-    // ============================================
     @PostMapping(consumes = {"multipart/form-data"})
     @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT', 'ARTISAN')")
     @Operation(summary = "Envoie un message avec pièce jointe optionnelle")
@@ -84,13 +97,14 @@ public class MessageController {
     ) {
         try {
             // Récupérer l’utilisateur authentifié
-            String email = principal.getName();
-            User authenticatedUser = userRepo.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé: " + email));
+            User authenticatedUser = getAuthenticatedUser(principal);
 
             // Récupérer le destinataire
-            User receiverUser = userRepo.findById(receiverId)
-                .orElseThrow(() -> new IllegalArgumentException("Destinataire non trouvé: " + receiverId));
+            User receiverUser = artisanRepo.findById(receiverId)
+                .map(User.class::cast)
+                .orElseGet(() -> clientRepo.findById(receiverId)
+                    .map(User.class::cast)
+                    .orElseThrow(() -> new IllegalArgumentException("Destinataire non trouvé: " + receiverId)));
 
             // Vérifier les autorisations
             checkMessageAuthorization(authenticatedUser, receiverUser);
@@ -116,7 +130,7 @@ public class MessageController {
             );
 
             messagingTemplate.convertAndSendToUser(
-                email,
+                authenticatedUser.getEmail(),
                 "/queue/messages",
                 response
             );
@@ -137,22 +151,21 @@ public class MessageController {
         }
     }
 
-    // ============================================
     // WebSocket pour messages SANS fichiers (texte uniquement)
-    // ============================================
     @MessageMapping("/chat")
     public void processMessage(@Valid MessageRequestDTO message, Principal principal) {
         try {
             logger.info("Message reçu via WebSocket de: {}", principal.getName());
             
-            String email = principal.getName();
-            User authenticatedUser = userRepo.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé: " + email));
+            User authenticatedUser = getAuthenticatedUser(principal);
             UUID authenticatedId = authenticatedUser.getId();
             
             // Récupérer le destinataire
-            User receiverUser = userRepo.findById(message.getReceiverId())
-                .orElseThrow(() -> new IllegalArgumentException("Destinataire non trouvé: " + message.getReceiverId()));
+            User receiverUser = artisanRepo.findById(message.getReceiverId())
+                .map(User.class::cast)
+                .orElseGet(() -> clientRepo.findById(message.getReceiverId())
+                    .map(User.class::cast)
+                    .orElseThrow(() -> new IllegalArgumentException("Destinataire non trouvé: " + message.getReceiverId())));
 
             // Vérifier les autorisations
             checkMessageAuthorization(authenticatedUser, receiverUser);
@@ -171,12 +184,12 @@ public class MessageController {
             );
 
             messagingTemplate.convertAndSendToUser(
-                email,
+                authenticatedUser.getEmail(),
                 "/queue/messages",
                 response
             );
             
-            logger.info("Message envoyé à {} et {}", receiverUser.getEmail(), email);
+            logger.info("Message envoyé à {} et {}", receiverUser.getEmail(), authenticatedUser.getEmail());
 
         } catch (IllegalArgumentException e) {
             logger.error("Erreur lors du traitement du message : {}", e.getMessage());
@@ -218,9 +231,7 @@ public class MessageController {
         @RequestParam UUID user2Id,
         Principal principal
     ) {
-        String email = principal.getName();
-        User authenticatedUser = userRepo.findByEmail(email)
-            .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé: " + email));
+        User authenticatedUser = getAuthenticatedUser(principal);
         UUID authId = authenticatedUser.getId();
 
         if (!(authId.equals(user1Id) || authId.equals(user2Id))) {
@@ -250,10 +261,10 @@ public class MessageController {
         @PathVariable UUID userId,
         Principal principal
     ) {
-        String email = principal.getName();
-        User authenticatedUser = userRepo.findByEmail(email)
-            .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé: " + email));
+        logger.info("Principal reçu: {}", principal != null ? principal.getName() : "null");
+        User authenticatedUser = getAuthenticatedUser(principal);
         UUID authId = authenticatedUser.getId();
+        logger.info("Utilisateur authentifié: id={}, email={}", authId, authenticatedUser.getEmail());
 
         if (!authId.equals(userId)) {
             logger.warn("⚠️ Tentative d'accès aux conversations d'un autre utilisateur = auth={}, request={}", authId, userId);
@@ -262,15 +273,58 @@ public class MessageController {
 
         try {
             List<ConversationSummaryDTO> conversations = messageService.getConversationSummaries(userId);
-            if (conversations.isEmpty()) {
-                return ResponseEntity.status(404).build();
-            }
+            logger.info("Conversations récupérées: {}", conversations.size());
             return ResponseEntity.ok(conversations);
         } catch (IllegalArgumentException e) {
             logger.error("Erreur lors de la récupération des conversations : {}", e.getMessage());
             return ResponseEntity.badRequest().build();
         } catch (Exception e) {
             logger.error("Erreur inattendue : {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("/unread")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT', 'ARTISAN')")
+    @Operation(summary = "Récupère les messages non lus de l'utilisateur authentifié")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Messages non lus récupérés avec succès"),
+        @ApiResponse(responseCode = "403", description = "Accès refusé"),
+        @ApiResponse(responseCode = "404", description = "Aucun message non lu trouvé")
+    })
+    public ResponseEntity<List<Message>> getUnreadMessages(Principal principal) {
+        try {
+            User authenticatedUser = getAuthenticatedUser(principal);
+            List <Message> unreadMessages = messageService.getUnreadMessages(authenticatedUser);
+
+            return ResponseEntity.ok(unreadMessages);
+        } catch (IllegalArgumentException e) {
+            logger.error("Erreur lors de la récupération des messages non lus : {}", e.getMessage());
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            logger.error("Erreur inattendue : {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("/{messageId}/read")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT', 'ARTISAN')")
+    @Operation(summary = "Marque un message comme lu")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Message marqué comme lu avec succès"),
+        @ApiResponse(responseCode = "400", description = "Message non trouvé ou utilisateur non autorisé"),
+        @ApiResponse(responseCode = "403", description = "Accès refusé")
+    })
+    public ResponseEntity<Void> markMessageAsRead(@PathVariable UUID messageId, Principal principal) {
+        try {
+            User authenticatedUser = getAuthenticatedUser(principal);
+            messageService.markMessageAsRead(messageId, authenticatedUser);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            logger.error("Erreur lors du marquage du message comme lu: {}", e.getMessage());
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            logger.error("Erreur inattendue: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
     }

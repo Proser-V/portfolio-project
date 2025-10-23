@@ -4,15 +4,23 @@ import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
 import MessagesList from "./MessageList";
 import MessageForm from "./MessageForm";
+import { markConversationAsRead } from "@/lib/messageService";
 
 export default function ConversationClient({ initialMessages, user, otherUser, otherUserName, jwtToken }) {
   const [messages, setMessages] = useState(initialMessages || []);
   const [stompClient, setStompClient] = useState(null);
 
+  // Marquer tous les messages de la conversation comme lus au montage
+  useEffect(() => {
+    if (messages.length > 0 && user?.id) {
+      markConversationAsRead(messages, user.id, jwtToken);
+    }
+  }, []); // Uniquement au montage
+
   // Connexion WebSocket
   useEffect(() => {
     const socket = new SockJS(`${process.env.NEXT_PUBLIC_API_URL}/ws`);
-    const client = Stomp.over(socket);
+    const client = Stomp.over(() => socket);
 
     client.connect(
       { Authorization: `Bearer ${jwtToken}` },
@@ -60,6 +68,20 @@ export default function ConversationClient({ initialMessages, user, otherUser, o
             }
 
             console.log("✅ Nouveau message ajouté");
+            
+            // Si le message est reçu (pas envoyé par nous), le marquer comme lu
+            if (received.receiverId === user.id && received.id) {
+              // Marquer comme lu de manière asynchrone
+              fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/messages/${received.id}/read`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  ...(jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {}),
+                },
+                credentials: "include",
+              }).catch(err => console.error("Erreur marquage lu:", err));
+            }
+
             return [...prev, received];
           });
         });
@@ -77,7 +99,7 @@ export default function ConversationClient({ initialMessages, user, otherUser, o
         console.log("🔌 WebSocket déconnecté");
       }
     };
-  }, [jwtToken]);
+  }, [jwtToken, user.id]);
 
   return (
     <>

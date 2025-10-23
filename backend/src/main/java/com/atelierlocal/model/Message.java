@@ -48,7 +48,7 @@ public class Message {
     private String messageError;
 
     @Enumerated(EnumType.STRING)
-    private MessageStatus messageStatus;
+    private MessageStatus messageStatus = MessageStatus.SENT;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -61,6 +61,7 @@ public class Message {
 
     // Getters + Setters
     public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
 
     public User getSender() { return sender; }
     public void setSender(User sender) { this.sender = sender; }

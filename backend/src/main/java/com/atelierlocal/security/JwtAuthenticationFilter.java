@@ -1,14 +1,19 @@
 package com.atelierlocal.security;
 
 import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import com.atelierlocal.model.User;
 import com.atelierlocal.repository.UserRepo;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,7 +21,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Service
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
+    private final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
     private final JwtService jwtService;
     private final UserRepo userRepository;
 
@@ -31,74 +36,81 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-
-        // Récupération du header Cookie
-        final String cookieHeader = request.getHeader("Cookie");
+        logger.info("Filtre JWT: Traitement de la requête pour {}", request.getRequestURI());
         String jwt = null;
 
-        // Pour /api/users/logout, on ignore le filtre
-        if (request.getServletPath().equals("/api/users/logout")) {
-            filterChain.doFilter(request, response);
-            return;
+        // Vérifier l'en-tête Authorization
+        String authHeader = request.getHeader("Authorization");
+        logger.info("En-tête Authorization reçu: {}", authHeader);
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            jwt = authHeader.substring(7);
+            logger.info("JWT extrait de l'en-tête Authorization: {}", jwt);
         }
 
-        // Extraction du JWT depuis le cookie nommé "jwt"
-        if (cookieHeader != null && cookieHeader.contains("jwt=")) {
-            String[] cookies = cookieHeader.split("; ");
-            for (String cookie : cookies) {
-                if (cookie.startsWith("jwt=")) {
-                    jwt = cookie.substring("jwt=".length());
-                    break;
+        // Vérifier le cookie jwt si Authorization n'est pas trouvé
+        if (jwt == null) {
+            final String cookieHeader = request.getHeader("Cookie");
+            logger.info("En-tête Cookie reçu: {}", cookieHeader);
+            if (cookieHeader != null && cookieHeader.contains("jwt=")) {
+                String[] cookies = cookieHeader.split("; ");
+                for (String cookie : cookies) {
+                    if (cookie.startsWith("jwt=")) {
+                        jwt = cookie.substring("jwt=".length());
+                        logger.info("JWT extrait du cookie: {}", jwt);
+                        break;
+                    }
                 }
             }
         }
 
-        // Si aucun JWT n'est trouvé, on passe au filtre suivant
-        if (jwt == null) {
+        if (request.getServletPath().equals("/api/users/logout")) {
+            logger.info("Ignoring /api/users/logout");
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Vérification si le token est blacklisté
+        if (jwt == null) {
+            logger.warn("Aucun JWT trouvé pour {}", request.getRequestURI());
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         if (jwtService.isTokenBlacklisted(jwt)) {
+            logger.warn("JWT blacklisté: {}", jwt);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\": \"Token invalide ou expiré\"}");
             return;
         }
 
-        // Extraction du username à partir du token
         final String username = jwtService.extractUsername(jwt);
+        logger.info("Utilisateur extrait du JWT: {}", username);
 
-        // Vérifier si l'utilisateur n'est pas déjà authentifié
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // Récupération de l'entité User depuis la base
             User user = userRepository.findByEmail(username).orElse(null);
+            logger.info("Utilisateur trouvé dans la base: {}", user != null ? user.getEmail() : "null");
 
             if (user != null && jwtService.isTokenValid(jwt, user)) {
-                // Création d'un objet Authentication avec l'entité User
+                logger.info("JWT valide pour utilisateur: {}", username);
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
                                 user,
                                 null,
                                 user.getAuthorities()
                         );
-
-                // Ajout des détails de la requête
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                // On place l'objet Authentication dans le contexte de sécurité
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+                logger.info("Authentification définie pour: {}", username);
+            } else {
+                logger.warn("JWT invalide ou utilisateur non trouvé pour: {}", username);
             }
         }
 
-        // On continue la chaîne de filtres
         filterChain.doFilter(request, response);
     }
 
     @Override
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
-        // Exclure certaines routes publiques
         String path = request.getServletPath();
         return path.equals("/api/clients/register")
                 || path.equals("/api/artisans/register")

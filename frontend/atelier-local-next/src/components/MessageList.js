@@ -21,6 +21,21 @@ export default function MessagesList({ initialMessages, user, otherUser, otherUs
       return dateA.getTime() - dateB.getTime();
     });
 
+    const uniqueMessages = validMessages.reduce((acc, current) => {
+      const isDuplicate = acc.find(item => 
+        item.id === current.id || 
+        (item.tempId && item.tempId === current.tempId) ||
+        (item.content === current.content && 
+         item.senderId === current.senderId && 
+         item.timestamp === current.timestamp)
+      );
+      
+      if (!isDuplicate) {
+        acc.push(current);
+      }
+      return acc;
+    }, []);
+
   return (
     <div className="relative h-[60vh] overflow-y-auto scrollbar-hidden">
       <div
@@ -35,7 +50,7 @@ export default function MessagesList({ initialMessages, user, otherUser, otherUs
           Aucun message dans cette conversation.
         </p>
       ) : (
-        validMessages.map((msg, index) => {
+        uniqueMessages.map((msg, index) => {
           const isSentByUser = msg.senderId.toString() === userId.toString();
           const msgTime = msg.timestamp || msg.createdAt;
           let messageDate = "Envoi en cours...";
@@ -67,7 +82,7 @@ export default function MessagesList({ initialMessages, user, otherUser, otherUs
 
           return (
             <motion.div
-              key={msg.id || msg.tempId || `${msg.senderId}-${msg.content}-${index}`}
+              key={msg.id || msg.tempId || `msg-${msg.senderId}-${index}-${msgTime}`}
               className={`flex ${isSentByUser ? "justify-end" : "justify-start"} mb-2 items-end`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

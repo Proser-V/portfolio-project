@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.atelierlocal.model.Message;
+import com.atelierlocal.model.User;
 
 /**
  * JpaRepository key inherited methods include:
@@ -29,4 +30,8 @@ public interface MessageRepo extends JpaRepository<Message, UUID> {
        "(m2.sender.id = m.sender.id AND m2.receiver.id = m.receiver.id) OR " +
        "(m2.sender.id = m.receiver.id AND m2.receiver.id = m.sender.id))")
     List<Message> findAllByUserId(UUID userId);
+
+    List<Message> findByReceiverAndIsReadFalse(User receiver);
+
+    List<Message> findAllBySenderIdOrReceiverId(UUID senderId, UUID receiverId);
 }

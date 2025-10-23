@@ -43,7 +43,7 @@ public class MessageResponseDTO {
     // Constructeur pour un message d'erreur
     public MessageResponseDTO(String errorMessage) {
         this.messageError = errorMessage;
-        this.messageStatus = MessageStatus.NOT_SENT;
+        this.messageStatus = MessageStatus.FAILED;
     }
 
     // Classe interne pour représenter les pièces jointes

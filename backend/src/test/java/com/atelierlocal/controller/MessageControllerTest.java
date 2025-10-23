@@ -16,7 +16,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -29,7 +28,8 @@ import com.atelierlocal.dto.MessageRequestDTO;
 import com.atelierlocal.dto.MessageResponseDTO;
 import com.atelierlocal.model.Artisan;
 import com.atelierlocal.model.UserRole;
-import com.atelierlocal.repository.UserRepo;
+import com.atelierlocal.repository.ArtisanRepo;
+import com.atelierlocal.repository.ClientRepo;
 import com.atelierlocal.service.MessageService;
 
 class MessageControllerTest {
@@ -41,7 +41,10 @@ class MessageControllerTest {
     private MessageService messageService;
 
     @Mock
-    private UserRepo userRepo;
+    private ArtisanRepo artisanRepo;
+
+    @Mock
+    private ClientRepo clientRepo;
 
     @InjectMocks
     private MessageController messageController;
@@ -60,8 +63,9 @@ class MessageControllerTest {
         mockUser = new Artisan();
         mockUser.setId(authenticatedUserId);
         mockUser.setEmail(userEmail);
+        mockUser.setUserRole(UserRole.ARTISAN); // Set a valid role for authorization
 
-        when(userRepo.findByEmail(userEmail)).thenReturn(Optional.of(mockUser));
+        when(artisanRepo.findByEmail(userEmail)).thenReturn(Optional.of(mockUser));
     }
 
     @Test
@@ -71,16 +75,17 @@ class MessageControllerTest {
         Artisan receiverUser = new Artisan();
         receiverUser.setId(receiverId);
         receiverUser.setEmail(receiverEmail);
+        receiverUser.setUserRole(UserRole.CLIENT); // Valid role for artisan-client communication
 
         MessageRequestDTO request = new MessageRequestDTO();
         request.setReceiverId(receiverId);
         request.setContent("Hello");
 
-        MessageResponseDTO response = new MessageResponseDTO("Hello");
+        MessageResponseDTO response = new MessageResponseDTO("Message sent successfully");
         response.setReceiverId(receiverId);
         response.setSenderId(authenticatedUserId);
 
-        when(userRepo.findById(receiverId)).thenReturn(Optional.of(receiverUser));
+        when(artisanRepo.findById(receiverId)).thenReturn(Optional.of(receiverUser));
         when(messageService.sendMessage(any(MessageRequestDTO.class))).thenReturn(response);
 
         messageController.processMessage(request, mockPrincipal);
@@ -88,63 +93,62 @@ class MessageControllerTest {
         ArgumentCaptor<MessageRequestDTO> captor = ArgumentCaptor.forClass(MessageRequestDTO.class);
         verify(messageService, times(1)).sendMessage(captor.capture());
         assertEquals(authenticatedUserId, captor.getValue().getSenderId());
+        assertEquals("Hello", captor.getValue().getContent());
 
         verify(messagingTemplate, times(1))
-            .convertAndSendToUser(eq(receiverEmail), eq("/queue/messages"), eq(response));
+                .convertAndSendToUser(eq(receiverEmail), eq("/queue/messages"), eq(response));
         verify(messagingTemplate, times(1))
-            .convertAndSendToUser(eq(userEmail), eq("/queue/messages"), eq(response));
+                .convertAndSendToUser(eq(userEmail), eq("/queue/messages"), eq(response));
     }
 
     @Test
     void testProcessMessageException() {
         UUID receiverId = UUID.randomUUID();
         String receiverEmail = "receiver@mail.com";
-        String senderEmail = "sender@mail.com";
-
-        Artisan senderUser = new Artisan();
-        senderUser.setId(UUID.randomUUID());
-        senderUser.setEmail(senderEmail);
-        senderUser.setUserRole(UserRole.ARTISAN);
-        when(userRepo.findByEmail(senderEmail)).thenReturn(Optional.of(senderUser));
 
         Artisan receiverUser = new Artisan();
         receiverUser.setId(receiverId);
         receiverUser.setEmail(receiverEmail);
-        receiverUser.setUserRole(UserRole.CLIENT);
-        when(userRepo.findById(receiverId)).thenReturn(Optional.of(receiverUser));
-
-        Principal principal = mock(Principal.class);
-        when(principal.getName()).thenReturn(senderEmail);
+        receiverUser.setUserRole(UserRole.CLIENT); // Valid role
 
         MessageRequestDTO request = new MessageRequestDTO();
         request.setReceiverId(receiverId);
         request.setContent("Hello");
 
+        when(artisanRepo.findById(receiverId)).thenReturn(Optional.of(receiverUser));
         when(messageService.sendMessage(any(MessageRequestDTO.class)))
-            .thenThrow(new RuntimeException("Service down"));
+                .thenThrow(new RuntimeException("Service down"));
 
-        messageController.processMessage(request, principal);
+        messageController.processMessage(request, mockPrincipal);
 
         ArgumentCaptor<MessageResponseDTO> captor = ArgumentCaptor.forClass(MessageResponseDTO.class);
         verify(messagingTemplate, times(1))
-            .convertAndSendToUser(eq(senderEmail), eq("/queue/messages"), captor.capture());
+                .convertAndSendToUser(eq(userEmail), eq("/queue/messages"), captor.capture());
 
         MessageResponseDTO capturedResponse = captor.getValue();
         assertTrue(capturedResponse.getMessageError().contains("Service down"));
 
         verify(messagingTemplate, never())
-            .convertAndSendToUser(eq(receiverEmail), eq("/queue/messages"), any(MessageResponseDTO.class));
+                .convertAndSendToUser(eq(receiverEmail), eq("/queue/messages"), any(MessageResponseDTO.class));
     }
 
     @Test
     void testGetHistorySuccess() {
         UUID otherUserId = UUID.randomUUID();
+        String otherUserEmail = "otheruser@mail.com";
+
+        Artisan otherUser = new Artisan();
+        otherUser.setId(otherUserId);
+        otherUser.setEmail(otherUserEmail);
+        otherUser.setUserRole(UserRole.CLIENT);
+
+        when(artisanRepo.findById(otherUserId)).thenReturn(Optional.of(otherUser));
 
         MessageResponseDTO msg1 = new MessageResponseDTO("hello");
         MessageResponseDTO msg2 = new MessageResponseDTO("world");
 
         when(messageService.getConversation(authenticatedUserId, otherUserId))
-            .thenReturn(List.of(msg1, msg2));
+                .thenReturn(List.of(msg1, msg2));
 
         var responseEntity = messageController.getHistory(authenticatedUserId, otherUserId, mockPrincipal);
 

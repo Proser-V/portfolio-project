@@ -3,6 +3,7 @@ package com.atelierlocal.controller;
 import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -292,12 +293,14 @@ public class MessageController {
         @ApiResponse(responseCode = "403", description = "Accès refusé"),
         @ApiResponse(responseCode = "404", description = "Aucun message non lu trouvé")
     })
-    public ResponseEntity<List<Message>> getUnreadMessages(Principal principal) {
+    public ResponseEntity<List<MessageResponseDTO>> getUnreadMessages(Principal principal) {
         try {
             User authenticatedUser = getAuthenticatedUser(principal);
-            List <Message> unreadMessages = messageService.getUnreadMessages(authenticatedUser);
-
-            return ResponseEntity.ok(unreadMessages);
+            List<Message> unreadMessages = messageService.getUnreadMessages(authenticatedUser);
+            List<MessageResponseDTO> messageDTOs = unreadMessages.stream()
+                .map(MessageResponseDTO::new)
+                .collect(Collectors.toList());
+            return ResponseEntity.ok(messageDTOs);
         } catch (IllegalArgumentException e) {
             logger.error("Erreur lors de la récupération des messages non lus : {}", e.getMessage());
             return ResponseEntity.badRequest().build();

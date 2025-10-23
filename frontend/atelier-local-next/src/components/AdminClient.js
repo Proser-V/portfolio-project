@@ -104,7 +104,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
         new Blob([JSON.stringify(clientData)], { type: "application/json" })
       );
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/clients/register`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/clients/admin/create`, {
         method: "POST",
         body: multipartFormData,
         credentials: "include"

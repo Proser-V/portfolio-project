@@ -62,6 +62,22 @@ public class ClientController {
         return ResponseEntity.status(201).body(clientDto);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(value = "/admin/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Création d'un nouvel administrateur", description = "Création d'un admin")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Client créé avec succès"),
+        @ApiResponse(responseCode = "400", description = "Requête invalide (données manquantes ou incorrectes)"),
+        @ApiResponse(responseCode = "409", description = "Email déjà utilisé")
+    })
+    public ResponseEntity<ClientResponseDTO> createAdmin(
+        @Valid @RequestPart("client") ClientRequestDTO request,
+        @RequestPart(value = "avatar", required = false) MultipartFile avatar) {
+            request.setAvatar(avatar);
+            ClientResponseDTO clientDto = clientService.createAdmin(request);
+            return ResponseEntity.status(201).body(clientDto);
+        }
+
     // Récupération du client connecté (ARTISAN/CLIENT/ADMIN selon contexte)
     @GetMapping("/me")
     @PreAuthorize("hasAnyRole('CLIENT', 'ADMIN')")

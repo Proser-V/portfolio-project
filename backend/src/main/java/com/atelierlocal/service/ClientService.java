@@ -6,17 +6,16 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.atelierlocal.dto.ClientRequestDTO;
+import com.atelierlocal.dto.ClientResponseDTO;
+import com.atelierlocal.model.Avatar;
+import com.atelierlocal.model.Client;
+import com.atelierlocal.model.UserRole;
 import com.atelierlocal.repository.AvatarRepo;
 import com.atelierlocal.repository.ClientRepo;
 import com.atelierlocal.security.SecurityService;
 
 import jakarta.persistence.EntityNotFoundException;
-
-import com.atelierlocal.model.Client;
-import com.atelierlocal.dto.ClientRequestDTO;
-import com.atelierlocal.dto.ClientResponseDTO;
-import com.atelierlocal.model.Avatar;
-import com.atelierlocal.model.UserRole;
 
 @Service
 public class ClientService {
@@ -84,7 +83,58 @@ public class ClientService {
 
         String hashed = passwordService.hashPassword(dto.getPassword());
         client.setHashedPassword(hashed);
-        client.setUserRole(dto.getRole() != null ? dto.getRole() : UserRole.CLIENT); // Possibilité de créer un admin en passant le bon role
+        client.setUserRole(UserRole.CLIENT);
+        client.setActive(true);
+        client.setPhoneNumber(dto.getPhoneNumber());
+
+        Client savedClient = clientRepo.save(client);
+        return new ClientResponseDTO(savedClient);
+    }
+
+    public ClientResponseDTO createAdmin(ClientRequestDTO dto) {
+        if (clientRepo.findByEmail(dto.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Cet email est déjà enregistré.");
+        }
+        if (dto.getPassword() == null || dto.getPassword().isBlank()) {
+            throw new IllegalArgumentException("Veuillez saisir un mot de passe.");
+        }
+        if (dto.getFirstName() == null || dto.getFirstName().isBlank()) {
+            throw new IllegalArgumentException("Veuillez entrer votre prénom.");
+        }
+        if (dto.getLastName() == null || dto.getLastName().isBlank()) {
+            throw new IllegalArgumentException("Veuillez entrer votre nom.");
+        }
+
+        Client client = new Client();
+        client.setFirstName(dto.getFirstName());
+        client.setLastName(dto.getLastName());
+        client.setEmail(dto.getEmail());
+        if (dto.getLatitude() == null) {
+            throw new IllegalArgumentException("La latitude ne peut être vide.");
+        }
+        if (dto.getLongitude() == null) {
+            throw new IllegalArgumentException("La longitude ne peut être vide.");
+        }
+        client.setLatitude(dto.getLatitude());
+        client.setLongitude(dto.getLongitude());
+        Avatar avatar = null;
+        if (dto.getAvatar() != null) {
+            String avatarUrl = avatarService.uploadAvatar(dto.getAvatar(), null);
+            avatar = new Avatar();
+            avatar.setAvatarUrl(avatarUrl);
+            avatar.setExtension(avatarService.getFileExtension(dto.getAvatar()));
+            avatar.setUser(client);
+        } else {
+            avatar = new Avatar();
+            avatar.setAvatarUrl("https://d1gmao6ee1284v.cloudfront.net/avatar-placeholder.png");
+            avatar.setExtension("png");
+            avatar.setUser(client);
+        }
+        client.setAvatar(avatar);
+
+        String hashed = passwordService.hashPassword(dto.getPassword());
+        client.setHashedPassword(hashed);
+        client.setUserRole(dto.getRole() != null ? dto.getRole() : UserRole.CLIENT);
         client.setActive(true);
         client.setPhoneNumber(dto.getPhoneNumber());
 

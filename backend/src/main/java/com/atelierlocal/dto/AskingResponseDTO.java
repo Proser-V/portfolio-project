@@ -31,6 +31,8 @@ public class AskingResponseDTO {
         this.createdAt = asking.getCreatedAt();
     }
 
+    // Getters et setters
+
     public UUID getId() { return id; }
 
     public UUID getClientId() { return clientId; }

@@ -7,6 +7,8 @@ import com.atelierlocal.model.EventCategory;
 
 public class EventCategoryResponseDTO {
 
+    // Attributs
+
     private UUID id;
     private String name;
     private List<UUID> artisanCategoryIds;
@@ -24,7 +26,7 @@ public class EventCategoryResponseDTO {
         }
     }
 
-    // Getters
+    // Getters et setters
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }
 

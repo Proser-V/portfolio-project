@@ -6,6 +6,9 @@ import com.atelierlocal.model.Client;
 import com.atelierlocal.model.UserRole;
 
 public class ClientResponseDTO {
+
+    // Attributs
+
     private UUID id;
     private String email;
     private String firstName;

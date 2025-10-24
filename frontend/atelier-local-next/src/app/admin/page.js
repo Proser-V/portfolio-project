@@ -56,7 +56,7 @@ export default async function AdminPanel() {
   // Vérifier si l'utilisateur est admin avec getUser
   const user = await getUser();
   if (!user || user.role !== "admin") {
-    redirect("/login");
+    redirect("/?error=unauthorized");
   }
 
   // Récupérer les données côté serveur
@@ -80,6 +80,7 @@ export default async function AdminPanel() {
         initialArtisans={artisans}
         initialArtisanCategories={artisanCategories}
         initialEventCategories={eventCategories}
+        currentUser={user}
         />
     </div>
   );

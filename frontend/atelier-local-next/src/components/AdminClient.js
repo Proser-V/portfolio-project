@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import fetchCoordinates from "utils/fetchCoordinates";
 import getApiUrl from "@/lib/api";
 
-export default function AdminClient({ initialArtisans, initialArtisanCategories, initialEventCategories }) {
+export default function AdminClient({ initialArtisans, initialArtisanCategories, initialEventCategories, currentUser }) {
   const [artisans, setArtisans] = useState(initialArtisans);
   const [clients, setClients] = useState([]);
   const [askings, setAskings] = useState([]);
@@ -125,6 +125,16 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
   };
 
   const handleBanClient = async (id) => {
+
+    if (!currentUser) {
+      alert("Utilisateur non chargé.");
+      return;
+    }
+
+    if (id === currentUser.id) {
+      alert("Vous ne pouvez pas vous bannir vous-même.");
+      return;
+    }
     const confirmAction = window.confirm("Voulez-vous vraiment modifier le statut de ce client ?");
     if (!confirmAction) return;
 
@@ -154,6 +164,10 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
   };
 
   const handleDeleteClient = async (id) => {
+    if (id === currentUser.id) {
+      alert("Vous ne pouvez pas supprimer votre compte.");
+      return;
+    }
     if (!confirm("Voulez-vous vraiment supprimer ce client ?")) return;
 
     try {

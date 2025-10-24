@@ -6,6 +6,9 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ConversationSummaryDTO {
+
+    // Attributs
+
     private UUID otherUserId;
     private String otherUserName;
     private String otherUserRole;
@@ -32,6 +35,8 @@ public class ConversationSummaryDTO {
         this.createdAt = createdAt;
         this.unreadCount = unreadCount;
     }
+
+    // Getters et setters
 
     public UUID getOtherUserId() { return otherUserId; }
     public String getOtherUserName() { return otherUserName; }

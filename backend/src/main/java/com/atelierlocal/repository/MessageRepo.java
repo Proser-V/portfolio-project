@@ -25,12 +25,6 @@ public interface MessageRepo extends JpaRepository<Message, UUID> {
         UUID senderId, UUID receiverId, UUID senderId2, UUID receiverId2
     );
 
-    @Query("SELECT m FROM Message m WHERE (m.sender.id = :userId OR m.receiver.id = :userId) " +
-       "AND m.createdAt = (SELECT MAX(m2.createdAt) FROM Message m2 WHERE " +
-       "(m2.sender.id = m.sender.id AND m2.receiver.id = m.receiver.id) OR " +
-       "(m2.sender.id = m.receiver.id AND m2.receiver.id = m.sender.id))")
-    List<Message> findAllByUserId(UUID userId);
-
     List<Message> findByReceiverAndIsReadFalse(User receiver);
 
     List<Message> findAllBySenderIdOrReceiverId(UUID senderId, UUID receiverId);

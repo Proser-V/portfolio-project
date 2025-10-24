@@ -32,7 +32,7 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
             WebSocketHandler wsHandler,
             Map<String, Object> attributes) throws Exception {
         
-        logger.info("🤝 Handshake WebSocket - URI: {}", request.getURI());
+        logger.info("Handshake WebSocket - URI: {}", request.getURI());
         
         String token = null;
         
@@ -40,7 +40,7 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
         String authHeader = request.getHeaders().getFirst("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
-            logger.info("🔑 Token JWT trouvé dans le header Authorization");
+            logger.info("Token JWT trouvé dans le header Authorization");
         }
         
         // 2. SINON essayer depuis le cookie (fallback)
@@ -52,7 +52,7 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
                 for (Cookie cookie : cookies) {
                     if ("jwt".equals(cookie.getName())) {
                         token = cookie.getValue();
-                        logger.info("🍪 Token JWT trouvé dans le cookie");
+                        logger.info("Token JWT trouvé dans le cookie");
                         break;
                     }
                 }
@@ -65,7 +65,7 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
                 String username = jwtService.extractUsername(token);
                 
                 if (username != null && !jwtService.isTokenExpired(token)) {
-                    logger.info("✅ Token valide pour: {}", username);
+                    logger.info("Token valide pour: {}", username);
                     
                     // Stocker les infos dans les attributs de session WebSocket
                     attributes.put("jwt", token);
@@ -73,17 +73,17 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
                     
                     return true;
                 } else {
-                    logger.warn("⚠️ Token invalide ou expiré");
+                    logger.warn("Token invalide ou expiré");
                 }
             } catch (Exception e) {
-                logger.error("❌ Erreur lors de la validation du token: {}", e.getMessage());
+                logger.error("Erreur lors de la validation du token: {}", e.getMessage());
             }
         } else {
             logger.warn("⚠️ Aucun token JWT trouvé (ni header Authorization, ni cookie)");
         }
         
         // Refuser la connexion si pas de token valide
-        logger.error("❌ Handshake refusé - pas de token valide");
+        logger.error("Handshake refusé - pas de token valide");
         return false;
     }
     
@@ -95,9 +95,9 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
             Exception exception) {
         
         if (exception != null) {
-            logger.error("❌ Erreur après handshake: {}", exception.getMessage());
+            logger.error("Erreur après handshake: {}", exception.getMessage());
         } else {
-            logger.info("✅ Handshake terminé avec succès");
+            logger.info("Handshake terminé avec succès");
         }
     }
 }

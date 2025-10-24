@@ -7,7 +7,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public class EventCategoryRequestDTO {
-    
+
+    // Attributs
+
     @NotBlank(message = "Le nom est obligatoire")
     @Size(max = 50, message = "La catégorie ne peut pas dépasser 50 caractères")
     private String name;

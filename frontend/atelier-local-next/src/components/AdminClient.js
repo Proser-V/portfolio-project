@@ -5,27 +5,87 @@ import { useEffect } from "react";
 import fetchCoordinates from "utils/fetchCoordinates";
 import getApiUrl from "@/lib/api";
 
+/**
+ * Composant d'administration principal pour la gestion des artisans, clients et catégories.
+ * 
+ * @component
+ * @param {Object} props - Les propriétés du composant
+ * @param {Array} props.initialArtisans - Liste initiale des artisans
+ * @param {Array} props.initialArtisanCategories - Liste initiale des catégories d'artisan
+ * @param {Array} props.initialEventCategories - Liste initiale des catégories d'événement
+ * @param {Object} props.currentUser - Utilisateur actuellement connecté
+ * @returns {JSX.Element} Interface d'administration
+ */
 export default function AdminClient({ initialArtisans, initialArtisanCategories, initialEventCategories, currentUser }) {
+  // ============================================================================
+  // ÉTATS LOCAUX
+  // ============================================================================
+  
+  /** @type {[Array, Function]} Liste des artisans */
   const [artisans, setArtisans] = useState(initialArtisans);
+  
+  /** @type {[Array, Function]} Liste des clients */
   const [clients, setClients] = useState([]);
+  
+  /** @type {[Array, Function]} Liste des demandes clients */
   const [askings, setAskings] = useState([]);
+  
+  /** @type {[Array, Function]} Liste des catégories d'artisan */
   const [artisanCategories, setArtisanCategories] = useState(initialArtisanCategories);
+  
+  /** @type {[Array, Function]} Liste des catégories d'événement */
   const [eventCategories, setEventCategories] = useState(initialEventCategories);
+  
+  /** @type {[string, Function]} ID de la catégorie d'artisan sélectionnée */
   const [selectedId, setSelectedId] = useState("");
+  
+  /** @type {[Array, Function]} Catégories d'artisan sélectionnées pour un événement */
   const [selectedArtisanCategories, setSelectedArtisanCategories] = useState([]);
+  
+  /** @type {[string, Function]} Message d'erreur à afficher */
   const [error, setError] = useState("");
+  
+  /** @type {[boolean, Function]} État d'ouverture de la section artisans */
   const [isOpenArtisan, setIsOpenArtisan] = useState(false);
+  
+  /** @type {[boolean, Function]} État d'ouverture de la section clients */
   const [isOpenClient, setIsOpenClient] = useState(false);
+  
+  /** @type {[boolean, Function]} État d'ouverture de la section catégories d'artisan */
   const [isOpenArtisanCategories, setIsOpenArtisanCategories] = useState(false);
+  
+  /** @type {[boolean, Function]} État d'ouverture de la section catégories d'événement */
   const [isOpenEventCategories, setIsOpenEventCategories] = useState(false);
+  
+  /** @type {[boolean, Function]} État d'ouverture de la section demandes */
   const [isOpenAsking, setIsOpenAsking] = useState(false);
   
+  // ============================================================================
+  // FONCTIONS DE BASCULEMENT D'AFFICHAGE
+  // ============================================================================
+  
+  /** Bascule l'affichage de la section artisans */
   const toggleOpenArtisan = () => setIsOpenArtisan(!isOpenArtisan);
+  
+  /** Bascule l'affichage de la section clients */
   const toggleOpenClient = () => setIsOpenClient(!isOpenClient);
+  
+  /** Bascule l'affichage de la section catégories d'artisan */
   const toggleOpenArtisanCategories = () => setIsOpenArtisanCategories(!isOpenArtisanCategories);
+  
+  /** Bascule l'affichage de la section catégories d'événement */
   const toggleOpenEventCategories = () => setIsOpenEventCategories(!isOpenEventCategories);
+  
+  /** Bascule l'affichage de la section demandes */
   const toggleOpenAsking = () => setIsOpenAsking(!isOpenAsking);
 
+  // ============================================================================
+  // EFFETS - CHARGEMENT DES DONNÉES
+  // ============================================================================
+  
+  /**
+   * Récupère la liste des clients au montage du composant
+   */
   useEffect(() => {
     const fetchClients = async () => {
       try {
@@ -45,6 +105,9 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
     fetchClients();
   }, [])
 
+  /**
+   * Récupère la liste des demandes clients au montage du composant
+   */
   useEffect(() => {
     const fetchAskings = async () => {
       try {
@@ -64,21 +127,54 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
     fetchAskings();
   }, [])
 
+  // ============================================================================
+  // FONCTIONS UTILITAIRES
+  // ============================================================================
+  
+  /**
+   * Récupère le nom complet d'un client à partir de son ID
+   * 
+   * @param {string} clientId - L'identifiant du client
+   * @returns {string} Le nom complet du client ou "—" si non trouvé
+   */
   function getClientName(clientId) {
     const c = clients.find(cl => cl.id === clientId);
     return c ? `${c.firstName} ${c.lastName}` : "—";
   };
 
+  /**
+   * Récupère le nom d'une catégorie d'artisan à partir de son ID
+   * 
+   * @param {string} categoryId - L'identifiant de la catégorie
+   * @returns {string} Le nom de la catégorie ou "—" si non trouvée
+   */
   function getArtisanCategoryName(categoryId) {
     const cat = artisanCategories.find(c => c.id === categoryId);
     return cat ? cat.name : "—";
   };
 
+  /**
+   * Récupère le nom d'une catégorie d'événement à partir de son ID
+   * 
+   * @param {string} categoryId - L'identifiant de la catégorie
+   * @returns {string} Le nom de la catégorie ou "—" si non trouvée
+   */
   function getEventCategoryName(categoryId) {
     const cat = eventCategories.find(c => c.id === categoryId);
     return cat ? cat.name : "—";
   };
 
+  // ============================================================================
+  // GESTIONNAIRES D'ÉVÉNEMENTS - CLIENTS
+  // ============================================================================
+  
+  /**
+   * Crée un nouveau compte administrateur
+   * 
+   * @async
+   * @param {Event} e - L'événement de soumission du formulaire
+   * @returns {Promise<void>}
+   */
   const handleAddAdmin = async (e) => {
     e.preventDefault();
     setError("");
@@ -86,9 +182,11 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
     try {
       const formData = new FormData(e.target);
 
+      // Géocodage de l'adresse
       const address = formData.get("address");
       const coords = await fetchCoordinates(address);
 
+      // Préparation des données client
       const clientData = {
         firstName: formData.get("firstName"),
         lastName: formData.get("lastName"),
@@ -99,6 +197,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
         role: "ADMIN"
       };
 
+      // Envoi de la requête
       const multipartFormData = new FormData();
       multipartFormData.append(
         "client",
@@ -124,8 +223,16 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
     }
   };
 
+  /**
+   * Bascule le statut actif/inactif d'un client (bannissement)
+   * 
+   * @async
+   * @param {string} id - L'identifiant du client
+   * @returns {Promise<void>}
+   */
   const handleBanClient = async (id) => {
 
+    // Vérification que l'utilisateur ne se bannit pas lui-même
     if (!currentUser) {
       alert("Utilisateur non chargé.");
       return;
@@ -135,6 +242,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
       alert("Vous ne pouvez pas vous bannir vous-même.");
       return;
     }
+    
     const confirmAction = window.confirm("Voulez-vous vraiment modifier le statut de ce client ?");
     if (!confirmAction) return;
 
@@ -148,6 +256,8 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
         throw new Error(text || "Erreur lors de la création de l'administrateur.");
       }
       const patchedClient = await response.json();
+      
+      // Mise à jour de l'état local
       setClients((prevClients) =>
         prevClients.map((client) =>
           client.id === patchedClient.id
@@ -163,7 +273,15 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
     }
   };
 
+  /**
+   * Supprime définitivement un client
+   * 
+   * @async
+   * @param {string} id - L'identifiant du client
+   * @returns {Promise<void>}
+   */
   const handleDeleteClient = async (id) => {
+    // Empêche l'auto-suppression
     if (id === currentUser.id) {
       alert("Vous ne pouvez pas supprimer votre compte.");
       return;
@@ -186,6 +304,17 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
     }
   };
 
+  // ============================================================================
+  // GESTIONNAIRES D'ÉVÉNEMENTS - ARTISANS
+  // ============================================================================
+  
+  /**
+   * Supprime définitivement un artisan
+   * 
+   * @async
+   * @param {string} id - L'identifiant de l'artisan
+   * @returns {Promise<void>}
+   */
   const handleDeleteArtisan = async (id) => {
       if (!confirm("Voulez-vous vraiment supprimer cet artisan ?")) return;
 
@@ -205,6 +334,17 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
       }
   };
 
+  // ============================================================================
+  // GESTIONNAIRES D'ÉVÉNEMENTS - CATÉGORIES D'ARTISAN
+  // ============================================================================
+  
+  /**
+   * Crée une nouvelle catégorie d'artisan
+   * 
+   * @async
+   * @param {Event} e - L'événement de soumission du formulaire
+   * @returns {Promise<void>}
+   */
   const handleAddArtisanCategory = async (e) => {
       e.preventDefault();
       const name = e.target.categoryName.value;
@@ -230,7 +370,13 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
       }
   };
 
-
+  /**
+   * Supprime définitivement une catégorie d'artisan
+   * 
+   * @async
+   * @param {string} id - L'identifiant de la catégorie
+   * @returns {Promise<void>}
+   */
   const handleDeleteArtisanCategory = async (id) => {
       if (!confirm("Voulez-vous vraiment supprimer cet catégorie ?")) return;
 
@@ -250,6 +396,17 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
       }
   };
 
+  // ============================================================================
+  // GESTIONNAIRES D'ÉVÉNEMENTS - CATÉGORIES D'ÉVÉNEMENT
+  // ============================================================================
+  
+  /**
+   * Crée une nouvelle catégorie d'événement avec des catégories d'artisan associées
+   * 
+   * @async
+   * @param {Event} e - L'événement de soumission du formulaire
+   * @returns {Promise<void>}
+   */
   const handleAddEventCategory = async (e) => {
       e.preventDefault();
       const name = e.target.name.value;
@@ -276,6 +433,13 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
       }
   };
 
+  /**
+   * Supprime définitivement une catégorie d'événement
+   * 
+   * @async
+   * @param {string} id - L'identifiant de la catégorie
+   * @returns {Promise<void>}
+   */
   const handleDeleteEventCategory = async (id) => {
       if (!confirm("Voulez-vous vraiment supprimer cette catégorie ?")) return;
 
@@ -295,6 +459,17 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
       }
   };
 
+  // ============================================================================
+  // GESTIONNAIRES D'ÉVÉNEMENTS - DEMANDES CLIENT
+  // ============================================================================
+  
+  /**
+   * Supprime définitivement une demande client
+   * 
+   * @async
+   * @param {string} id - L'identifiant de la demande
+   * @returns {Promise<void>}
+   */
   const handleDeleteAsking = async(id) => {
     if (!confirm("Voulez vous supprimer cette demande ?")) return;
 
@@ -314,14 +489,22 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
     }
   };
 
+  // ============================================================================
+  // RENDU DU COMPOSANT
+  // ============================================================================
+  
   return (
     <>
+      {/* Affichage des erreurs */}
       {error && (
         <div className="h-5 flex justify-center items-center mb-6">
           <p className="text-red-500 text-sm text-center">{error}</p>
         </div>
       )}
-      {/* Section catégorie d'artisan */}
+      
+      {/* ====================================================================== */}
+      {/* SECTION: GESTION DES CATÉGORIES D'ARTISAN */}
+      {/* ====================================================================== */}
       <div className="mb-4 w-[90%] mx-auto">
         <h2 className="text-blue text-lg text-center mb-4 cursor-pointer select-none flex items-center justify-center gap-2"
                         onClick={toggleOpenArtisanCategories}
@@ -348,6 +531,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
         </h2>
         {isOpenArtisanCategories && (
           <>
+            {/* Formulaire d'ajout de catégorie d'artisan */}
             <h3 className="text-gold text-base mb-4 text-center">
               Ajouter une catégorie
             </h3>
@@ -380,6 +564,8 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
                 </button>
               </div>
             </form>
+            
+            {/* Tableau des catégories existantes */}
             <h3 className="text-gold text-base mb-4 text-center">
               Catégories existantes
             </h3>
@@ -414,7 +600,9 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
         )}
       </div>
 
-      {/* Section catégorie d'évènement */}
+      {/* ====================================================================== */}
+      {/* SECTION: GESTION DES CATÉGORIES D'ÉVÉNEMENT */}
+      {/* ====================================================================== */}
       <div className="mb-4 w-[90%] mx-auto">
         <h2 className="text-blue text-lg text-center mb-4 cursor-pointer select-none flex items-center justify-center gap-2"
                         onClick={toggleOpenEventCategories}
@@ -441,6 +629,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
         </h2>
         {isOpenEventCategories && (
           <>
+            {/* Formulaire d'ajout de catégorie d'événement */}
             <h3 className="text-gold text-base mb-4 text-center">
               Ajouter une catégorie
             </h3>
@@ -451,7 +640,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
             >
               <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:w-full w-3/4">
 
-                {/* Nom de la catégorie d’événement */}
+                {/* Champ: Nom de la catégorie d'événement */}
                 <input
                   type="text"
                   name="name"
@@ -461,7 +650,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
                   required
                 />
 
-                {/* Sélecteur de catégories d’artisans */}
+                {/* Sélecteur: Catégories d'artisans associées */}
                 <select
                   value={selectedId}
                   onChange={(e) => {
@@ -474,7 +663,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
                       setSelectedArtisanCategories([...selectedArtisanCategories, selected]);
                     }
 
-                    // Réinitialise le select
+                    // Réinitialise le select après sélection
                     setSelectedId("");
                   }}
                   className="input text-xs w-full md:flex-1 h-8 px-4 rounded-full border-2 border-solid border-silver text-blue outline-none"
@@ -488,7 +677,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
                 </select>
               </div>
 
-              {/* Liste des catégories artisan sélectionnées */}
+              {/* Affichage des catégories artisan sélectionnées (badges) */}
               {selectedArtisanCategories.length > 0 && (
                 <div className="flex flex-wrap gap-2 justify-center mt-4 w-full">
                   {selectedArtisanCategories.map((cat) => (
@@ -513,7 +702,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
                 </div>
               )}
 
-              {/* Bouton d’ajout */}
+              {/* Bouton de soumission */}
               <button
                 type="submit"
                 className="w-1/2 h-10 rounded-full bg-blue border-2 border-solid border-gold text-gold text-base font-normal font-cabin flex items-center justify-center hover:cursor-pointer mt-4"
@@ -522,6 +711,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
               </button>
             </form>
 
+            {/* Tableau des catégories d'événement existantes */}
             <h3 className="text-gold text-base mb-4 text-center">
               Catégories existantes
             </h3>
@@ -564,7 +754,9 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
         )}
       </div>
 
-      {/* Section Artisans */}
+      {/* ====================================================================== */}
+      {/* SECTION: GESTION DES ARTISANS */}
+      {/* ====================================================================== */}
       <div className="mb-4 w-[90%] mx-auto">
         <h2
           className="text-blue text-lg text-center mb-4 cursor-pointer select-none flex items-center justify-center gap-2"
@@ -591,6 +783,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
           </span>
         </h2>
 
+        {/* Tableau des artisans */}
         {isOpenArtisan && (
           <div className="overflow-x-auto transition-all duration-300">
             <table className="w-[90%] max-w-4xl mx-auto">
@@ -628,7 +821,9 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
         )}
       </div>
 
-      {/* Section Clients */}
+      {/* ====================================================================== */}
+      {/* SECTION: GESTION DES CLIENTS */}
+      {/* ====================================================================== */}
       <div className="mb-4 w-[90%] mx-auto">
         <h2
           className="text-blue text-lg text-center mb-4 cursor-pointer select-none flex items-center justify-center gap-2"
@@ -657,6 +852,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
 
         {isOpenClient && (
           <div className="overflow-x-auto transition-all duration-300">
+            {/* Formulaire de création d'administrateur */}
             <h3 className="text-gold text-base mb-4 text-center">
               Création d'un administrateur
             </h3>
@@ -708,6 +904,8 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
                 </button>
               </div>
             </form>
+            
+            {/* Tableau des clients */}
             <h3 className="text-gold text-base mb-4 text-center">
               Liste des clients
             </h3>
@@ -758,7 +956,9 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
         )}
       </div>
 
-      {/* Section Askings */}
+      {/* ====================================================================== */}
+      {/* SECTION: GESTION DES DEMANDES CLIENT */}
+      {/* ====================================================================== */}
       <div className="mb-4 w-[90%] mx-auto">
         <h2
           className="text-blue text-lg text-center mb-4 cursor-pointer select-none flex items-center justify-center gap-2"
@@ -785,6 +985,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
           </span>
         </h2>
 
+        {/* Tableau des demandes client */}
         {isOpenAsking && (
           <div className="overflow-x-auto transition-all duration-300">
             <table className="w-[90%] max-w-4xl mx-auto">

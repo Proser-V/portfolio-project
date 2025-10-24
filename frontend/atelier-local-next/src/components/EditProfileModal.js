@@ -1,9 +1,35 @@
+/**
+ * Composant EditProfileModal
+ * 
+ * Modal pour modifier le profil d'un artisan. Permet de mettre à jour :
+ * - Nom de l'entreprise
+ * - Email de contact
+ * - SIRET
+ * - Adresse
+ * - Date de début d'activité
+ * - Téléphone
+ * - Bio
+ * 
+ * Props :
+ * - artisan : objet contenant les informations actuelles de l'artisan
+ * - address : adresse initiale
+ * - isOpen : booléen pour afficher ou non le modal
+ * - onClose : callback pour fermer le modal
+ * - onSuccess : callback après mise à jour réussie
+ * 
+ * Comportements :
+ * - Gestion locale des champs via useState
+ * - Envoi des données via API PUT sur /api/artisans/:id/update
+ * - Affichage des erreurs et indicateur de soumission
+ * - Modal responsive et accessible
+ */
 "use client";
 import { useState } from "react";
 import Image from "next/image";
 import getApiUrl from "@/lib/api";
 
 export default function EditProfileModal({ artisan, address, isOpen, onClose, onSuccess }) {
+  // États du formulaire
   const [formData, setFormData] = useState({
     name: artisan.name || "",
     email: artisan.email || "",
@@ -13,11 +39,13 @@ export default function EditProfileModal({ artisan, address, isOpen, onClose, on
     address: address || "",
     activityStartDate: artisan.activityStartDate || "",
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false); // Indique si le formulaire est en cours de soumission
+  const [error, setError] = useState(null); // Message d'erreur à afficher
 
+  // Ne pas afficher le modal si isOpen est false
   if (!isOpen) return null;
 
+  // Gestion des changements des inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -26,6 +54,7 @@ export default function EditProfileModal({ artisan, address, isOpen, onClose, on
     }));
   };
 
+  // Soumission du formulaire
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -36,9 +65,7 @@ export default function EditProfileModal({ artisan, address, isOpen, onClose, on
         `${getApiUrl()}/api/artisans/${artisan.id}/update`,
         {
           method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           credentials: "include",
           body: JSON.stringify(formData),
         }
@@ -49,7 +76,7 @@ export default function EditProfileModal({ artisan, address, isOpen, onClose, on
         throw new Error(errorText || "Erreur lors de la mise à jour");
       }
 
-      // Succès
+      // Succès : message, callback et fermeture du modal
       alert("Profil mis à jour avec succès !");
       onSuccess();
       onClose();
@@ -68,7 +95,8 @@ export default function EditProfileModal({ artisan, address, isOpen, onClose, on
   return (
     <div className="fixed font-cabin inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
       <div className="bg-white shadow-xl w-full max-w-[70vw] overflow-y-auto">
-        {/* En-tête */}
+        
+        {/* En-tête du modal */}
         <div className="sticky top-0 bg-white border-b border-silver px-6 pt-4 flex justify-between items-center">
           <h2 className="text-2xl font-cabin text-blue">Modifier mon profil</h2>
           <button
@@ -80,15 +108,16 @@ export default function EditProfileModal({ artisan, address, isOpen, onClose, on
           </button>
         </div>
 
-        {/* Formulaire */}
+        {/* Formulaire de modification */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          {/* Affichage des erreurs */}
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
               {error}
             </div>
           )}
 
-          {/* Nom */}
+          {/* Nom de l'entreprise */}
           <div>
             <label className="block text-blue font-semibold mb-2">
               Nom de l'entreprise <span className="text-red-700">*</span>
@@ -103,7 +132,7 @@ export default function EditProfileModal({ artisan, address, isOpen, onClose, on
             />
           </div>
 
-          {/* Email */}
+          {/* Email de contact */}
           <div>
             <label className="block text-blue font-semibold mb-2">
               Email de contact <span className="text-red-700">*</span>
@@ -192,7 +221,7 @@ export default function EditProfileModal({ artisan, address, isOpen, onClose, on
             />
           </div>
 
-          {/* Boutons */}
+          {/* Boutons de soumission et annulation */}
           <div className="flex flex-col md:flex-row gap-4 pt-4">
             <button
               type="submit"

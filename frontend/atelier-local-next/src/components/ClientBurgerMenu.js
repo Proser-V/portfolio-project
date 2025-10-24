@@ -6,6 +6,32 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUnreadMessages } from "./UnreadMessageProvider";
 
+/**
+ * ClientBurgerMenu
+ *
+ * Composant de navigation pour les clients.
+ * Affiche une barre de navigation pour Desktop et un menu burger pour Mobile.
+ *
+ * Fonctionnalités :
+ * - Lien vers la page "Demande de prestation"
+ * - Lien vers la liste des artisans
+ * - Lien vers la messagerie avec indicateur de messages non lus
+ * - Bloc profil client avec avatar et message de bienvenue
+ * - Lien de déconnexion
+ * - Menu burger mobile animé avec Framer Motion
+ *
+ * @component
+ * 
+ * @param {Object} props - Les props du composant
+ * @param {Object} props.client - Objet représentant le client connecté
+ * @param {string|number} props.client.id - ID unique du client
+ * @param {string} props.client.firstName - Prénom du client, affiché dans le message de bienvenue
+ * @param {Object} [props.client.avatar] - Objet représentant l'avatar du client (optionnel)
+ * @param {string} props.client.avatar.url - URL de l'image avatar
+ *
+ * @example
+ * <ClientBurgerMenu client={{ id: 1, firstName: 'Valentin', avatar: { url: '/avatar.png' } }} />
+ */
 export default function ClientBurgerMenu({ client }) {
   const [isOpen, setIsOpen] = useState(false);
   const { unreadCount } = useUnreadMessages();
@@ -14,6 +40,7 @@ export default function ClientBurgerMenu({ client }) {
     <>
     {/* Navigation Desktop */}
     <nav className="hidden md:flex flex-row items-stretch text-sm h-full">
+      {/* Lien vers la page de création d'une demande de prestation */}
       <Link
         href="/new-asking"
         className="flex items-center justify-center px-4 py-2 text-gold hover:underline whitespace-nowrap"
@@ -21,6 +48,7 @@ export default function ClientBurgerMenu({ client }) {
         Demande de prestation
       </Link>
 
+      {/* Lien vers la liste des artisans */}
       <Link
         href="/artisans"
         className="flex items-center justify-center px-4 py-2 text-gold hover:underline whitespace-nowrap"
@@ -28,6 +56,7 @@ export default function ClientBurgerMenu({ client }) {
         Artisans
       </Link>
 
+      {/* Lien vers la messagerie */}
       <Link
         href="/messenger"
         className="flex flex-col items-center px-4"
@@ -51,7 +80,7 @@ export default function ClientBurgerMenu({ client }) {
         />
       </Link>
 
-      {/* Bloc doré qui prend toute la hauteur */}
+      {/* Bloc doré contenant le profil utilisateur et déconnexion */}
       <div className="flex flex-row items-center bg-gold text-blue h-full">
         <Link
           href={`/clients/${client.id}`}
@@ -80,7 +109,7 @@ export default function ClientBurgerMenu({ client }) {
       </div>
     </nav>
 
-      {/* Bouton Burger (mobile uniquement) */}
+      {/* Bouton Burger (affiché uniquement sur mobile) */}
       <button
         className="md:hidden text-gold border border-gold rounded-lg p-2 bg-blue z-50"
         onClick={() => setIsOpen(!isOpen)}
@@ -91,7 +120,7 @@ export default function ClientBurgerMenu({ client }) {
         <span className="block w-6 h-0.5 bg-gold"></span>
       </button>
 
-      {/* Navigation Mobile (dropdown) */}
+      {/* Navigation Mobile (dropdown animé avec Framer Motion) */}
       <AnimatePresence>
         {isOpen && (
           <motion.nav

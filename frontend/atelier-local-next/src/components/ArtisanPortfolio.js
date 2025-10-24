@@ -1,42 +1,62 @@
 "use client";
+
 import { useState } from "react";
 import Image from "next/image";
 import getApiUrl from "@/lib/api";
 
+/**
+ * Composant ArtisanPortfolio
+ * --------------------------
+ * Affiche le portfolio photo d'un artisan avec deux modes :
+ * 1. Mode visualisation (carousel)
+ * 2. Mode gestion (ajout/suppression de photos, uniquement pour le propriétaire)
+ *
+ * @param {Object} props - Les propriétés du composant
+ * @param {string|number} props.artisanId - Identifiant de l'artisan
+ * @param {Array<Object>} props.initialPhotos - Liste initiale des photos du portfolio
+ * @param {boolean} props.isOwner - Indique si l'utilisateur connecté est le propriétaire du portfolio
+ *
+ * @returns {JSX.Element|null} Composant affichant le portfolio ou null si vide et non propriétaire
+ */
 export default function ArtisanPortfolio({ 
   artisanId, 
   initialPhotos, 
   isOwner 
 }) {
-  const [photos, setPhotos] = useState(initialPhotos || []);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isManaging, setIsManaging] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadError, setUploadError] = useState(null);
-  const [isMobile, setIsMobile] = useState(false);
+  // ----- États locaux -----
+  const [photos, setPhotos] = useState(initialPhotos || []); // Liste des photos affichées
+  const [currentIndex, setCurrentIndex] = useState(0); // Index de la photo centrale du carousel
+  const [isManaging, setIsManaging] = useState(false); // Mode gestion activé/désactivé
+  const [isUploading, setIsUploading] = useState(false); // Indique si un fichier est en cours d'upload
+  const [uploadError, setUploadError] = useState(null); // Message d'erreur lors de l'upload
+  const [isMobile, setIsMobile] = useState(false); // Détecte si affichage mobile (non utilisé actuellement)
 
-  // Si pas de photos et pas propriétaire, ne rien afficher
+  // Si pas de photos et que l'utilisateur n'est pas le propriétaire, on ne rend rien
   if (photos.length === 0 && !isOwner) {
     return null;
   }
 
-  // ============ UPLOAD ============
+  // =======================
+  // ===== UPLOAD PHOTO =====
+  // =======================
   const handleFileUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Vérifie doublon par nom de fichier
+    // Vérifie les doublons par nom de fichier
     if (photos.some((p) => p.uploadedPhotoUrl?.endsWith(file.name))) {
-        setUploadError("Vous avez déjà uploadé ce fichier.");
-        return;
+      setUploadError("Vous avez déjà uploadé ce fichier.");
+      return;
     }
 
+    // Vérification du type de fichier
     const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
     if (!allowedTypes.includes(file.type)) {
       setUploadError("Format non autorisé. Utilisez PNG ou JPEG.");
       return;
     }
 
+    // Vérification de la taille (max 5 Mo)
     if (file.size > 5 * 1024 * 1024) {
       setUploadError("Fichier trop volumineux. Maximum 5 Mo.");
       return;
@@ -65,12 +85,14 @@ export default function ArtisanPortfolio({
 
       const newPhoto = await res.json();
 
+      // Ajoute la nouvelle photo à l'état
       setPhotos((prev) => [...prev, {
         id: newPhoto.id,
         uploadedPhotoUrl: newPhoto.fileUrl,
         extension: newPhoto.extension,
       }]);
 
+      // Réinitialise l'input file
       e.target.value = "";
       
     } catch (err) {
@@ -81,7 +103,9 @@ export default function ArtisanPortfolio({
     }
   };
 
-  // ============ SUPPRESSION ============
+  // =========================
+  // ===== SUPPRESSION PHOTO =====
+  // =========================
   const handleDeletePhoto = async (photoId) => {
     if (!confirm("Êtes-vous sûr de vouloir supprimer cette photo ?")) {
       return;
@@ -100,9 +124,10 @@ export default function ArtisanPortfolio({
         throw new Error("Erreur lors de la suppression");
       }
 
+      // Supprime la photo de l'état
       setPhotos((prev) => prev.filter((p) => p.id !== photoId));
       
-      // Ajuste l'index si nécessaire
+      // Ajuste l'index du carousel si nécessaire
       if (currentIndex >= photos.length - 1 && currentIndex > 0) {
         setCurrentIndex(currentIndex - 1);
       }
@@ -113,36 +138,35 @@ export default function ArtisanPortfolio({
     }
   };
 
-  // ============ NAVIGATION CAROUSEL ============
+  // =========================
+  // ===== NAVIGATION CAROUSEL =====
+  // =========================
   const goToPrevious = () => {
-    setCurrentIndex((prev) => 
-      prev === 0 ? photos.length - 1 : prev - 1
-    );
+    setCurrentIndex((prev) => prev === 0 ? photos.length - 1 : prev - 1);
   };
 
   const goToNext = () => {
-    setCurrentIndex((prev) => 
-      prev === photos.length - 1 ? 0 : prev + 1
-    );
+    setCurrentIndex((prev) => prev === photos.length - 1 ? 0 : prev + 1);
   };
 
-const getVisibleImages = () => {
-  if (photos.length === 0) return [];
+  // Détermine quelles images afficher dans le carousel selon le nombre de photos
+  const getVisibleImages = () => {
+    if (photos.length === 0) return [];
 
-  if (photos.length === 1) {
-    return [{ photo: photos[0], index: 0, position: "center" }];
-  }
+    if (photos.length === 1) {
+      return [{ photo: photos[0], index: 0, position: "center" }];
+    }
 
-  if (photos.length === 2) {
-    const firstIndex = currentIndex;
-    const secondIndex = (currentIndex + 1) % 2;
+    if (photos.length === 2) {
+      const firstIndex = currentIndex;
+      const secondIndex = (currentIndex + 1) % 2;
 
-    return [
-      { photo: photos[secondIndex], index: secondIndex, position: "left", key: `${secondIndex}-left` },
-      { photo: photos[firstIndex], index: firstIndex, position: "center", key: `${firstIndex}-center` },
-      { photo: photos[secondIndex], index: secondIndex, position: "right", key: `${secondIndex}-right` },
-    ];
-  }
+      return [
+        { photo: photos[secondIndex], index: secondIndex, position: "left", key: `${secondIndex}-left` },
+        { photo: photos[firstIndex], index: firstIndex, position: "center", key: `${firstIndex}-center` },
+        { photo: photos[secondIndex], index: secondIndex, position: "right", key: `${secondIndex}-right` },
+      ];
+    }
 
     const prevIndex = currentIndex === 0 ? photos.length - 1 : currentIndex - 1;
     const nextIndex = (currentIndex + 1) % photos.length;
@@ -156,6 +180,9 @@ const getVisibleImages = () => {
 
   const visibleImages = getVisibleImages();
 
+  // =========================
+  // ===== RENDU DU COMPOSANT =====
+  // =========================
   return (
     <div className="w-full mt-8 mb-8">
       {/* En-tête avec titre et bouton gérer */}
@@ -173,7 +200,7 @@ const getVisibleImages = () => {
         )}
       </div>
 
-      {/* ============ MODE GESTION (propriétaire uniquement) ============ */}
+      {/* ===== MODE GESTION (propriétaire) ===== */}
       {isManaging && isOwner && (
         <div className="max-w-4xl mx-auto mb-6 p-6 bg-white border-solid border-gold border-2">
           {/* Upload */}
@@ -244,7 +271,7 @@ const getVisibleImages = () => {
         </div>
       )}
 
-      {/* ============ MODE VISUALISATION (carousel) ============ */}
+      {/* ===== MODE VISUALISATION (carousel) ===== */}
       {!isManaging && photos.length > 0 && (
         <div className="relative flex items-center justify-center gap-4 px-0 md:px-0">
           {/* Flèche gauche */}
@@ -269,41 +296,42 @@ const getVisibleImages = () => {
           )}
 
           {/* Container des images */}
-<div className="flex items-center justify-center flex-1 max-w-5xl overflow-hidden">
-  {visibleImages.map((img) => (
-    <div
-      key={`${img.index}-${img.position}`}
-      className={`relative transition-transform duration-300 ease-in-out
-        ${img.position === "center"
-          ? "w-[65vw] h-[280px] md:w-[600px] md:h-[450px] z-20 bg-white shadow-xl scale-100"
-          : "w-[180px] h-[140px] md:w-[300px] md:h-[250px] z-10 opacity-70 hidden sm:block bg-white shadow-md scale-90"
-        }`}
-      style={{
-        transform: img.position === "right"
-          ? "translateX(-15%) scale(0.9)"
-          : img.position === "left"
-          ? "translateX(15%) scale(0.9)"
-          : "translateX(0%) scale(1)",
-        zIndex: img.position === "center" ? 20 : 10,
-      }}
-    >
-      <Image
-        src={img.photo.uploadedPhotoUrl || img.photo.fileUrl}
-        alt={`Portfolio image ${img.index + 1}`}
-        fill
-        sizes={
-          img.position === "center"
-            ? "(min-width: 768px) 600px, 260px"
-            : "(min-width: 768px) 280px, 200px"
-        }
-        style={{
-          objectFit: "contain",
-          objectPosition: "center"
-        }}
-      />
-    </div>
-  ))}
-</div>
+          <div className="flex items-center justify-center flex-1 max-w-5xl overflow-hidden">
+            {visibleImages.map((img) => (
+              <div
+                key={`${img.index}-${img.position}`}
+                className={`relative transition-transform duration-300 ease-in-out
+                  ${img.position === "center"
+                    ? "w-[65vw] h-[280px] md:w-[600px] md:h-[450px] z-20 bg-white shadow-xl scale-100"
+                    : "w-[180px] h-[140px] md:w-[300px] md:h-[250px] z-10 opacity-70 hidden sm:block bg-white shadow-md scale-90"
+                  }`}
+                style={{
+                  transform: img.position === "right"
+                    ? "translateX(-15%) scale(0.9)"
+                    : img.position === "left"
+                    ? "translateX(15%) scale(0.9)"
+                    : "translateX(0%) scale(1)",
+                  zIndex: img.position === "center" ? 20 : 10,
+                }}
+              >
+                <Image
+                  src={img.photo.uploadedPhotoUrl || img.photo.fileUrl}
+                  alt={`Portfolio image ${img.index + 1}`}
+                  fill
+                  sizes={
+                    img.position === "center"
+                      ? "(min-width: 768px) 600px, 260px"
+                      : "(min-width: 768px) 280px, 200px"
+                  }
+                  style={{
+                    objectFit: "contain",
+                    objectPosition: "center"
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+
           {/* Flèche droite */}
           {photos.length > 1 && (
             <button

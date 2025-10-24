@@ -1,3 +1,20 @@
+/**
+ * Composant ConversationClient
+ * 
+ * Gestion complète d'une conversation client-artisan avec :
+ * - Affichage des messages existants
+ * - Envoi de messages texte et fichiers
+ * - Connexion WebSocket pour réception en temps réel
+ * - Marquage automatique des messages comme lus
+ * 
+ * Props :
+ * - initialMessages : liste initiale des messages de la conversation
+ * - user : utilisateur courant
+ * - otherUser : destinataire de la conversation
+ * - otherUserName : nom à afficher pour l'autre utilisateur
+ * - jwtToken : token d'authentification pour API et WebSocket
+ */
+
 "use client";
 import { useState, useEffect } from "react";
 import SockJS from "sockjs-client";
@@ -11,14 +28,14 @@ export default function ConversationClient({ initialMessages, user, otherUser, o
   const [messages, setMessages] = useState(initialMessages || []);
   const [stompClient, setStompClient] = useState(null);
 
-  // Marquer tous les messages de la conversation comme lus au montage
+  // Marque tous les messages comme lus au montage du composant
   useEffect(() => {
     if (messages.length > 0 && user?.id) {
       markConversationAsRead(messages, user.id, jwtToken);
     }
-  }, []); // Uniquement au montage
+  }, []); // Seulement au montage
 
-  // Connexion WebSocket
+  // Connexion et gestion WebSocket
   useEffect(() => {
     const socket = new SockJS(`${getApiUrl()}/ws`);
     const client = Stomp.over(() => socket);
@@ -26,27 +43,16 @@ export default function ConversationClient({ initialMessages, user, otherUser, o
     client.connect(
       { Authorization: `Bearer ${jwtToken}` },
       () => {
-        console.log("✅ WebSocket connecté");
 
-        // S'abonner aux messages
+        // Abonnement aux messages entrants
         client.subscribe("/user/queue/messages", (message) => {
           const received = JSON.parse(message.body);
-          console.log("Message reçu via WebSocket:", received);
-          console.log("TempId reçu:", received.tempId);
-          console.log("Timestamp:", received.timestamp);
-          console.log("CreatedAt:", received.createdAt);
-          console.log("Tous les champs:", Object.keys(received));
 
           setMessages((prev) => {
-            console.log("🔍 Messages actuels:", prev.map(m => ({ id: m.id, tempId: m.tempId, content: m.content })));
-
-            // Cas 1 : Message avec tempId (réponse à notre envoi)
+            // Cas 1 : Message temporaire (envoyé par nous mais pas encore confirmé)
             if (received.tempId) {
               const tempIndex = prev.findIndex((m) => m.tempId === received.tempId);
-              console.log("🔍 Index du message temporaire:", tempIndex);
-
               if (tempIndex !== -1) {
-                // Remplacer le message temporaire par le vrai
                 const updated = [...prev];
                 const finalTimestamp = received.createdAt || received.timestamp || prev[tempIndex].timestamp || new Date().toISOString();
                 updated[tempIndex] = {
@@ -55,24 +61,16 @@ export default function ConversationClient({ initialMessages, user, otherUser, o
                   timestamp: finalTimestamp,
                   createdAt: finalTimestamp,
                 };
-                console.log("✅ Message temporaire remplacé:", updated[tempIndex]);
-                console.log("✅ Timestamp final:", finalTimestamp);
                 return updated;
               }
             }
 
-            // Cas 2 : Nouveau message reçu d'un autre utilisateur
+            // Cas 2 : Nouveau message d'un autre utilisateur
             const exists = prev.some((m) => m.id === received.id);
-            if (exists) {
-              console.log("⚠️ Message déjà existant, ignoré");
-              return prev;
-            }
+            if (exists) return prev; // Ignore les doublons
 
-            console.log("✅ Nouveau message ajouté");
-            
-            // Si le message est reçu (pas envoyé par nous), le marquer comme lu
+            // Marquer le message comme lu si c'est pour l'utilisateur courant
             if (received.receiverId === user.id && received.id) {
-              // Marquer comme lu de manière asynchrone
               fetch(`${getApiUrl()}/api/messages/${received.id}/read`, {
                 method: "POST",
                 headers: {
@@ -90,26 +88,29 @@ export default function ConversationClient({ initialMessages, user, otherUser, o
         setStompClient(client);
       },
       (error) => {
-        console.error("❌ Erreur WebSocket:", error);
+        console.error("Erreur WebSocket:", error);
       }
     );
 
+    // Déconnexion lors du démontage du composant
     return () => {
       if (client && client.connected) {
         client.disconnect();
-        console.log("🔌 WebSocket déconnecté");
       }
     };
   }, [jwtToken, user.id]);
 
   return (
     <>
+      {/* Liste des messages */}
       <MessagesList
         initialMessages={messages}
         user={user}
         otherUser={otherUser}
         otherUserName={otherUserName}
       />
+
+      {/* Formulaire d'envoi de messages */}
       <MessageForm
         user={user}
         otherUser={otherUser}

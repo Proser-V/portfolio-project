@@ -3,7 +3,7 @@ import logo from "../assets/logo/atelier-local-logo_white.png";
 import Link from "next/link";
 import AdminBurgerMenu from "@/components/AdminBurgerMenu";
 
-export default function AdminHeader({ admin }) {
+export default function AdminHeader({ admin, unreadCount }) {
   return (
     <header className="bg-blue text-gold shadow-md relative pr-4 py-2 md:pr-0 md:py-0 md:items-center">
       <div className="flex items-center justify-between">
@@ -17,7 +17,7 @@ export default function AdminHeader({ admin }) {
         </Link>
 
         {/* Burger Menu + Navigation */}
-        <AdminBurgerMenu admin={admin} />
+        <AdminBurgerMenu admin={admin} unreadCount={unreadCount} />
       </div>
     </header>
   );

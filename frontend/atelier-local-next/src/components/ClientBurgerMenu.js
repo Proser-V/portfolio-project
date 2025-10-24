@@ -4,10 +4,12 @@ import { useState } from "react";
 import messengerLogo from "../assets/messenger/poignee-de-main-gold.png";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { useUnreadMessages } from "./UnreadMessageProvider";
 
 export default function ClientBurgerMenu({ client }) {
   const [isOpen, setIsOpen] = useState(false);
-  const messageCount = 2;
+  const { unreadCount } = useUnreadMessages();
+
   return (
     <>
     {/* Navigation Desktop */}
@@ -30,10 +32,10 @@ export default function ClientBurgerMenu({ client }) {
         href="/messenger"
         className="flex flex-col items-center px-4"
       >
-        {messageCount > 0 ?(
-        <div className={`absolute flex items-center justify-center border-gold border-solid bg-white rounded-full ${messageCount < 10 ? "h-3 w-3 mt-1" : "h-2 w-2 mt-3 ml-10"}`}>
-          {messageCount < 10 ?(
-            <span className="relative flex text-[12px] items-center justify-center text-center">{messageCount}</span>
+        {unreadCount > 0 ?(
+        <div className={`absolute flex items-center justify-center border-gold border-solid bg-white rounded-full ${unreadCount < 10 ? "h-3 w-3 mt-1" : "h-2 w-2 mt-3 ml-10"}`}>
+          {unreadCount < 10 ?(
+            <span className="relative flex text-[12px] items-center justify-center text-center">{unreadCount}</span>
           ) : (
             ""
           )}
@@ -45,7 +47,7 @@ export default function ClientBurgerMenu({ client }) {
         src={messengerLogo}
         alt="Messenger"
         height={30}
-        className={`${messageCount > 0 ? "lg:mt-5" : "lg:mt-4"} w-auto`}
+        className={`${unreadCount > 0 ? "lg:mt-5 md:mt-5" : "lg:mt-4 md:mt-4"} w-auto`}
         />
       </Link>
 
@@ -121,7 +123,7 @@ export default function ClientBurgerMenu({ client }) {
               onClick={() => setIsOpen(false)}
               className="py-2 transition-colors duration-200 flex items-center justify-center"
             >
-              {messageCount > 0 ?(
+              {unreadCount > 0 ?(
               <div className={`absolute flex items-center justify-center border-gold border-solid bg-white rounded-full h-2 w-2 mb-8 ml-10`}></div>
               ) : (
                 ""

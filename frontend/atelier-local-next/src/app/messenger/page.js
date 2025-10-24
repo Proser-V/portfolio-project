@@ -4,13 +4,40 @@ import MessengerList from "@/components/MessengerList";
 
 export const dynamic = "force-dynamic";
 
+async function fetchUnreadMessages(jwtToken) {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/messages/unread`,
+            {
+                headers: {
+                    ...(jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {}),
+                },
+                credentials: "include",
+                cache: "no-store",
+            }
+        );
+
+        if (response.ok) {
+            const data = await response.json();
+            return Array.isArray(data) ? data : [];
+        }
+
+        if (response.status === 404) {
+            return [];
+        }
+
+        return [];
+    } catch (error) {
+        console.error("Erreur lors de la récupération des messages non lus:", error);
+        return [];
+    }
+}
+
 export default async function MessengerPage() {
   const cookieStore = await cookies();
   const jwt = cookieStore.get("jwt")?.value;
-  console.log("JWT utilisé:", jwt);
 
   const user = await getUser();
-  console.log("Utilisateur récupéré:", user);
 
   if (!user || !user.id) {
       return (
@@ -32,9 +59,7 @@ export default async function MessengerPage() {
               cache: "no-store",
           }
       );
-      console.log("Statut de la réponse API:", convRes.status);
       const data = await convRes.json();
-      console.log("Données reçues de l'API:", data);
 
       if (!convRes.ok) {
           return (
@@ -54,6 +79,8 @@ export default async function MessengerPage() {
       );
   }
 
+  const unreadMessages = await fetchUnreadMessages(jwt);
+
   return (
       <div>
           <main className="max-w-4xl mx-auto px-4">
@@ -63,8 +90,8 @@ export default async function MessengerPage() {
               <MessengerList 
                   initialConversations={conversations} 
                   conversationsPerPage={10}
-                  jwtToken={jwt}
                   currentUserId={user.id}
+                  initialUnreadMessages={unreadMessages} // ✅ Maintenant rempli
               />
           </main>
       </div>

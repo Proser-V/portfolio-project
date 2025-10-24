@@ -6,7 +6,7 @@ export async function markMessageAsRead(messageId, jwtToken) {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    ...(jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {}), // Use Authorization header
+                    ...(jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {}),
                 },
                 credentials: "include",
             }
@@ -48,15 +48,19 @@ export async function getUnreadMessages(jwtToken) {
     }
 }
 
+export function getTotalUnreadCount(unreadMessages, currentUserId) {
+    return unreadMessages.filter(msg => msg.receiverId === currentUserId).length;
+}
+
 export function countUnreadByUser(unreadMessages, currentUserId) {
     const counts = {};
 
     unreadMessages.forEach((msg) => {
-        if (msg.receiverId === currentUserId) {
+        if (msg.receiverId === currentUserId && msg.isRead === false) {
             const senderId = msg.senderId;
             counts[senderId] = (counts[senderId] || 0) + 1;
         }
-    });
+  });
 
     return counts;
 }

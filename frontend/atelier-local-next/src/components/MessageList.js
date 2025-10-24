@@ -1,16 +1,28 @@
 "use client";
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import { useUnreadMessages } from "./UnreadMessageProvider";
 
 export default function MessagesList({ initialMessages, user, otherUser, otherUserName }) {
   const messages = initialMessages || [];
   const messagesEndRef = useRef(null);
   const userId = user?.id;
+  const { setActiveConversationId } = useUnreadMessages();
 
   // Auto-scroll
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  useEffect(() => {
+    if (!otherUser?.id) return;
+
+    // La conversation avec cet utilisateur devient active
+    setActiveConversationId(otherUser.id);
+
+    // Quand on quitte la conversation
+    return () => setActiveConversationId(null);
+  }, [otherUser?.id, setActiveConversationId]);
 
   // Filtrer et trier les messages
   const validMessages = messages

@@ -26,6 +26,7 @@ export async function getUser() {
       return {
         ...data.user,
         role: data.role?.toLowerCase() || data.user.role?.toLowerCase(),
+        jwtToken: token,
       };
     }
   } catch (err) {

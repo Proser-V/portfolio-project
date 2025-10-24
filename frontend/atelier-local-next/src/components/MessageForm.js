@@ -123,7 +123,7 @@ export default function MessageForm({ user, otherUser, jwtToken, messages, setMe
               className={`flex items-center justify-center rounded-full border-solid w-[36px] h-[36px] transition-colors
                 ${
                   isSending || message.trim()
-                    ? "bg-white border-silver cursor-not-allowed opacity-50"
+                    ? "bg-white border-silver cursor-not-allowed"
                     : "bg-blue border-gold cursor-pointer"
                 }`}
             >

@@ -37,7 +37,7 @@ export default function ArtisansPageClient({ initialCategories, initialArtisans 
       <p className="text-sm">Filtrer les artisans par</p>
       <div className="flex flex-col justify-center items-center md:gap-4 gap-2">
         <div className="w-full flex flex-row justify-center items-center md:gap-4 gap-1">
-          <label className="w-[30%] md:mb-2 text-sm text-right">Nom :</label>
+          <label className="w-[30%] md:mb-2 text-sm text-right whitespace-nowrap">Nom :</label>
           <input
             type="text"
             value={nameFilter}
@@ -47,7 +47,7 @@ export default function ArtisansPageClient({ initialCategories, initialArtisans 
           />
         </div>
         <div className="w-full flex flex-row justify-center items-center md:gap-4 gap-1">
-          <label className="w-[30%] text-sm text-right">Catégorie :</label>
+          <label className="w-[25%] text-sm text-right whitespace-nowrap">Métier :</label>
           <select
             value={selectedCategory}
             onChange={e => setSelectedCategory(e.target.value)}

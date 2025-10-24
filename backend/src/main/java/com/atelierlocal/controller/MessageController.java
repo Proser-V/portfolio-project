@@ -322,6 +322,12 @@ public class MessageController {
         try {
             User authenticatedUser = getAuthenticatedUser(principal);
             messageService.markMessageAsRead(messageId, authenticatedUser);
+            int unreadCount = messageService.getUnreadMessages(authenticatedUser).size();
+            messagingTemplate.convertAndSendToUser(
+                authenticatedUser.getEmail(),
+                "/queue/unread",
+                unreadCount
+            );
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             logger.error("Erreur lors du marquage du message comme lu: {}", e.getMessage());

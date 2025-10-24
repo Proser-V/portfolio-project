@@ -38,7 +38,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 public class MessageService {
 
     private static final List<String> ALLOWED_FILE_TYPES = List.of("image/png", "image/jpeg", "application/pdf");
-    private static final long MAX_FILE_SIZE = 15 * 1024 * 1024; // 15 Mo
+    private static final long MAX_FILE_SIZE = 5 * 1024 * 1024;
 
     private final MessageRepo messageRepository;
     private final ArtisanRepo artisanRepo;

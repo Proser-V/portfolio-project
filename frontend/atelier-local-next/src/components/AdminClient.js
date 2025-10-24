@@ -262,7 +262,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
   };
 
   const handleDeleteEventCategory = async (id) => {
-      if (!confirm("Voulez-vous vraiment supprimer cet catégorie ?")) return;
+      if (!confirm("Voulez-vous vraiment supprimer cette catégorie ?")) return;
 
       try {
           const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/event-categories/${id}/delete`, {
@@ -278,6 +278,25 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
       } catch (err) {
           setError("Erreur réseau, impossible de supprimer la catégorie d'évènement");
       }
+  };
+
+  const handleDeleteAsking = async(id) => {
+    if (!confirm("Voulez vous supprimer cette demande ?")) return;
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/askings/${id}/delete`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (response.ok) {
+        setAskings(askings.filter((askings) => askings.id !== id));
+        setError("");
+      } else {
+        setError("Erreur lors de la suppression de la demande.");
+      }
+    } catch (err) {
+      setError("Erreur réseau, impossible de supprimer la demande.");
+    }
   };
 
   return (

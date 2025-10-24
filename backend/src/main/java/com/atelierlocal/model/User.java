@@ -1,53 +1,87 @@
 package com.atelierlocal.model;
 
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.UUID;
-import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "users")
-public class User {
-    // Atributes
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class User implements UserDetails {
 
     @Id
     @GeneratedValue
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(nullable = false)
-    private String firstName;
-
-    @Column(nullable = false)
-    private String lastName;
-
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 100)
+    @Email(message = "Format d'email invalide.")
+    @Size(max = 100, message = "L'email ne peut dépasser 100 caractères.")
     private String email;
 
     @Column(name = "hashed_password", nullable = false)
     private String hashedPwd;
 
-    @Embedded
-    private Address address;
-
-    @Column
-    private String avatar;
-
-    @Column(nullable = false)
-    private Boolean isAdmin;
-
     @Column(nullable = false)
     private Boolean isActive;
 
-    @OneToMany(mappedBy = "client")
-    private List<UploadedFile> uploadedFiles;
+    @Enumerated(EnumType.STRING)
+    private UserRole userRole;
 
-    // Getters and setters
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
+    private Avatar avatar;
 
-    public String getFirstName() { return firstName; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
+    @Column
+    @DecimalMin(value = "-90.0", message = "La latitude doit être supérieure ou égale à -90.")
+    @DecimalMax(value = "90.0", message = "La latitude doit être inférieure ou égale à 90.")
+    private Double latitude;
 
-    public String getLastName() { return lastName; }
-    public void setLastName(String lastName) { this.lastName = lastName; }
+    @Column
+    @DecimalMin(value = "-180.0", message = "La longitude doit être supérieure ou égale à -180.")
+    @DecimalMax(value = "180.0", message = "La longitude doit être inférieure ou égale à 180.")
+    private Double longitude;
+
+    @Column(length = 12)
+    @Pattern(regexp = "^(|(\\+33|0)[1-9](\\d{2}){4})$", message = "Numéro invalide (format français attendu)")
+    @Size(min = 10, max = 12)
+    private String phoneNumber;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
+    // Getters et setters classiques
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
@@ -55,18 +89,65 @@ public class User {
     public String getHashedPassword() { return hashedPwd; }
     public void setHashedPassword(String hashedPwd) { this.hashedPwd = hashedPwd; }
 
-    public Address getAddress() { return address; }
-    public void setAddress(Address address) { this.address = address; }
-
-    public String getAvatar() { return avatar; }
-    public void setAvatar(String avatar) { this.avatar = avatar; }
-
-    public Boolean getAdmin() { return isAdmin; }
-    public void setAdmin(Boolean isAdmin) { this.isAdmin = isAdmin; }
-
     public Boolean getActive() { return isActive; }
     public void setActive(Boolean isActive) { this.isActive = isActive; }
 
-    public List<UploadedFile> getUploadedFile() { return uploadedFiles; }
-    public void setUploadedFile(List<UploadedFile> uploadedFiles) { this.uploadedFiles = uploadedFiles;}
+    public UserRole getUserRole() { return userRole; }
+    public void setUserRole(UserRole userRole) { this.userRole = userRole; }
+
+    public Avatar getAvatar() { return avatar; }
+    public void setAvatar(Avatar avatar) { this.avatar = avatar; }
+
+    public Double getLatitude() { return latitude; }
+    public void setLatitude(Double latitude) { this.latitude = latitude; }
+
+    public Double getLongitude() { return longitude; }
+    public void setLongitude(Double longitude) { this.longitude = longitude; }
+
+    public String getPhoneNumber() { return phoneNumber; }
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    // ======================
+    // Méthodes UserDetails
+    // ======================
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Simple rôle unique basé sur l'enum UserRole
+        return Collections.singleton(() -> "ROLE_" + userRole.name());
+    }
+
+    @Override
+    public String getPassword() {
+        return hashedPwd;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true; // Pas de gestion d'expiration pour l'instant
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true; // Pas de verrouillage pour l'instant
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true; // Pas de gestion d'expiration des credentials
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return Boolean.TRUE.equals(isActive);
+    }
 }

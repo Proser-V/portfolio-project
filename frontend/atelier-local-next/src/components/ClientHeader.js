@@ -1,0 +1,24 @@
+import Image from "next/image";
+import logo from "../assets/logo/atelier-local-logo_white.png";
+import Link from "next/link";
+import ClientBurgerMenu from "@/components/ClientBurgerMenu";
+
+export default function ClientHeader({ client }) {
+  return (
+    <header className="bg-blue text-gold shadow-md relative pr-4 py-2 md:pr-0 md:py-0 md:items-center">
+      <div className="flex items-center justify-between">
+        {/* Logo */}
+        <Link href="/" className="flex-shrink-0 pl-4">
+          <Image
+            src={logo}
+            alt="Atelier Local Logo"
+            className="h-12 w-auto"
+          />
+        </Link>
+
+        {/* Burger Menu + Navigation */}
+        <ClientBurgerMenu client={client} />
+      </div>
+    </header>
+  );
+}

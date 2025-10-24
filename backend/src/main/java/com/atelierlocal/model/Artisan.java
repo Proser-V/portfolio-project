@@ -1,60 +1,75 @@
 package com.atelierlocal.model;
 
-import jakarta.persistence.*;
-
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @Entity
-public class Artisan {
+@Table(name = "artisans")
+public class Artisan extends User {
     // Atributes
 
-    @Id
-    @GeneratedValue
-    @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
-
-    @Column(nullable = false)
+    @Size(max = 50, message = "Le nom ne peut pas dépasser 50 caractères.")
+    @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(nullable = false, unique = true)
-    private String email;
+    @Size(max = 500, message = "La bio ne peut pas dépasser 500 caractères.")
+    @Column(length = 500)
+    private String bio;
 
-    @Column(name = "hashed_password", nullable = false)
-    private String hashedPwd;
+    @ManyToOne
+    @JoinColumn(name = "artisan_category_name")
+    @JsonManagedReference
+    private ArtisanCategory category;
 
-    @Column
-    private String category;
+    @Column(length = 14)
+    @Pattern(regexp = "\\d+", message = "Le champ ne doit contenir que des chiffres.") // Validation du format seulement
+    @Size(min = 14, max = 14)
+    private String siret;
 
-    @Embedded
-    private Address address;
+    @OneToMany(mappedBy = "artisan", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<UploadedPhoto> photoGallery = new ArrayList<>();
 
-    @Column
-    private String avatar;
+    private LocalDate activityStartDate;
 
-    @OneToMany(mappedBy = "creator")
-    private List<UploadedFile> uploadedFiles;
+    @OneToMany(mappedBy = "artisan", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Recommendation> recommendations = new ArrayList<>();
 
     // Getters and setters
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
 
-    public String getHashedPassword() { return hashedPwd; }
-    public void setHashedPassword(String hashedPwd) { this.hashedPwd = hashedPwd; }
+    public ArtisanCategory getCategory() { return category; }
+    public void setCategory(ArtisanCategory category) { this.category = category; }
 
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public String getSiret() { return siret; }
+    public void setSiret(String siret) { this.siret = siret; }
 
-    public Address getAddress() { return address; }
-    public void setAddress(Address address) { this.address = address; }
+    public List<UploadedPhoto> getPhotoGallery() { return photoGallery; }
+    public void setPhotoGallery(List<UploadedPhoto> photoGallery) { this.photoGallery = photoGallery; }
 
-    public String getAvatar() { return avatar; }
-    public void setAvatar(String avatar) { this.avatar = avatar; }
+    public LocalDate getActivityStartDate() { return activityStartDate; }
+    public void setActivityStartDate(LocalDate activityStartDate) { this.activityStartDate = activityStartDate; }
 
-    public List<UploadedFile> getUploadedFile() { return uploadedFiles; }
-    public void setUploadedFile(List<UploadedFile> uploadedFiles) { this.uploadedFiles = uploadedFiles;}
+    public List<Recommendation> getRecommendations() { return recommendations; }
+    public void setRecommendations(List<Recommendation> recommendations) { this.recommendations = recommendations; }
 }

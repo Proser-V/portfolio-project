@@ -1,13 +1,14 @@
 import { cookies } from "next/headers";
 import { getUser } from "@/lib/getUser";
 import MessengerList from "@/components/MessengerList";
+import getApiUrl from "@/lib/api";
 
 export const dynamic = "force-dynamic";
 
 async function fetchUnreadMessages(jwtToken) {
     try {
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/messages/unread`,
+            `${getApiUrl()}/api/messages/unread`,
             {
                 headers: {
                     ...(jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {}),
@@ -50,7 +51,7 @@ export default async function MessengerPage() {
   let conversations = [];
   try {
       const convRes = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/messages/conversations/${user.id}`,
+          `${getApiUrl()}/api/messages/conversations/${user.id}`,
           {
               headers: {
                   Authorization: jwt ? `Bearer ${jwt}` : "",

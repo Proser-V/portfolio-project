@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import RegistrationClientModal from "../../components/RegistrationClientModal";
 import { useUser } from "../../context/UserContext"
+import getApiUrl from "@/lib/api";
 
 export default function AskingsForm() {
   const [eventCategories, setEventCategories] = useState([]);
@@ -18,7 +19,7 @@ export default function AskingsForm() {
 
   // --- Fetch event categories ---
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/event-categories/`)
+    fetch(`${getApiUrl()}/api/event-categories/`)
       .then(async (res) => {
         if (!res.ok) throw new Error(`HTTP error ${res.status}`);
         const text = await res.text(); // récupère la réponse brute
@@ -30,7 +31,7 @@ export default function AskingsForm() {
 
   // --- Fetch artisan categories ---
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artisan-category/`)
+    fetch(`${getApiUrl()}/api/artisan-category/`)
       .then(res => res.json())
       .then(data => setAllArtisanCategories(data || []))
       .catch(err => console.error(err));
@@ -44,7 +45,7 @@ export default function AskingsForm() {
       return;
     }
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/event-categories/${selectedEvent}/artisan-categories`)
+    fetch(`${getApiUrl()}/api/event-categories/${selectedEvent}/artisan-categories`)
       .then(res => res.json())
       .then(eventCats => {
         setVisibleCategories(eventCats);
@@ -104,7 +105,7 @@ export default function AskingsForm() {
       };
 
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/askings/creation`, {
+        const res = await fetch(`${getApiUrl()}/api/askings/creation`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),

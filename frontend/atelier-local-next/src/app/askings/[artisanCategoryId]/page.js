@@ -1,10 +1,11 @@
 import AskingsPageClient from "@/components/AskingsPageClient";
 import { getUser } from "@/lib/getUser";
+import getApiUrl from "@/lib/api";
 
 async function getAllAskingsByCategory(artisanCategoryId) {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/artisan-category/${artisanCategoryId}/askings`,
+      `${getApiUrl()}/api/artisan-category/${artisanCategoryId}/askings`,
       { cache: "no-store" }
     );
     if (!res.ok){
@@ -24,7 +25,7 @@ async function getAllAskingsByCategory(artisanCategoryId) {
 async function getArtisanCategory(artisanCategoryId) {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/artisan-category/${artisanCategoryId}`,
+      `${getApiUrl()}/api/artisan-category/${artisanCategoryId}`,
       { cache: "no-store" }
     );
     if (!res.ok) return {};

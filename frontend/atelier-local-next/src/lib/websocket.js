@@ -1,12 +1,13 @@
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
+import getApiUrl from "./api";
 
 let stompClient = null;
 
 export function connectWebSocket(jwtToken, onMessageReceived) {
   if (stompClient && stompClient.connected) return stompClient;
 
-  const socket = new SockJS(`${process.env.NEXT_PUBLIC_API_URL}/ws`);
+  const socket = new SockJS(`${getApiUrl()}/ws`);
   stompClient = new Client({
     webSocketFactory: () => socket,
     debug: (str) => console.log("STOMP:", str),

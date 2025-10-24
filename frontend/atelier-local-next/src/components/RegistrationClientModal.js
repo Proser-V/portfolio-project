@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import fetchCoordinates from "../../utils/fetchCoordinates";
+import getApiUrl from "@/lib/api";
 
 export default function RegistrationClientModal({ isOpen, onClose, onSuccess }) {
   const [clientData, setClientData] = useState({
@@ -42,7 +43,7 @@ export default function RegistrationClientModal({ isOpen, onClose, onSuccess }) 
       const { avatarFile, avatarPreview, ...rest } = clientData;
       const payload = { ...rest, latitude: coords.latitude, longitude: coords.longitude };
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/clients/register`, {
+      const res = await fetch(`${getApiUrl()}/api/clients/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -60,7 +61,7 @@ export default function RegistrationClientModal({ isOpen, onClose, onSuccess }) 
         const formData = new FormData();
         formData.append("file", avatarFile);
         formData.append("userId", uuid);
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/avatar/upload`, {
+        await fetch(`${getApiUrl()}/api/avatar/upload`, {
           method: "POST",
           body: formData,
           credentials: "include",

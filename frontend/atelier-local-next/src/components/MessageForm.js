@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import getApiUrl from "@/lib/api";
 
 export default function MessageForm({ user, otherUser, jwtToken, messages, setMessages, stompClient }) {
   const [message, setMessage] = useState("");
@@ -33,7 +34,7 @@ export default function MessageForm({ user, otherUser, jwtToken, messages, setMe
         formData.append("content", message.trim() || "Fichier joint");
         formData.append("file", attachment);
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/messages`, {
+        const response = await fetch(`${getApiUrl()}/api/messages`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${jwtToken}`,

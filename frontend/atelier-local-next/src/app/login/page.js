@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useEffect } from "react";
 import Link from "next/link";
+import getApiUrl from "@/lib/api";
 
 export default function LoginPage({ user }) {
     const [email, setEmail] = useState("");
@@ -18,7 +19,7 @@ export default function LoginPage({ user }) {
         err.preventDefault();
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/login`, {
+            const response = await fetch(`${getApiUrl()}/api/users/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),

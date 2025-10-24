@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { getUser } from "@/lib/getUser";
 import ConversationClient from "@/components/ConversationClient";
+import getApiUrl from "@/lib/api";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +29,7 @@ export default async function ConversationPage({ params }) {
 
   // Récupérer les messages
   const messagesRes = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/messages/history?user1Id=${user.id}&user2Id=${otherUserId}`,
+    `${getApiUrl()}/api/messages/history?user1Id=${user.id}&user2Id=${otherUserId}`,
     {
       headers: jwt ? { Cookie: `jwt=${jwt}` } : {},
       credentials: "include",
@@ -45,7 +46,7 @@ export default async function ConversationPage({ params }) {
     let role = null;
 
     const artisanRes = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/artisans/${otherUserId}`,
+      `${getApiUrl()}/api/artisans/${otherUserId}`,
       {
         headers: jwt ? { Cookie: `jwt=${jwt}` } : {},
         credentials: "include",
@@ -58,7 +59,7 @@ export default async function ConversationPage({ params }) {
       role = "artisan";
     } else {
       const clientRes = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/clients/${otherUserId}`,
+        `${getApiUrl()}/api/clients/${otherUserId}`,
         {
           headers: jwt ? { Cookie: `jwt=${jwt}` } : {},
           credentials: "include",

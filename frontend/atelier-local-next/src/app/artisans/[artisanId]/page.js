@@ -4,11 +4,12 @@ import Link from "next/link";
 import ArtisanPortfolio from "@/components/ArtisanPortfolio";
 import ProfileActionButton from "@/components/ProfileActionButton";
 import ArtisanAvatarUploader from "@/components/ArtisanAvatarUploader";
+import getApiUrl from "@/lib/api";
 
 async function getArtisan(artisanId) {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/artisans/${artisanId}`,
+      `${getApiUrl()}/api/artisans/${artisanId}`,
       { cache: "no-store" }
     );
     if (!res.ok) return null;
@@ -24,7 +25,7 @@ async function getAddress(latitude, longitude) {
   
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/geocode/reverse?latitude=${latitude}&longitude=${longitude}`,
+      `${getApiUrl()}/api/geocode/reverse?latitude=${latitude}&longitude=${longitude}`,
       { cache: "force-cache" }
     );
     
@@ -149,7 +150,7 @@ export async function generateMetadata({ params }) {
   const { artisanId } = await params;
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artisans/${artisanId}`);
+    const res = await fetch(`${getApiUrl()}/api/artisans/${artisanId}`);
     
     if (!res.ok) {
       return {

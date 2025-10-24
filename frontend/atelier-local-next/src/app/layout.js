@@ -10,6 +10,7 @@ import React from "react";
 import { getUser } from "@/lib/getUser";
 import { UnreadMessagesProvider } from "@/components/UnreadMessageProvider";
 import HeaderByRole from "@/components/HeaderByRole"
+import getApiUrl from "@/lib/api";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +18,7 @@ async function fetchUnreadMessages(jwtToken) {
   if (!jwtToken) return [];
   try {
       const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/messages/unread`,
+          `${getApiUrl()}/api/messages/unread`,
           {
               headers: {
                   ...(jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {}),

@@ -4,11 +4,12 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import getApiUrl from "@/lib/api";
 
 async function getClient(clientId) {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/clients/${clientId}`,
+      `${getApiUrl()}/api/clients/${clientId}`,
       { cache: "no-store", credentials: "include" }
     );
     if (!res.ok) return null;
@@ -22,7 +23,7 @@ async function getClient(clientId) {
 async function getEventCategory(eventId) {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/event-categories/${eventId}`,
+      `${getApiUrl()}/api/event-categories/${eventId}`,
       { cache: "no-store", credentials: "include" }
     );
     if (!res.ok) return null;

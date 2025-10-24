@@ -1,7 +1,9 @@
+import getApiUrl from "./api";
+
 export async function markMessageAsRead(messageId, jwtToken) {
     try {
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/messages/${messageId}/read`,
+            `${getApiUrl()}/api/messages/${messageId}/read`,
             {
                 method: "POST",
                 headers: {
@@ -22,7 +24,7 @@ export async function markMessageAsRead(messageId, jwtToken) {
 export async function getUnreadMessages(jwtToken) {
     try {
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/messages/unread`,
+            `${getApiUrl()}/api/messages/unread`,
             {
                 headers: {
                     ...(jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {}), // Use Authorization header

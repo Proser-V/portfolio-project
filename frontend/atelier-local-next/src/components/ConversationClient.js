@@ -5,6 +5,7 @@ import { Stomp } from "@stomp/stompjs";
 import MessagesList from "./MessageList";
 import MessageForm from "./MessageForm";
 import { markConversationAsRead } from "@/lib/messageService";
+import getApiUrl from "@/lib/api";
 
 export default function ConversationClient({ initialMessages, user, otherUser, otherUserName, jwtToken }) {
   const [messages, setMessages] = useState(initialMessages || []);
@@ -19,7 +20,7 @@ export default function ConversationClient({ initialMessages, user, otherUser, o
 
   // Connexion WebSocket
   useEffect(() => {
-    const socket = new SockJS(`${process.env.NEXT_PUBLIC_API_URL}/ws`);
+    const socket = new SockJS(`${getApiUrl()}/ws`);
     const client = Stomp.over(() => socket);
 
     client.connect(
@@ -72,7 +73,7 @@ export default function ConversationClient({ initialMessages, user, otherUser, o
             // Si le message est reçu (pas envoyé par nous), le marquer comme lu
             if (received.receiverId === user.id && received.id) {
               // Marquer comme lu de manière asynchrone
-              fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/messages/${received.id}/read`, {
+              fetch(`${getApiUrl()}/api/messages/${received.id}/read`, {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",

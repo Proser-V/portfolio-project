@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import AdminClient from "@/components/AdminClient";
+import getApiUrl from "@/lib/api";
 import { getUser } from "@/lib/getUser";
 
 // Récupérer les artisans
 async function fetchArtisans() {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artisans/`, {
+    const response = await fetch(`${getApiUrl()}/api/artisans/`, {
       method: "GET",
       credentials: "include",
     });
@@ -22,7 +23,7 @@ async function fetchArtisans() {
 // Récupérer les catégories d'artisan
 async function fetchArtisanCategories() {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artisan-category/`, {
+    const response = await fetch(`${getApiUrl()}/api/artisan-category/`, {
       method: "GET",
       credentials: "include",
     });
@@ -38,7 +39,7 @@ async function fetchArtisanCategories() {
 // Récupérer les catégories d'évènement
 async function fetchEventCategories() {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/event-categories/`, {
+    const response = await fetch(`${getApiUrl()}/api/event-categories/`, {
       method: "GET",
       credentials: "include",
     });

@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useEffect } from "react";
 import fetchCoordinates from "utils/fetchCoordinates";
+import getApiUrl from "@/lib/api";
 
 export default function AdminClient({ initialArtisans, initialArtisanCategories, initialEventCategories }) {
   const [artisans, setArtisans] = useState(initialArtisans);
@@ -28,7 +29,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/clients/`, {
+        const res = await fetch(`${getApiUrl()}/api/clients/`, {
           method: "GET",
           credentials: "include",
         });
@@ -47,7 +48,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
   useEffect(() => {
     const fetchAskings = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/askings/`, {
+        const res = await fetch(`${getApiUrl()}/api/askings/`, {
           method: "GET",
           credentials: "include",
         });
@@ -104,7 +105,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
         new Blob([JSON.stringify(clientData)], { type: "application/json" })
       );
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/clients/admin/create`, {
+      const res = await fetch(`${getApiUrl()}/api/clients/admin/create`, {
         method: "POST",
         body: multipartFormData,
         credentials: "include"
@@ -128,7 +129,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
     if (!confirmAction) return;
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/clients/${id}/moderate`,{
+      const response = await fetch(`${getApiUrl()}/api/clients/${id}/moderate`,{
         method: "PATCH",
         credentials: "include"
       });
@@ -156,7 +157,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
     if (!confirm("Voulez-vous vraiment supprimer ce client ?")) return;
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/clients/${id}/delete`, {
+      const response = await fetch(`${getApiUrl()}/api/clients/${id}/delete`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -175,7 +176,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
       if (!confirm("Voulez-vous vraiment supprimer cet artisan ?")) return;
 
       try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artisans/${id}/delete`, {
+          const response = await fetch(`${getApiUrl()}/api/artisans/${id}/delete`, {
               method: "DELETE",
               credentials: "include",
           });
@@ -196,7 +197,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
       const description = e.target.description.value;
 
       try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artisan-category/creation`, {
+          const response = await fetch(`${getApiUrl()}/api/artisan-category/creation`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ name, description }),
@@ -220,7 +221,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
       if (!confirm("Voulez-vous vraiment supprimer cet catégorie ?")) return;
 
       try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artisan-category/${id}/delete`, {
+          const response = await fetch(`${getApiUrl()}/api/artisan-category/${id}/delete`, {
               method: "DELETE",
               credentials: "include",
           });
@@ -241,7 +242,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
       const artisanCategoryIds = selectedArtisanCategories.map((cat) => cat.id);
 
       try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/event-categories/creation`, {
+          const response = await fetch(`${getApiUrl()}/api/event-categories/creation`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ name, artisanCategoryIds }),
@@ -265,7 +266,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
       if (!confirm("Voulez-vous vraiment supprimer cette catégorie ?")) return;
 
       try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/event-categories/${id}/delete`, {
+          const response = await fetch(`${getApiUrl()}/api/event-categories/${id}/delete`, {
               method: "DELETE",
               credentials: "include",
           });
@@ -284,7 +285,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
     if (!confirm("Voulez vous supprimer cette demande ?")) return;
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/askings/${id}/delete`, {
+      const response = await fetch(`${getApiUrl()}/api/askings/${id}/delete`, {
         method: "DELETE",
         credentials: "include",
       });

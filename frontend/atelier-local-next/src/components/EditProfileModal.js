@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
+import getApiUrl from "@/lib/api";
 
 export default function EditProfileModal({ artisan, address, isOpen, onClose, onSuccess }) {
   const [formData, setFormData] = useState({
@@ -32,7 +33,7 @@ export default function EditProfileModal({ artisan, address, isOpen, onClose, on
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/artisans/${artisan.id}/update`,
+        `${getApiUrl()}/api/artisans/${artisan.id}/update`,
         {
           method: "PUT",
           headers: {

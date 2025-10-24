@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import fetchCoordinates from "../../../utils/fetchCoordinates";
+import getApiUrl from "@/lib/api";
 
 export default function RegistrationPage({ user }) {
   const router = useRouter();
@@ -42,7 +43,7 @@ export default function RegistrationPage({ user }) {
   });
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artisan-category/`)
+    fetch(`${getApiUrl()}/api/artisan-category/`)
       .then((res) => res.json())
       .then(setCategories)
       .catch((err) => console.error("Erreur lors du chargement des catégories :", err));
@@ -95,7 +96,7 @@ export default function RegistrationPage({ user }) {
 
       console.log("FormData envoyé:", Array.from(formData.entries()).map(([k, v]) => [k, v instanceof Blob ? `Blob(${v.size} bytes)` : v]));
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/clients/register`, {
+      const response = await fetch(`${getApiUrl()}/api/clients/register`, {
         method: "POST",
         body: formData,
         credentials: "include",
@@ -165,7 +166,7 @@ export default function RegistrationPage({ user }) {
         formData.append("avatar", artisanData.avatarFile);
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/artisans/register`, {
+      const response = await fetch(`${getApiUrl()}/api/artisans/register`, {
         method: "POST",
         body: formData,
         credentials: "include",

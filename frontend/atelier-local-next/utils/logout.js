@@ -1,6 +1,8 @@
+import getApiUrl from "@/lib/api";
+
 export async function logout() {
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/logout`, {
+        const response = await fetch(`${getApiUrl()}/api/users/logout`, {
             method: "POST",
             credentials: "include",
         });

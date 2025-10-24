@@ -1,13 +1,14 @@
 import { Suspense } from "react";
 import { getUser } from "@/lib/getUser";
 import HomeContent from "@/components/HomeContent";
+import getApiUrl from "@/lib/api";
 
 export default async function Home() {
   const user = await getUser();
   let artisans = null;
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/artisans/random-top`,
+      `${getApiUrl()}/api/artisans/random-top`,
       { cache: "no-store" }
     );
     

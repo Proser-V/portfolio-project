@@ -79,7 +79,6 @@ public class MessageService {
                 Attachment attachment = uploadToS3(dto.getFile());
                 attachment.setMessage(message);
                 message.getAttachments().add(attachment);
-            // Ne pas sauvegarder l'attachment séparément, cascade le fera
             }
 
         // Sauvegarder le message (cascade sauvegarde les attachments)

@@ -1,10 +1,11 @@
 import ArtisansPageClient from "@/components/ArtisansPageClient";
+import getApiUrl from "@/lib/api";
 
 // Fetch côté serveur
 async function getArtisanCategories() {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/artisan-category/`,
+      `${getApiUrl()}/api/artisan-category/`,
       { cache: "no-store" }
     );
     if (!res.ok) return [];
@@ -18,7 +19,7 @@ async function getArtisanCategories() {
 async function getAllArtisans() {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/artisans/`,
+      `${getApiUrl()}/api/artisans/`,
       { cache: "no-store" }
     );
     if (!res.ok) return [];

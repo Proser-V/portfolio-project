@@ -91,7 +91,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             logger.info("Utilisateur trouvé dans la base: {}", user != null ? user.getEmail() : "null");
 
             if (user != null && jwtService.isTokenValid(jwt, user)) {
-                logger.info("JWT valide pour utilisateur: {}", username);
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
                                 user,

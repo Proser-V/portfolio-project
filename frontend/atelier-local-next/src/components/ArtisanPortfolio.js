@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
+import getApiUrl from "@/lib/api";
 
 export default function ArtisanPortfolio({ 
   artisanId, 
@@ -49,7 +50,7 @@ export default function ArtisanPortfolio({
       formData.append("file", file);
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/artisans/${artisanId}/portfolio/upload`,
+        `${getApiUrl()}/api/artisans/${artisanId}/portfolio/upload`,
         {
           method: "POST",
           credentials: "include",
@@ -88,7 +89,7 @@ export default function ArtisanPortfolio({
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/artisans/${artisanId}/portfolio/${photoId}/delete`,
+        `${getApiUrl()}/api/artisans/${artisanId}/portfolio/${photoId}/delete`,
         {
           method: "DELETE",
           credentials: "include",

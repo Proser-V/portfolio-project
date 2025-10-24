@@ -1,6 +1,7 @@
 "use client"
 import { useState } from "react";
 import Image from "next/image";
+import getApiUrl from "@/lib/api";
 
 export default function ArtisanAvatarUploader({ artisan, isOwner, isAdmin }) {
   const [preview, setPreview] = useState(null);
@@ -24,7 +25,7 @@ export default function ArtisanAvatarUploader({ artisan, isOwner, isAdmin }) {
     formData.append("userId", artisan.id);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/avatar/upload`, {
+      const res = await fetch(`${getApiUrl()}/api/avatar/upload`, {
         method: "POST",
         body: formData,
       });

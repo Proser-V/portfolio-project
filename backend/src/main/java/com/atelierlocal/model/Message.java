@@ -72,7 +72,7 @@ public class Message {
     public String getContent() { return content; }
     public void setContent(String content) { this.content = content; }
 
-    public boolean isRead() { return isRead; }
+    public boolean getRead() { return isRead; }
     public void setRead(boolean isRead) { this.isRead = isRead; }
 
     public List<Attachment> getAttachments() { return attachments; }

@@ -43,19 +43,17 @@ public class MessageService {
     private final MessageRepo messageRepository;
     private final ArtisanRepo artisanRepo;
     private final ClientRepo clientRepo;
-    private final AttachmentRepo attachmentRepo;
     private final S3Client s3Client;
     private final S3Properties s3Properties;
     private final SimpMessagingTemplate messagingTemplate;
     private static final Logger logger = LoggerFactory.getLogger(MessageService.class);
 
     public MessageService(MessageRepo messageRepository, ArtisanRepo artisanRepo, ClientRepo clientRepo,
-                         AttachmentRepo attachmentRepo, S3Client s3Client, S3Properties s3Properties,
+                         S3Client s3Client, S3Properties s3Properties,
                          SimpMessagingTemplate messagingTemplate) {
         this.messageRepository = messageRepository;
         this.artisanRepo = artisanRepo;
         this.clientRepo = clientRepo;
-        this.attachmentRepo = attachmentRepo;
         this.s3Client = s3Client;
         this.s3Properties = s3Properties;
         this.messagingTemplate = messagingTemplate;

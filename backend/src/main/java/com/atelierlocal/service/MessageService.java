@@ -67,7 +67,6 @@ public class MessageService {
 
             Message message = new Message();
         
-        // ✅ CORRECTION : Définir sender et receiver AVANT la sauvegarde
             message.setSender(sender);
             message.setReceiver(receiver);
             message.setContent(dto.getContent());

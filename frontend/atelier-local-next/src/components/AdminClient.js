@@ -289,7 +289,7 @@ export default function AdminClient({ initialArtisans, initialArtisanCategories,
         credentials: "include",
       });
       if (response.ok) {
-        setAskings(askings.filter((askings) => askings.id !== id));
+        setAskings(askings.filter((asking) => asking.id !== id));
         setError("");
       } else {
         setError("Erreur lors de la suppression de la demande.");

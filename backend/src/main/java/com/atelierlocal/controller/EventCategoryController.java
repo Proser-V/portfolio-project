@@ -27,7 +27,6 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/event-categories")
-@PreAuthorize("hasRole('ADMIN')")
 @Tag(name = "Event Categories", description = "API pour la gestion des catégories d'évènements")
 public class EventCategoryController {
     private final EventCategoryService eventCategoryService;
@@ -38,6 +37,7 @@ public class EventCategoryController {
 
     @PostMapping("/creation")
     @Operation(summary = "Créer une catégorie d'évènement", description = "Accessible uniquement aux administrateurs")
+    @PreAuthorize("hasRole('ADMIN')")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Catégorie créée avec succès"),
         @ApiResponse(responseCode = "400", description = "Requête invalide"),
@@ -85,6 +85,7 @@ public class EventCategoryController {
 
     @PutMapping("/{id}/update")
     @Operation(summary = "Mettre à jour une catégorie d'évènement", description = "Accessible uniquement aux administrateurs")
+    @PreAuthorize("hasRole('ADMIN')")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Catégorie mise à jour"),
         @ApiResponse(responseCode = "400", description = "Requête invalide"),
@@ -101,6 +102,7 @@ public class EventCategoryController {
 
     @DeleteMapping("/{id}/delete")
     @Operation(summary = "Supprimer une catégorie d'évènement", description = "Accessible uniquement aux administrateurs")
+    @PreAuthorize("hasRole('ADMIN')")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Catégorie supprimée"),
         @ApiResponse(responseCode = "404", description = "Catégorie non trouvée"),

@@ -18,6 +18,8 @@ public class MessageRequestDTO {
 
     private MultipartFile file;
 
+    private String tempId;
+
     // Getters + setters
     public UUID getSenderId() { return senderId; }
     public void setSenderId(UUID senderId) { this.senderId = senderId; }
@@ -30,4 +32,7 @@ public class MessageRequestDTO {
 
     public MultipartFile getFile() { return file; }
     public void setFile(MultipartFile file) { this.file = file; }
+
+    public String getTempId() { return tempId; }
+    public void setTempId(String tempId) { this.tempId = tempId; }
 }

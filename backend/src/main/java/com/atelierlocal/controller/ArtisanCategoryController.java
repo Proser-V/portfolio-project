@@ -6,9 +6,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.atelierlocal.dto.ArtisanCategoryRequestDTO;
 import com.atelierlocal.dto.ArtisanCategoryResponseDTO;
 import com.atelierlocal.dto.ArtisanResponseDTO;
+import com.atelierlocal.dto.AskingResponseDTO;
 import com.atelierlocal.model.Client;
+import com.atelierlocal.model.User;
 import com.atelierlocal.service.ArtisanCategoryService;
 import com.atelierlocal.service.ArtisanService;
+import com.atelierlocal.service.AskingService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -33,10 +36,16 @@ public class ArtisanCategoryController {
     
     private final ArtisanCategoryService artisanCategoryService;
     private final ArtisanService artisanService;
+    private final AskingService askingService;
 
-    public ArtisanCategoryController(ArtisanCategoryService artisanCategoryService, ArtisanService artisanService) {
+    public ArtisanCategoryController(
+        ArtisanCategoryService artisanCategoryService,
+        ArtisanService artisanService,
+        AskingService askingService
+        ) {
         this.artisanCategoryService = artisanCategoryService;
         this.artisanService = artisanService;
+        this.askingService = askingService;
     }
 
     // --------------------
@@ -104,14 +113,26 @@ public class ArtisanCategoryController {
 
     /**
      * Récupère tous les artisans d'une catégorie
-     * Accessible aux utilisateurs connectés (CLIENT, ARTISAN, ADMIN)
+     * Route publique : accessible à tout le monde
      */
     @GetMapping("/{id}/artisans")
-    @PreAuthorize("hasAnyRole('CLIENT','ARTISAN','ADMIN')")
     public ResponseEntity<List<ArtisanResponseDTO>> getArtisansByCategory(
             @PathVariable UUID id,
             @AuthenticationPrincipal Client currentClient) {
         List<ArtisanResponseDTO> artisansByCategory = artisanService.getAllArtisansByCategory(id, currentClient);
         return ResponseEntity.ok(artisansByCategory);
+    }
+
+    /**
+     * Récupère tous les askings liées à une catégorie
+     * Accessible à tous les utilisateurs
+     */
+    @GetMapping("/{id}/askings")
+    // @PreAuthorize("hasAnyRole('ARTISAN', 'ADMIN')")
+    public ResponseEntity<List<AskingResponseDTO>> getAskingsByCategory(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal User currentUser) {
+        List<AskingResponseDTO> askingsByCategory = askingService.getAskingsByCategory(id, currentUser);
+        return ResponseEntity.ok(askingsByCategory);
     }
 }

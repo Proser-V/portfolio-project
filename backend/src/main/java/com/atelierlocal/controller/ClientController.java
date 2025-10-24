@@ -10,11 +10,14 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.atelierlocal.dto.AskingResponseDTO;
 import com.atelierlocal.dto.ClientRequestDTO;
@@ -50,10 +53,30 @@ public class ClientController {
         @ApiResponse(responseCode = "400", description = "Requête invalide (données manquantes ou incorrectes)"),
         @ApiResponse(responseCode = "409", description = "Email déjà utilisé")
     })
-    public ResponseEntity<ClientResponseDTO> registerClient(@Valid @ModelAttribute ClientRequestDTO request) {
+    public ResponseEntity<ClientResponseDTO> registerClient(
+            @Valid 
+            @RequestPart("client") ClientRequestDTO request,
+            @RequestPart(value = "avatar", required = false) MultipartFile avatar) {
+        request.setAvatar(avatar);
         ClientResponseDTO clientDto = clientService.createClient(request);
         return ResponseEntity.status(201).body(clientDto);
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(value = "/admin/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Création d'un nouvel administrateur", description = "Création d'un admin")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Client créé avec succès"),
+        @ApiResponse(responseCode = "400", description = "Requête invalide (données manquantes ou incorrectes)"),
+        @ApiResponse(responseCode = "409", description = "Email déjà utilisé")
+    })
+    public ResponseEntity<ClientResponseDTO> createAdmin(
+        @Valid @RequestPart("client") ClientRequestDTO request,
+        @RequestPart(value = "avatar", required = false) MultipartFile avatar) {
+            request.setAvatar(avatar);
+            ClientResponseDTO clientDto = clientService.createAdmin(request);
+            return ResponseEntity.status(201).body(clientDto);
+        }
 
     // Récupération du client connecté (ARTISAN/CLIENT/ADMIN selon contexte)
     @GetMapping("/me")
@@ -73,7 +96,7 @@ public class ClientController {
 
     // Détails d'un client par ID (ADMIN ou client lui-même)
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
+    // @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
     public ResponseEntity<ClientResponseDTO> getClientByID(@PathVariable UUID id) {
         ClientResponseDTO client = clientService.getClientById(id);
         return ResponseEntity.ok(client);
@@ -103,5 +126,12 @@ public class ClientController {
     public ResponseEntity<Void> deleteClient(@PathVariable UUID id, @AuthenticationPrincipal Client currentClient) {
         clientService.deleteClient(id, currentClient);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/moderate")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ClientResponseDTO> moderateClient(@PathVariable UUID id, @AuthenticationPrincipal Client currentClient) {
+        ClientResponseDTO patchedClient = clientService.banClient(id, currentClient);
+        return ResponseEntity.ok(patchedClient);
     }
 }

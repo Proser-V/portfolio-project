@@ -3,8 +3,12 @@ package com.atelierlocal.dto;
 import java.util.UUID;
 
 import com.atelierlocal.model.Client;
+import com.atelierlocal.model.UserRole;
 
 public class ClientResponseDTO {
+
+    // Attributs
+
     private UUID id;
     private String email;
     private String firstName;
@@ -14,6 +18,8 @@ public class ClientResponseDTO {
     private Double longitude;
     private String phoneNumber;
     private int recommendationsCount;
+    public UserRole role;
+    private Boolean isActive;
 
     public ClientResponseDTO(Client client) {
         this.id = client.getId();
@@ -25,6 +31,8 @@ public class ClientResponseDTO {
         this.avatar = client.getAvatar() != null ? new AvatarDTO(client.getAvatar()) : null;
         this.phoneNumber = client.getPhoneNumber();
         this.recommendationsCount = client.getRecommendations() != null ? client.getRecommendations().size() : 0;
+        this.role = client.getUserRole();
+        this.isActive = client.getActive();
     }
 
     // Getters et setters
@@ -54,4 +62,10 @@ public class ClientResponseDTO {
 
     public int getRecommendationsCount() { return recommendationsCount; }
     public void setRecommendationsCount(int recommendationsCount) { this.recommendationsCount = recommendationsCount; }
+
+    public UserRole getRole() { return role; }
+    public void setRole(UserRole role) { this.role = role; }
+
+    public Boolean getActive() { return isActive; }
+    public void setActive(Boolean isActive) { this.isActive = isActive; }
 }

@@ -1,7 +1,7 @@
 package com.atelierlocal.model;
 
 public enum MessageStatus {
+    SENT,
     DELIVERED,
-    READ,
-    NOT_SENT
+    FAILED
 }

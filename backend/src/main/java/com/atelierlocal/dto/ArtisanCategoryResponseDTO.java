@@ -13,6 +13,8 @@ public class ArtisanCategoryResponseDTO {
         this.description = description;
     }
 
+    // Getters et setters
+
     public UUID getId() { return id; }
     public String getName() { return name; }
     public String getDescription() { return description; }

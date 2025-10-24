@@ -1,5 +1,7 @@
 package com.atelierlocal.config;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +17,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.atelierlocal.security.CustomUserDetailsService;
 import com.atelierlocal.security.JwtAuthenticationFilter;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableMethodSecurity(prePostEnabled = true)
@@ -37,15 +41,31 @@ public class SecurityConfig {
                                      Argon2PasswordEncoder passwordEncoder) throws Exception {
     return http
         .csrf(csrf -> csrf.disable())
-        .cors(cors -> {})
+        .cors(c -> c.configurationSource(corsConfigurationSource()))
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/home", "/", "/api/users/login",
-            "/api/clients/register", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**",
-            "/api/artisans/register", "/swagger-resources/**", "/webjars/**").permitAll()
+            .requestMatchers(
+                "/home", "/", "/api/users/logout", "/api/users/login",
+                "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**",
+                "/api/artisans/**",
+                "/api/clients/**", 
+                "/api/artisan-category/**",
+                "/api/geocode/**",
+                "/api/avatar/**",
+                "/api/event-categories/**",
+                "/api/askings/**"
+            ).permitAll()
             .anyRequest().authenticated()
         )
         .userDetailsService(userDetailsService)
         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+        .logout(logout -> logout
+            .logoutUrl("/api/users/logout")
+            .clearAuthentication(true)
+            .deleteCookies("jwt")
+            .logoutSuccessHandler((request, response, authentication) -> {
+                response.setStatus(HttpServletResponse.SC_OK);
+            })
+        )
         .build();
     }
 
@@ -53,9 +73,10 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         var config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOriginPattern("*");
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
+        config.setAllowedOriginPatterns(List.of("http://localhost:3000"));
+        config.setExposedHeaders(List.of("Authorization", "Set-Cookie"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH"));
 
         var source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

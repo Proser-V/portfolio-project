@@ -2,19 +2,24 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
+import getApiUrl from "@/lib/api";
 
-export default function LoginPage() {
+export default function LoginPage({ user }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const router = useRouter();
 
+    useEffect(() => {
+        document.title = "Connexion - Atelier Local";
+    }, []);
     const handleSubmit = async (err) => {
         err.preventDefault();
 
         try {
-            const response = await fetch("http://localhost:8080/api/login", {
+            const response = await fetch(`${getApiUrl()}/api/users/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
@@ -28,7 +33,7 @@ export default function LoginPage() {
 
             setError("");
             console.log("Login success");
-            router.push("/");
+            window.location.href = "/";
         } catch (err) {
             console.error("Erreur réseau :", err);
             setError("Serveur inaccessible. Vérifiez votre connexion.");
@@ -52,7 +57,7 @@ export default function LoginPage() {
                     placeholder="Adresse email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full border-none outline-none text-silver text-xs"
+                    className="w-full border-none outline-none text-blue text-xs"
                     required
                 />
             </div>
@@ -63,7 +68,7 @@ export default function LoginPage() {
                     placeholder="Mot de passe"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full border-none outline-none text-silver text-xs"
+                    className="w-full border-none outline-none text-blue text-xs"
                     required
                 />
             </div>
@@ -73,7 +78,7 @@ export default function LoginPage() {
                 className="w-1/2 h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
                             text-gold text-base font-normal font-cabin
                             flex items-center justify-center mx-auto hover:cursor-pointer 
-                            hover:bg-blue transition mb-5 mt-8"
+                            mb-5 mt-8"
                 >
                 Connexion
             </button>
@@ -86,8 +91,7 @@ export default function LoginPage() {
             href="/registration"
             className="w-1/2 max-w-xs h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
                         text-gold text-base font-normal font-cabin
-                        flex items-center justify-center mx-auto 
-                        hover:bg-blue transition mt-4"
+                        flex items-center justify-center mx-auto mt-4"
             >
             Créez un compte
         </Link>

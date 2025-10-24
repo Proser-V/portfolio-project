@@ -16,8 +16,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 
 @Entity
 public class Message {
@@ -28,11 +28,11 @@ public class Message {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "sender_id", nullable = false)
     private User sender;
 
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "receiver_id", nullable = false)
     private User receiver;
 
@@ -43,15 +43,12 @@ public class Message {
     private List<Attachment> attachments = new ArrayList<>();
 
     @Column(nullable = false)
-    private LocalDateTime timestamp;
-
-    @Column(nullable = false)
     private boolean isRead = false;
 
     private String messageError;
 
     @Enumerated(EnumType.STRING)
-    private MessageStatus messageStatus;
+    private MessageStatus messageStatus = MessageStatus.SENT;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -60,8 +57,11 @@ public class Message {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    private String tempId;
+
     // Getters + Setters
     public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
 
     public User getSender() { return sender; }
     public void setSender(User sender) { this.sender = sender; }
@@ -72,10 +72,7 @@ public class Message {
     public String getContent() { return content; }
     public void setContent(String content) { this.content = content; }
 
-    public LocalDateTime getTimestamp() { return timestamp; }
-    public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
-
-    public boolean isRead() { return isRead; }
+    public boolean getRead() { return isRead; }
     public void setRead(boolean isRead) { this.isRead = isRead; }
 
     public List<Attachment> getAttachments() { return attachments; }
@@ -88,7 +85,11 @@ public class Message {
     public void setMessageStatus(MessageStatus messageStatus) { this.messageStatus = messageStatus; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public String getTempId() { return tempId; }
+    public void setTempId(String tempId) { this.tempId = tempId; }
 }

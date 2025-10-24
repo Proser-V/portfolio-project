@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.atelierlocal.dto.*;
 import com.atelierlocal.model.*;
@@ -49,7 +50,10 @@ public class ArtisanController {
         @ApiResponse(responseCode = "400", description = "Requête invalide (données manquantes ou incorrectes)"),
         @ApiResponse(responseCode = "409", description = "Email déjà utilisé")
     })
-    public ResponseEntity<ArtisanResponseDTO> registerArtisan(@Valid @ModelAttribute ArtisanRequestDTO request) {
+    public ResponseEntity<ArtisanResponseDTO> registerArtisan(
+            @Valid @RequestPart("artisan") ArtisanRequestDTO request,
+            @RequestPart(value = "avatar", required = false) MultipartFile avatar) {
+        request.setAvatar(avatar);
         ArtisanResponseDTO artisanDto = artisanService.createArtisan(request);
         return ResponseEntity.status(201).body(artisanDto);
     }
@@ -81,10 +85,9 @@ public class ArtisanController {
 
     /**
      * Récupère tous les artisans
-     * Accessible aux CLIENTS et ADMIN
+     * Lecture publique : pas de restriction
      */
     @GetMapping("/")
-    @PreAuthorize("hasAnyRole('CLIENT','ADMIN')")
     public ResponseEntity<List<ArtisanResponseDTO>> getAllArtisans(@AuthenticationPrincipal Client currentClient) {
         List<ArtisanResponseDTO> allArtisans = artisanService.getAllArtisans(currentClient);
         return ResponseEntity.ok(allArtisans);
@@ -137,6 +140,19 @@ public class ArtisanController {
             @AuthenticationPrincipal Client currentClient) {
         RecommendationResponseDTO newRecommendation = recommendationService.createRecommendation(id, request, currentClient);
         return ResponseEntity.ok(newRecommendation);
+    }
+
+    /**
+     * Récupération de 3 artisans aléatoires parmis les plus recommandés.
+     * Route publique : pas besoin d'être connecté (home page)
+     */
+    @GetMapping("/random-top")
+    public ResponseEntity<List<ArtisanResponseDTO>> getRandomTopArtisans() {
+        List<Artisan> artisans = artisanService.getRandomTopArtisans(3);
+        List<ArtisanResponseDTO> dtoList = artisans.stream()
+            .map(ArtisanResponseDTO::new)
+            .toList();
+        return ResponseEntity.ok(dtoList);
     }
 
     // --------------------

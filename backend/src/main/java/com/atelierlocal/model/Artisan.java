@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,6 +32,7 @@ public class Artisan extends User {
 
     @ManyToOne
     @JoinColumn(name = "artisan_category_name")
+    @JsonManagedReference
     private ArtisanCategory category;
 
     @Column(length = 14)
@@ -37,11 +41,13 @@ public class Artisan extends User {
     private String siret;
 
     @OneToMany(mappedBy = "artisan", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<UploadedPhoto> photoGallery = new ArrayList<>();
 
     private LocalDate activityStartDate;
 
-    @OneToMany(mappedBy = "artisan")
+    @OneToMany(mappedBy = "artisan", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Recommendation> recommendations = new ArrayList<>();
 
     // Getters and setters

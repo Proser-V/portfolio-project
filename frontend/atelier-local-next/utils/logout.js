@@ -1,0 +1,18 @@
+import getApiUrl from "@/lib/api";
+
+export async function logout() {
+    try {
+        const response = await fetch(`${getApiUrl()}/api/users/logout`, {
+            method: "POST",
+            credentials: "include",
+        });
+        if (response.ok) {
+            document.cookie = "jwt=; Max-Age=0; path=/; SameSite=Strict";
+            console.log("Logout successful, cookie removed");
+        } else {
+            console.error("Logout failed with status:", response.status);
+        }
+    } catch (err) {
+        console.error("Erreur lors de la déconnexion : ", err);
+    }
+}

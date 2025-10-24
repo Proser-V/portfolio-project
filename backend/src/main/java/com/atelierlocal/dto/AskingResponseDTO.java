@@ -16,6 +16,7 @@ public class AskingResponseDTO {
     private LocalDateTime eventDate;
     private String eventLocalisation;
     private AskingStatus status;
+    private LocalDateTime createdAt;
 
     public AskingResponseDTO(Asking asking) {
         this.id = asking.getId();
@@ -27,7 +28,10 @@ public class AskingResponseDTO {
         this.eventDate = asking.getEventDate() != null ? asking.getEventDate() : null;
         this.eventLocalisation = asking.getEventLocalisation() != null ? asking.getEventLocalisation() : null;
         this.status = asking.getStatus();
+        this.createdAt = asking.getCreatedAt();
     }
+
+    // Getters et setters
 
     public UUID getId() { return id; }
 
@@ -54,4 +58,6 @@ public class AskingResponseDTO {
 
     public AskingStatus getStatus() { return status; }
     public void setStatus(AskingStatus status) { this.status = status; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
 }

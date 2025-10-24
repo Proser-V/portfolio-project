@@ -18,6 +18,7 @@ import com.atelierlocal.model.UserRole;
 import com.atelierlocal.dto.ArtisanRequestDTO;
 import com.atelierlocal.dto.ArtisanResponseDTO;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -68,13 +69,6 @@ public class ArtisanService {
         if (dto.getLongitude() == null) {
             throw new IllegalArgumentException("La longitude ne peut être vide.");
         }
-        Avatar avatar = null;
-        if (dto.getAvatar() != null) {
-            String avatarUrl = avatarService.uploadAvatar(dto.getAvatar(), null);
-            avatar = new Avatar();
-            avatar.setAvatarUrl(avatarUrl);
-            avatar.setExtension(avatarService.getFileExtension(dto.getAvatar()));
-        }
         ArtisanCategory category = artisanCategoryRepo.findByNameIgnoreCase(dto.getCategoryName())
             .orElseThrow(() -> new IllegalArgumentException("Catégorie invalide"));
 
@@ -86,6 +80,14 @@ public class ArtisanService {
         artisan.setLatitude(dto.getLatitude());
         artisan.setLongitude(dto.getLongitude());
         artisan.setSiret(dto.getSiret());
+        Avatar avatar = null;
+        if (dto.getAvatar() != null) {
+            String avatarUrl = avatarService.uploadAvatar(dto.getAvatar(), null);
+            avatar = new Avatar();
+            avatar.setAvatarUrl(avatarUrl);
+            avatar.setExtension(avatarService.getFileExtension(dto.getAvatar()));
+            avatar.setUser(artisan);
+        }
         artisan.setAvatar(avatar);
         artisan.setCategory(category);
         artisan.setUserRole(UserRole.ARTISAN);
@@ -160,7 +162,9 @@ public class ArtisanService {
     }
 
     public List<ArtisanResponseDTO> getAllArtisans(Client currentClient) {
+    if (currentClient != null) {
         securityService.checkClientOrAdmin(currentClient);
+    }
         return artisanRepo.findAll().stream()
                                 .map(ArtisanResponseDTO::new)
                                 .collect(Collectors.toList());
@@ -181,5 +185,12 @@ public class ArtisanService {
             .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé."));
         artisan.setActive(false);
         artisanRepo.save(artisan);
+    }
+
+    public List<Artisan> getRandomTopArtisans(int count) {
+        List<Artisan> top10 = artisanRepo.findTop10ByOrderByRecommendationsDesc();
+        if (top10.isEmpty()) return Collections.emptyList();
+        Collections.shuffle(top10);
+        return top10.subList(0, Math.min(count, top10.size()));
     }
 }

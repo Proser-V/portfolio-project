@@ -4,15 +4,23 @@ import com.atelierlocal.dto.LoginRequest;
 import com.atelierlocal.security.CustomUserDetailsService;
 import com.atelierlocal.security.JwtService;
 import com.atelierlocal.service.LoginService;
+
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 class LoginControllerTest {
@@ -31,31 +39,23 @@ class LoginControllerTest {
     }
 
     @Test
-    void testLoginSuccess() {
+    void testLoginSuccess() throws Exception {
         LoginRequest request = new LoginRequest();
-        request.setEmail("test@example.com");
+        request.setEmail("test@exemple.com");
         request.setPassword("password");
+        String fakeToken = "fake-jwt-token";
 
-        when(loginService.login(request.getEmail(), request.getPassword())).thenReturn(true);
-
-        UserDetails mockUser = User.withUsername(request.getEmail())
-                .password("password").roles("CLIENT").build();
-
-        when(userDetailsService.loadUserByUsername(request.getEmail())).thenReturn(mockUser);
-        when(jwtService.generateToken(mockUser)).thenReturn("fake-jwt-token");
+        when(loginService.login(anyString(), anyString())).thenReturn(true);
+        when(userDetailsService.loadUserByUsername(anyString())).thenReturn(mock(UserDetails.class));
+        when(jwtService.generateToken(any())).thenReturn(fakeToken);
 
         ResponseEntity<?> response = loginController.login(request);
 
-        assertNotNull(response);
-        assertEquals(200, response.getStatusCode().value());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getHeaders().containsKey("Set-Cookie"));
 
-        Map<?, ?> body = (Map<?, ?>) response.getBody();
-        assertNotNull(body);
-        assertEquals("fake-jwt-token", body.get("token"));
-
-        verify(loginService).login(request.getEmail(), request.getPassword());
-        verify(userDetailsService).loadUserByUsername(request.getEmail());
-        verify(jwtService).generateToken(mockUser);
+        String cookieHeader = response.getHeaders().getFirst("Set-Cookie");
+        assertTrue(cookieHeader.contains(fakeToken));
     }
 
     @Test
@@ -82,35 +82,35 @@ class LoginControllerTest {
 
     @Test
     void testLogoutSuccess() {
-        String token = "Bearer fake-token";
+        String token = "fake-token";
 
-        doNothing().when(jwtService).blacklistToken("fake-token");
+        doNothing().when(jwtService).blacklistToken(token);
 
-        ResponseEntity<?> response = loginController.logout(token);
+        // Appel du logout
+        ResponseEntity<Void> response = loginController.logout(token);
 
+        // Vérifie que le token a été blacklister
+        verify(jwtService).blacklistToken(token);
+
+        // Vérifie le statut HTTP
         assertNotNull(response);
-        assertEquals(200, response.getStatusCode().value());
-
-        Map<?, ?> body = (Map<?, ?>) response.getBody();
-        assertNotNull(body);
-        assertEquals("Déconnexion réussie", body.get("message"));
-
-        verify(jwtService).blacklistToken("fake-token");
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNull(response.getBody()); // Pas de corps
     }
 
     @Test
     void testLogoutBadRequest() {
-        String token = "invalid-header";
+        String token = null;
 
-        ResponseEntity<?> response = loginController.logout(token);
+        // Appel du logout
+        ResponseEntity<Void> response = loginController.logout(token);
 
-        assertNotNull(response);
-        assertEquals(400, response.getStatusCode().value());
-
-        Map<?, ?> body = (Map<?, ?>) response.getBody();
-        assertNotNull(body);
-        assertEquals("Token manquant", body.get("error"));
-
+        // Aucun token à blacklister
         verifyNoInteractions(jwtService);
+
+        // Vérifie le statut HTTP
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode()); // Toujours OK dans ce design minimal
+        assertNull(response.getBody());
     }
 }

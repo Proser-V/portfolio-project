@@ -26,7 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService, UserDetails
 
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getEmail())
-                .password(user.getHashedPassword()) // ton password hashé
+                .password(user.getHashedPassword()) //  password hashé
                 .authorities(new SimpleGrantedAuthority("ROLE_" + user.getUserRole().name()))
                 .accountLocked(!user.getActive()) // si user non actif, compte verrouillé
                 .build();

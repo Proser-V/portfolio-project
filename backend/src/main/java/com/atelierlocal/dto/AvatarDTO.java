@@ -12,6 +12,8 @@ public class AvatarDTO {
         this.extension = avatar.getExtension();
     }
 
+    // Getters et setters
+
     public String getUrl() { return url; }
     public void setUrl(String url) { this.url = url; }
 

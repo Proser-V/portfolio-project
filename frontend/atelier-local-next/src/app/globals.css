@@ -15,3 +15,50 @@ a {
   text-decoration: none;
   color: inherit;
 }
+
+.input {
+  @apply w-full lg:w-3/4 h-10 rounded-[42.5px] bg-white shadow-[0px_4px_4px_rgba(0,0,0,0.25)] font-cabin
+         border-2 border-solid border-silver px-4 text-xs text-blue outline-none;
+  box-sizing: border-box;
+  display: block;
+}
+
+select.input {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-size: 12px;
+}
+
+input[type="date"].input {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.form-group {
+  @apply flex space-x-4 w-full max-w-md; /* Flexbox with 1rem gap, max-width for control */
+}
+
+.form-group .input {
+  @apply w-1/2; /* 50% width for each field */
+}
+
+.textarea {
+  @apply w-3/4 h-40 rounded-[20px] bg-white shadow-[0px_4px_4px_rgba(0,0,0,0.25)] font-cabin
+         border-2 border-solid border-silver px-4 py-2 text-xs text-silver outline-none resize-none;
+}
+
+.btn-primary {
+  @apply w-1/2 h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
+         text-gold text-base font-cabin flex items-center justify-center hover:bg-blue transition;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hidden {
+  -ms-overflow-style: none;  /* Pour IE et Edge */
+  scrollbar-width: none;     /* Pour Firefox */
+}

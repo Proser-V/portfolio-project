@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.atelierlocal.model.Artisan;
+import com.atelierlocal.model.UserRole;
 
 
 public class ArtisanResponseDTO {
@@ -17,10 +18,12 @@ public class ArtisanResponseDTO {
     private AvatarDTO avatar;
     private Double latitude;
     private Double longitude;
+    private UUID categoryId;
     private String categoryName;
     private LocalDate activityStartDate;
     private int recommendationsCount;
     private List<UploadedPhotoResponseDTO> photoGallery;
+    private UserRole role;
 
     public ArtisanResponseDTO(Artisan artisan) {
         this.id = artisan.getId();
@@ -32,12 +35,14 @@ public class ArtisanResponseDTO {
         this.avatar = artisan.getAvatar() != null ? new AvatarDTO(artisan.getAvatar()) : null;
         this.latitude = artisan.getLatitude();
         this.longitude = artisan.getLongitude();
+        this.categoryId = artisan.getCategory() != null ? artisan.getCategory().getId() : null;
         this.categoryName = artisan.getCategory() != null ? artisan.getCategory().getName() : null;
         this.activityStartDate = artisan.getActivityStartDate();
         this.recommendationsCount = artisan.getRecommendations() != null ? artisan.getRecommendations().size() : 0;
         this.photoGallery = artisan.getPhotoGallery().stream()
             .map(UploadedPhotoResponseDTO::new)
             .toList();
+        this.role = artisan.getUserRole();
     }
 
     // Getters et setters
@@ -69,6 +74,9 @@ public class ArtisanResponseDTO {
     public Double getLongitude() { return longitude; }
     public void setLongitude(Double longitude) { this.longitude = longitude; }
 
+    public UUID getCategoryId() { return categoryId; }
+    public void setCategoryId(UUID categoryId) { this.categoryId = categoryId; }
+
     public String getCategoryName() { return categoryName; }
     public void setCategoryName(String categoryName) { this.categoryName = categoryName; }
 
@@ -80,4 +88,7 @@ public class ArtisanResponseDTO {
 
     public List<UploadedPhotoResponseDTO> getPhotoGallery() { return photoGallery; }
     public void setPhotoGallery(List<UploadedPhotoResponseDTO> photoGallery) { this.photoGallery = photoGallery; }
+
+    public UserRole getRole() { return role; }
+    public void setRole(UserRole role) { this.role = role; }
 }

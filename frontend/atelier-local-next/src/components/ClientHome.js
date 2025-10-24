@@ -1,11 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import avatar from "../../public/tronche.jpg"
 
-export default function ClientHome({ client }) {
+export default function ClientHome({ client, artisans }) {
     return (
-        <section className="relative mx-auto px-4 sm:px-6 md:px-8">
-            <h1 className="text-blue text-xl md:text-2xl text-center mt-4 font-cabin">
+        <section className="relative mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 className="text-blue text-xl lg:text-2xl text-center mt-4 font-cabin">
                 Le savoir faire à Dijon et ses alentours
             </h1>
 
@@ -19,13 +18,13 @@ export default function ClientHome({ client }) {
             <div className="text-center">
                 <p className="text-gold -mb-1 text-lg">Bienvenue dans l'Atelier, {client.firstName} !</p>
             </div>
-            <div className="flex flex-wrap justify-center gap-1 md:flex-row-1">
+            <div className="flex flex-wrap justify-center gap-1 lg:flex-row-1">
                 <Link
-                href="/askings"
+                href="/new-asking"
                 className="max-w-xs h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
                             text-gold text-sm font-normal font-cabin
                             flex items-center justify-center mx-2 
-                            hover:bg-blue transition mt-5 px-4"
+                            mt-5 px-4"
                 >
                 Postez une demande de prestation
                 </Link>
@@ -34,89 +33,49 @@ export default function ClientHome({ client }) {
                 className="max-w-xs h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
                             text-gold text-sm font-normal font-cabin
                             flex items-center justify-center mx-2
-                            hover:bg-blue transition md:mt-5 px-4"
+                            mt-5 px-4"
                 >
                 Parcourez les artisans autour de chez vous
                 </Link>
             </div>
 
             <div className="relative flex flex-col items-center w-full">
-                <p className="text-blue text-center font-cabin text-sm mb-4 md:absolute md:top-10 md:mb-0">
+                <p className="text-blue text-center font-cabin text-sm mb-4 lg:absolute lg:top-10 lg:mb-0">
                 Vos voisins les recommandent :
                 </p>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 justify-items-center w-full max-w-4xl mx-auto">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 justify-items-center w-full max-w-4xl mx-auto">
+                    
+                    {artisans.map((artisan, index) => (
                     <Link
-                        href="/artisans"
-                        className="relative w-[250px] h-[250px] border-2 border-solid border-gold shadow-lg overflow-hidden md:mt-12">
+                        key={artisan.id || index}
+                        href={`/artisans/${artisan.id}`}
+                        className={`relative w-[250px] h-[250px] border-2 border-solid border-gold shadow-lg overflow-hidden ${
+                        index === 1 ? "lg:mt-24" : "lg:mt-12"
+                        }`}
+                    >
                         <Image
-                            src={avatar}
-                            alt="avatar"
-                            fill
-                            className="object-cover"
+                        src={artisan.avatar?.url || "/placeholder.png"}
+                        alt={artisan.name}
+                        width={250}
+                        height={250}
+                        className="object-center object-cover"
                         />
-                        <div className="absolute inset-0 z-10"
-                            style={{
-                                backgroundImage: 'linear-gradient(to bottom right, transparent, rgba(255, 255, 255, 1))'
-                            }}>
-                        </div>
+                        <div
+                        className="absolute inset-0 z-10"
+                        style={{
+                            backgroundImage:
+                            "linear-gradient(to bottom right, transparent, rgba(255, 255, 255, 1))",
+                        }}
+                        ></div>
                         <div className="absolute -bottom-2 right-2 text-right text-blue font-cabin z-20">
-                            <p>
-                                Nom de l'artisan<br/>
-                                Métier<br/>
-                                Tel: 03 80 XX XX XX<br/>
-                                email@artisan.com
-                            </p>
+                        <p>
+                            <span className="text-lg font-bold">{artisan.name}</span><br />
+                            <span className="text-base font-semibold">{artisan.categoryName}</span><br />
+                        </p>
                         </div>
                     </Link>
-
-                    <Link
-                        href="/artisans"
-                        className="relative w-[250px] h-[250px] border-2 border-solid border-gold shadow-lg overflow-hidden md:mt-24">
-                        <Image
-                            src={avatar}
-                            alt="avatar"
-                            fill
-                            className="object-cover"
-                        />
-                        <div className="absolute inset-0 z-10"
-                            style={{
-                                backgroundImage: 'linear-gradient(to bottom right, transparent, rgba(255, 255, 255, 1))'
-                            }}>
-                        </div>
-                        <div className="absolute -bottom-2 right-2 text-right text-blue font-cabin z-20">
-                            <p>
-                                Nom de l'artisan<br/>
-                                Métier<br/>
-                                Tel: 03 80 XX XX XX<br/>
-                                email@artisan.com
-                            </p>
-                        </div>
-                    </Link>
-
-                    <Link
-                        href="/artisans"
-                        className="relative w-[250px] h-[250px] border-2 border-solid border-gold shadow-lg overflow-hidden md:mt-12">
-                        <Image
-                            src={avatar}
-                            alt="avatar"
-                            fill
-                            className="object-cover"
-                        />
-                        <div className="absolute inset-0 z-10"
-                            style={{
-                                backgroundImage: 'linear-gradient(to bottom right, transparent, rgba(255, 255, 255, 1))'
-                            }}>
-                        </div>
-                        <div className="absolute -bottom-2 right-2 text-right text-blue font-cabin z-20">
-                            <p>
-                                Nom de l'artisan<br/>
-                                Métier<br/>
-                                Tel: 03 80 XX XX XX<br/>
-                                email@artisan.com
-                            </p>
-                        </div>
-                    </Link>
+                    ))}
                 </div>
             </div>
         </section>

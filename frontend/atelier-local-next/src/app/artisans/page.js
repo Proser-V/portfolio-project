@@ -1,7 +1,11 @@
 import ArtisansPageClient from "@/components/ArtisansPageClient";
 import getApiUrl from "@/lib/api";
 
-// Fetch côté serveur
+/**
+ * Récupère toutes les catégories d'artisans depuis l'API.
+ * Fetch côté serveur avec cache désactivé pour toujours avoir les données à jour.
+ * @returns {Promise<Array>} Tableau des catégories d'artisans ou [] en cas d'erreur
+ */
 async function getArtisanCategories() {
   try {
     const res = await fetch(
@@ -16,6 +20,11 @@ async function getArtisanCategories() {
   }
 }
 
+/**
+ * Récupère tous les artisans depuis l'API.
+ * Fetch côté serveur avec cache désactivé.
+ * @returns {Promise<Array>} Tableau des artisans ou [] en cas d'erreur
+ */
 async function getAllArtisans() {
   try {
     const res = await fetch(
@@ -31,6 +40,11 @@ async function getAllArtisans() {
   }
 }
 
+/**
+ * Page principale des artisans.
+ * Effectue les fetchs côté serveur en parallèle et transmet les données initiales au composant client.
+ * @returns {JSX.Element} Composant client ArtisansPageClient avec données initiales
+ */
 export default async function ArtisansPage() {
   // Fetch en parallèle côté serveur
   const [categories, artisans] = await Promise.all([
@@ -38,7 +52,7 @@ export default async function ArtisansPage() {
     getAllArtisans()
   ]);
 
-  // Passe les données au composant client pour les filtres
+  // Passe les données au composant client pour les filtres et l'affichage
   return (
     <ArtisansPageClient 
       initialCategories={categories}

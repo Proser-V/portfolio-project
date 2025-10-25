@@ -5,13 +5,29 @@ import getApiUrl from "@/lib/api";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * @function ConversationPage
+ * @async
+ * @description
+ * Page serveur de la conversation entre l'utilisateur connecté et un autre utilisateur (client ou artisan).  
+ * Elle récupère :
+ * - Les informations de session de l'utilisateur courant  
+ * - L'historique des messages entre les deux utilisateurs  
+ * - Les informations de profil de l'interlocuteur (artisan ou client)
+ *
+ * @param {Object} params - Paramètres dynamiques provenant de l'URL.
+ * @param {string} params.userId - Identifiant de l'autre utilisateur dans la conversation.
+ * @returns {Promise<JSX.Element>} Composant JSX affichant la conversation ou un message d’erreur/session expirée.
+ */
 export default async function ConversationPage({ params }) {
+  // Récupération du cookie JWT côté serveur
   const cookieStore = await cookies();
   const jwt = cookieStore.get("jwt")?.value;
 
-  // Récupérer l'utilisateur connecté
+  // Récupération des informations de l'utilisateur actuellement connecté
   const user = await getUser();
 
+  // Si la session est invalide ou expirée, invite à se reconnecter
   if (!user || !user.id) {
     return (
       <div className="mt-20 text-center text-red-500">
@@ -24,27 +40,35 @@ export default async function ConversationPage({ params }) {
     );
   }
 
+  // Extraction du paramètre userId depuis l'URL
   const { userId } = await params;
   const otherUserId = userId;
 
-  // Récupérer les messages
+  /**
+   * Étape 1 : Récupération de l'historique des messages
+   */
   const messagesRes = await fetch(
     `${getApiUrl()}/api/messages/history?user1Id=${user.id}&user2Id=${otherUserId}`,
     {
       headers: jwt ? { Cookie: `jwt=${jwt}` } : {},
       credentials: "include",
-      cache: "no-store",
+      cache: "no-store", // Toujours récupérer les messages à jour
     }
   );
 
+  // Variables pour stocker les données de la conversation
   let messages = [];
   let otherUserName = "Utilisateur inconnu";
   let otherUser = null;
 
-  // Déterminer le rôle et le nom de l'autre utilisateur
+  /**
+   * Étape 2 : Tentative de récupération des informations de l'autre utilisateur
+   * (l'API peut renvoyer un artisan ou un client selon son rôle)
+   */
   try {
     let role = null;
 
+    // 🔹 Tentative 1 : Vérifie si l’autre utilisateur est un artisan
     const artisanRes = await fetch(
       `${getApiUrl()}/api/artisans/${otherUserId}`,
       {
@@ -58,6 +82,7 @@ export default async function ConversationPage({ params }) {
       otherUser = await artisanRes.json();
       role = "artisan";
     } else {
+      // 🔹 Tentative 2 : Sinon, essaie comme client
       const clientRes = await fetch(
         `${getApiUrl()}/api/clients/${otherUserId}`,
         {
@@ -73,6 +98,7 @@ export default async function ConversationPage({ params }) {
       }
     }
 
+    // Si on a bien trouvé un utilisateur et son rôle, on détermine le nom à afficher
     if (otherUser && role) {
       if (role === "artisan") {
         otherUserName = otherUser.name || "Artisan inconnu";
@@ -86,11 +112,14 @@ export default async function ConversationPage({ params }) {
     console.error("Erreur lors de la récupération de l'autre utilisateur :", e);
   }
 
-  // Traiter la réponse des messages
+  /**
+   * Étape 3 : Traitement de la réponse des messages
+   */
   if (messagesRes.ok) {
     const data = await messagesRes.json();
     messages = Array.isArray(data) ? data : [];
   } else {
+    // En cas d'erreur de récupération, affichage d’un message d’erreur simple
     return (
       <div className="mt-20 text-center text-red-500">
         Erreur de chargement de la conversation.
@@ -98,12 +127,17 @@ export default async function ConversationPage({ params }) {
     );
   }
 
+  /**
+   * Étape 4 : Affichage du contenu principal de la page de conversation
+   */
   return (
     <div className="">
       <main className="w-[90vw] md:w-[45vw] mx-auto p-4">
         <h1 className="text-center text-blue text-xl font-semibold mb-6">
           Votre fil de discussion avec {otherUserName}
         </h1>
+
+        {/* Composant client gérant l’affichage et l’envoi des messages */}
         <ConversationClient
           initialMessages={messages}
           user={user}

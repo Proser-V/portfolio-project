@@ -6,13 +6,33 @@ import { motion, AnimatePresence } from "framer-motion";
 import fetchCoordinates from "../../../utils/fetchCoordinates";
 import getApiUrl from "@/lib/api";
 
+/**
+ * @component RegistrationPage
+ * @description
+ * Composant de création de compte utilisateur (client ou artisan).  
+ * Affiche un formulaire dynamique dont le contenu change en fonction du rôle sélectionné.  
+ * Gère l’upload d’un avatar, la validation des champs, la conversion d’adresse en coordonnées,
+ * et l’envoi des données au backend via des requêtes multipart/form-data.
+ *
+ * @param {Object} props - Les propriétés du composant.
+ * @param {Object} [props.user] - L’utilisateur connecté (ou `undefined` si non authentifié).
+ * @returns {JSX.Element} L’interface de création de compte.
+ */
 export default function RegistrationPage({ user }) {
   const router = useRouter();
+
+  // Rôle actif (client par défaut)
   const [role, setRole] = useState("client");
+
+  // Message d’erreur affiché à l’utilisateur
   const [error, setError] = useState("");
+
+  // Liste des catégories d’artisans récupérées depuis l’API
   const [categories, setCategories] = useState([]);
 
-  // Données formulaires
+  /**
+   * État pour les données de formulaire "client"
+   */
   const [clientData, setClientData] = useState({
     email: "",
     password: "",
@@ -26,6 +46,9 @@ export default function RegistrationPage({ user }) {
     userRole: "CLIENT",
   });
 
+  /**
+   * État pour les données de formulaire "artisan"
+   */
   const [artisanData, setArtisanData] = useState({
     email: "",
     password: "",
@@ -42,6 +65,9 @@ export default function RegistrationPage({ user }) {
     userRole: "ARTISAN",
   });
 
+  /**
+   * Chargement initial des catégories d’artisans depuis l’API.
+   */
   useEffect(() => {
     fetch(`${getApiUrl()}/api/artisan-category/`)
       .then((res) => res.json())
@@ -49,7 +75,14 @@ export default function RegistrationPage({ user }) {
       .catch((err) => console.error("Erreur lors du chargement des catégories :", err));
   }, []);
 
-  // Handlers Client
+  // ────────────────────────────────────────────────────────────────
+  // HANDLERS CLIENT
+  // ────────────────────────────────────────────────────────────────
+
+  /**
+   * Gère la saisie du formulaire client (texte ou image).
+   * @param {React.ChangeEvent<HTMLInputElement>} e - L’événement de changement.
+   */
   const handleClientChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "avatar" && files[0]) {
@@ -65,6 +98,9 @@ export default function RegistrationPage({ user }) {
     }
   };
 
+  /**
+   * Supprime l’avatar sélectionné (client ou artisan).
+   */
   const handleRemoveAvatar = () => {
     setClientData((prev) => ({
       ...prev,
@@ -80,13 +116,21 @@ export default function RegistrationPage({ user }) {
     if (fileInput) fileInput.value = "";
   };
 
+  /**
+   * Envoie le formulaire de création d’un client.
+   * Convertit l’adresse en coordonnées avant l’envoi.
+   * @async
+   * @param {React.FormEvent<HTMLFormElement>} e - L’événement de soumission du formulaire.
+   */
   const handleClientSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Convertir l’adresse en coordonnées GPS
       const coords = await fetchCoordinates(clientData.address);
       const { address, avatarFile, avatarPreview, ...rest } = clientData;
       const payload = { ...rest, latitude: coords.latitude, longitude: coords.longitude };
-      
+
+      // Construction du corps multipart/form-data
       const formData = new FormData();
       formData.append("client", new Blob([JSON.stringify(payload)], { type: "application/json" }));
       if (avatarFile) {
@@ -94,14 +138,19 @@ export default function RegistrationPage({ user }) {
         console.log("Avatar ajouté au FormData:", avatarFile.name, avatarFile.type);
       }
 
-      console.log("FormData envoyé:", Array.from(formData.entries()).map(([k, v]) => [k, v instanceof Blob ? `Blob(${v.size} bytes)` : v]));
+      console.log(
+        "FormData envoyé:",
+        Array.from(formData.entries()).map(([k, v]) => [k, v instanceof Blob ? `Blob(${v.size} bytes)` : v])
+      );
 
+      // Envoi de la requête HTTP vers l’API d’inscription client
       const response = await fetch(`${getApiUrl()}/api/clients/register`, {
         method: "POST",
         body: formData,
         credentials: "include",
       });
 
+      // Gestion des erreurs HTTP
       if (!response.ok) {
         let errorMessage = "Veuillez remplir tous les champs obligatoires.";
         try {
@@ -114,16 +163,17 @@ export default function RegistrationPage({ user }) {
         return;
       }
 
+      // Succès
       const result = await response.json();
       console.log("Client créé avec succès:", result);
-      
-      // Vérifier si l'avatar a été enregistré
+
       if (avatarFile && result.avatar) {
         console.log("Avatar enregistré:", result.avatar);
       } else if (avatarFile && !result.avatar) {
         console.warn("⚠️ Avatar non enregistré côté backend");
       }
 
+      // Nettoyage de l’URL de prévisualisation
       if (clientData.avatarPreview) {
         URL.revokeObjectURL(clientData.avatarPreview);
       }
@@ -135,7 +185,14 @@ export default function RegistrationPage({ user }) {
     }
   };
 
-  // Handlers Artisan
+  // ────────────────────────────────────────────────────────────────
+  // HANDLERS ARTISAN
+  // ────────────────────────────────────────────────────────────────
+
+  /**
+   * Gère la saisie du formulaire artisan (texte ou image).
+   * @param {React.ChangeEvent<HTMLInputElement>} e - L’événement de changement.
+   */
   const handleArtisanChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "avatar" && files[0]) {
@@ -151,15 +208,19 @@ export default function RegistrationPage({ user }) {
     }
   };
 
+  /**
+   * Envoie le formulaire de création d’un artisan.
+   * Gère la conversion d’adresse et l’envoi multipart/form-data.
+   * @async
+   * @param {React.FormEvent<HTMLFormElement>} e - L’événement de soumission.
+   */
   const handleArtisanSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Obtenir les coordonnées
       const coords = await fetchCoordinates(artisanData.address);
       const { address, avatarFile, avatarPreview, ...rest } = artisanData;
       const payload = { ...rest, latitude: coords.latitude, longitude: coords.longitude };
 
-      // Créer la requête multipart/form-data
       const formData = new FormData();
       formData.append("artisan", new Blob([JSON.stringify(payload)], { type: "application/json" }));
       if (artisanData.avatarFile) {
@@ -178,6 +239,7 @@ export default function RegistrationPage({ user }) {
         return;
       }
 
+      // Libération de l'URL temporaire d'image
       if (artisanData.avatarPreview) {
         URL.revokeObjectURL(artisanData.avatarPreview);
       }
@@ -191,25 +253,41 @@ export default function RegistrationPage({ user }) {
     }
   };
 
-  // Animation Framer Motion
+  // ────────────────────────────────────────────────────────────────
+  // ANIMATIONS ET STYLE
+  // ────────────────────────────────────────────────────────────────
+
+  // Variantes Framer Motion pour les transitions entre les formulaires
   const slideVariants = {
     initial: { x: "100%", opacity: 0 },
     animate: { x: 0, opacity: 1 },
     exit: { x: "-100%", opacity: 0 },
   };
 
+  // Classes dynamiques pour le style des boutons selon le rôle sélectionné
   const activeBtnStyle = "bg-blue border-gold text-gold hover:bg-blue";
   const inactiveBtnStyle = "bg-white border-silver text-blue hover:bg-gray-100";
 
+  // ────────────────────────────────────────────────────────────────
+  // RENDU JS
+  // ────────────────────────────────────────────────────────────────
+
   return (
+    // Conteneur principal de la page d'inscription
     <div className="mt-6 flex flex-col items-center justify-center px-4 lg:px-0">
+      {/* Titre principal */}
       <h1 className="text-center text-blue text-xl font-normal font-cabin mb-4">
         Création de compte
       </h1>
 
-      {/* Boutons de rôle */}
-      <p className="text-silver text-sm">Vous souhaitez vous inscrire en tant que :</p>
+      {/* Sélecteur du rôle d’inscription : habitant (client) ou professionnel (artisan) */}
+      <p className="text-silver text-sm">
+        Vous souhaitez vous inscrire en tant que :
+      </p>
+
+      {/* Boutons de sélection du rôle */}
       <div className="flex gap-4 mb-8">
+        {/* Bouton "Habitant" — active le mode client */}
         <button
           onClick={() => setRole("client")}
           className={`lg:w-[200px] w-1/2 h-10 rounded-[42.5px] border-2 border-solid 
@@ -218,6 +296,8 @@ export default function RegistrationPage({ user }) {
         >
           Habitant
         </button>
+
+        {/* Bouton "Professionnel" — active le mode artisan */}
         <button
           onClick={() => setRole("artisan")}
           className={`lg:w-[200px] w-1/2 px-8 h-10 rounded-[42.5px] border-2 border-solid 
@@ -228,11 +308,13 @@ export default function RegistrationPage({ user }) {
         </button>
       </div>
 
+      {/* Message d’erreur global du formulaire (affiché si nécessaire) */}
       {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
 
-      {/* Zone d’animation */}
+      {/* Zone contenant l’animation des formulaires (client / artisan) */}
       <div className="relative flex w-full lg:w-screen items-center justify-center overflow-x-hidden overflow-y-auto py-2">
         <AnimatePresence mode="wait">
+          {/* FORMULAIRE CLIENT */}
           {role === "client" ? (
             <motion.form
               key="client"
@@ -244,9 +326,11 @@ export default function RegistrationPage({ user }) {
               onSubmit={handleClientSubmit}
               className="flex flex-col items-center justify-center w-full px-6"
             >
+              {/* Conteneur des deux colonnes : avatar (gauche) + informations (droite) */}
               <div className="flex flex-col lg:flex-row items-center justify-center w-full max-w-6xl">
-                {/* Colonne gauche */}
+                {/* ───── Colonne gauche : Avatar du client ───── */}
                 <div className="relative lg:w-48 w-36 aspect-square border-2 border-dashed border-silver flex items-center justify-center text-center mb-6">
+                  {/* Champ de fichier invisible couvrant tout le carré */}
                   <input
                     type="file"
                     name="avatar"
@@ -254,6 +338,7 @@ export default function RegistrationPage({ user }) {
                     onChange={handleClientChange}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   />
+                  {/* Si une image est sélectionnée, afficher la prévisualisation */}
                   {clientData.avatarPreview ? (
                     <>
                       <img
@@ -261,6 +346,7 @@ export default function RegistrationPage({ user }) {
                         alt="Prévisualisation de l'avatar"
                         className="w-full h-full object-cover rounded"
                       />
+                      {/* Bouton pour supprimer l’avatar sélectionné */}
                       <button
                         type="button"
                         onClick={handleRemoveAvatar}
@@ -270,20 +356,65 @@ export default function RegistrationPage({ user }) {
                       </button>
                     </>
                   ) : (
+                    // Texte d’invitation par défaut
                     <span className="text-silver">Ajoutez une photo de profil (optionnel)</span>
                   )}
                 </div>
-                {/* Colonne droite */}
+
+                {/* ───── Colonne droite : Informations du client ───── */}
                 <div className="flex flex-col items-center justify-center w-[100%] lg:w-1/2 gap-4">
-                  <input name="firstName" value={clientData.firstName} onChange={handleClientChange} placeholder="Votre prénom" className="input" maxLength={50}/>
-                  <input name="lastName" value={clientData.lastName} onChange={handleClientChange} placeholder="Votre nom" className="input" maxLength={50}/>
-                  <input name="email" value={clientData.email} onChange={handleClientChange} placeholder="Adresse email" className="input" maxLength={100}/>
-                  <input type="password" name="password" value={clientData.password} onChange={handleClientChange} placeholder="Mot de passe" className="input" />
-                  <input name="address" value={clientData.address} onChange={handleClientChange} placeholder="Adresse" className="input" />
-                  <input name="phoneNumber" value={clientData.phoneNumber} onChange={handleClientChange} placeholder="Téléphone (optionnel)" className="input" maxLength={12}/>
+                  {/* Champs de saisie client */}
+                  <input
+                    name="firstName"
+                    value={clientData.firstName}
+                    onChange={handleClientChange}
+                    placeholder="Votre prénom"
+                    className="input"
+                    maxLength={50}
+                  />
+                  <input
+                    name="lastName"
+                    value={clientData.lastName}
+                    onChange={handleClientChange}
+                    placeholder="Votre nom"
+                    className="input"
+                    maxLength={50}
+                  />
+                  <input
+                    name="email"
+                    value={clientData.email}
+                    onChange={handleClientChange}
+                    placeholder="Adresse email"
+                    className="input"
+                    maxLength={100}
+                  />
+                  <input
+                    type="password"
+                    name="password"
+                    value={clientData.password}
+                    onChange={handleClientChange}
+                    placeholder="Mot de passe"
+                    className="input"
+                  />
+                  <input
+                    name="address"
+                    value={clientData.address}
+                    onChange={handleClientChange}
+                    placeholder="Adresse"
+                    className="input"
+                  />
+                  <input
+                    name="phoneNumber"
+                    value={clientData.phoneNumber}
+                    onChange={handleClientChange}
+                    placeholder="Téléphone (optionnel)"
+                    className="input"
+                    maxLength={12}
+                  />
                 </div>
               </div>
 
+              {/* Bouton de validation du formulaire client */}
               <div className="flex justify-center w-full mt-8 mb-5">
                 <button
                   type="submit"
@@ -296,6 +427,7 @@ export default function RegistrationPage({ user }) {
               </div>
             </motion.form>
           ) : (
+            // FORMULAIRE ARTISAN
             <motion.form
               key="artisan"
               variants={slideVariants}
@@ -306,10 +438,11 @@ export default function RegistrationPage({ user }) {
               onSubmit={handleArtisanSubmit}
               className="flex items-center justify-center w-full px-6"
             >
+              {/* Conteneur principal : deux colonnes (avatar + bio / infos entreprise) */}
               <div className="flex flex-col lg:flex-row items-center justify-center w-full max-w-6xl">
-                {/* Colonne gauche */}
+                {/* ───── Colonne gauche : Avatar et bio ───── */}
                 <div className="flex flex-col items-center justify-center w-full lg:w-1/3 gap-4">
-                  {/* Avatar */}
+                  {/* Zone de sélection d’avatar */}
                   <div className="relative w-36 lg:w-48 aspect-square border-2 border-dashed border-silver mb-6 overflow-hidden">
                     <input
                       type="file"
@@ -318,6 +451,7 @@ export default function RegistrationPage({ user }) {
                       onChange={handleArtisanChange}
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                     />
+                    {/* Prévisualisation de l’avatar */}
                     {artisanData.avatarPreview ? (
                       <>
                         <img
@@ -325,6 +459,7 @@ export default function RegistrationPage({ user }) {
                           alt="Prévisualisation de l'avatar"
                           className="absolute inset-0 w-full h-full object-cover object-center"
                         />
+                        {/* Bouton de suppression de l’image */}
                         <button
                           type="button"
                           onClick={handleRemoveAvatar}
@@ -334,12 +469,14 @@ export default function RegistrationPage({ user }) {
                         </button>
                       </>
                     ) : (
+                      // Texte par défaut si aucun avatar
                       <div className="flex items-center justify-center w-full h-full text-silver text-center">
                         Ajoutez une photo de profil (optionnel)
                       </div>
                     )}
                   </div>
 
+                  {/* Zone de texte "bio" visible uniquement sur desktop */}
                   <div className="relative w-full flex justify-center">
                     <textarea
                       name="bio"
@@ -355,11 +492,11 @@ export default function RegistrationPage({ user }) {
                   </div>
                 </div>
 
-                {/* Colonne droite */}
+                {/* ───── Colonne droite : Informations entreprise ───── */}
                 <div className="flex flex-col items-center justify-center w-full lg:w-3/4 gap-4 mt-4">
-                  {/* Formulaire principal */}
+                  {/* Ligne combinée Catégorie + Date de début d’activité */}
                   <div className="flex flex-row items-center justify-center gap-2 w-[80%]">
-                    {/* Catégorie */}
+                    {/* Sélecteur de catégorie professionnelle */}
                     <div className="flex flex-col w-1/2 items-center justify-center">
                       <span className="text-xs text-silver mb-1 italic">Quel est votre métier ?</span>
                       <select
@@ -370,14 +507,16 @@ export default function RegistrationPage({ user }) {
                       >
                         <option value="">Votre catégorie pro</option>
                         {categories.map((cat) => (
-                          <option key={cat.id} value={cat.name}>{cat.name}</option>
+                          <option key={cat.id} value={cat.name}>
+                            {cat.name}
+                          </option>
                         ))}
                       </select>
                     </div>
 
-                    {/* Date */}
+                    {/* Sélecteur de date de début d’activité */}
                     <div className="flex flex-col w-1/2 items-center justify-center">
-                      <span className="text-xs text-silver mb-1 italic">Depuis quand?</span>
+                      <span className="text-xs text-silver mb-1 italic">Depuis quand ?</span>
                       <input
                         type="date"
                         name="activityStartDate"
@@ -388,14 +527,56 @@ export default function RegistrationPage({ user }) {
                     </div>
                   </div>
 
-                  <input name="name" value={artisanData.name} onChange={handleArtisanChange} placeholder="Nom de votre entreprise" className="input" maxLength={50}/>
-                  <input name="email" value={artisanData.email} onChange={handleArtisanChange} placeholder="Adresse email" className="input" maxLength={100}/>
-                  <input type="password" name="password" value={artisanData.password} onChange={handleArtisanChange} placeholder="Mot de passe" className="input" />
-                  <input name="address" value={artisanData.address} onChange={handleArtisanChange} placeholder="Votre adresse" className="input" />
-                  <input name="siret" value={artisanData.siret} onChange={handleArtisanChange} placeholder="SIRET" className="input" maxLength={14}/>
-                  <input name="phoneNumber" value={artisanData.phoneNumber} onChange={handleArtisanChange} placeholder="Votre numéro de téléphone (optionnel)" className="input" maxLength={12}/>
+                  {/* Champs d’informations de l’entreprise artisanale */}
+                  <input
+                    name="name"
+                    value={artisanData.name}
+                    onChange={handleArtisanChange}
+                    placeholder="Nom de votre entreprise"
+                    className="input"
+                    maxLength={50}
+                  />
+                  <input
+                    name="email"
+                    value={artisanData.email}
+                    onChange={handleArtisanChange}
+                    placeholder="Adresse email"
+                    className="input"
+                    maxLength={100}
+                  />
+                  <input
+                    type="password"
+                    name="password"
+                    value={artisanData.password}
+                    onChange={handleArtisanChange}
+                    placeholder="Mot de passe"
+                    className="input"
+                  />
+                  <input
+                    name="address"
+                    value={artisanData.address}
+                    onChange={handleArtisanChange}
+                    placeholder="Votre adresse"
+                    className="input"
+                  />
+                  <input
+                    name="siret"
+                    value={artisanData.siret}
+                    onChange={handleArtisanChange}
+                    placeholder="SIRET"
+                    className="input"
+                    maxLength={14}
+                  />
+                  <input
+                    name="phoneNumber"
+                    value={artisanData.phoneNumber}
+                    onChange={handleArtisanChange}
+                    placeholder="Votre numéro de téléphone (optionnel)"
+                    className="input"
+                    maxLength={12}
+                  />
 
-                  {/* Bio mobile */}
+                  {/* Zone de texte "bio" mobile (visible uniquement sur petits écrans) */}
                   <div className="relative w-full flex justify-center">
                     <textarea
                       name="bio"
@@ -410,6 +591,7 @@ export default function RegistrationPage({ user }) {
                     </p>
                   </div>
 
+                  {/* Bouton de validation du formulaire artisan */}
                   <button
                     type="submit"
                     className="w-full lg:w-1/2 h-10 rounded-[42.5px] bg-blue border-2 border-solid border-gold 
@@ -421,7 +603,7 @@ export default function RegistrationPage({ user }) {
                   </button>
                 </div>
               </div>
-              </motion.form>
+            </motion.form>
           )}
         </AnimatePresence>
       </div>

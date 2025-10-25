@@ -57,7 +57,7 @@ async function fetchUnreadMessages(jwtToken) {
  * Elle récupère les informations de l'utilisateur, les conversations associées et les messages non lus,  
  * puis affiche la liste via le composant `MessengerList`.
  *
- * @returns {Promise<JSX.Element>} Composant JSX affichant la messagerie ou un message d’erreur/session expirée.
+ * @returns {Promise<JSX.Element>} Composant JSX affichant la messagerie ou un message d’erreur/Vous n'êtes pas connectés.
  */
 export default async function MessengerPage() {
   // Récupère les cookies côté serveur (Next.js 13+)
@@ -70,8 +70,8 @@ export default async function MessengerPage() {
   // Vérifie la validité de la session utilisateur
   if (!user || !user.id) {
       return (
-          <div className="mt-20 text-center text-red-500">
-              Session expirée - <a href="/login" className="underline text-blue-600">Veuillez vous reconnecter</a>.
+          <div className="mt-20 text-center text-blue">
+              Vous n'êtes pas connecté - <a href="/login" className="underline text-blue">Veuillez vous connecter</a>.
           </div>
       );
   }

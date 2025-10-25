@@ -1,3 +1,5 @@
+import getApiUrl from "@/lib/api";
+
 /**
  * Convertit une adresse postale en coordonnées GPS (latitude et longitude)
  * en interrogeant le service de géocodage du backend.
@@ -22,7 +24,9 @@ const fetchCoordinates = async (address) => {
 
   try {
     // Requête vers le service backend de géocodage
-    const response = await fetch(`${process.env._API_URL}/api/geocode`, {
+    const apiUrl = getApiUrl(); // Appelez la fonction pour obtenir l'URL
+    console.log("API URL:", apiUrl); // Pour déboguer
+    const response = await fetch(`${apiUrl}/api/geocode`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ address }),

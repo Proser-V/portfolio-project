@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
  *
  * @param {Object} params - Paramètres dynamiques provenant de l'URL.
  * @param {string} params.userId - Identifiant de l'autre utilisateur dans la conversation.
- * @returns {Promise<JSX.Element>} Composant JSX affichant la conversation ou un message d’erreur/session expirée.
+ * @returns {Promise<JSX.Element>} Composant JSX affichant la conversation ou un message d’erreur/Vous n'êtes pas connectés.
  */
 export default async function ConversationPage({ params }) {
   // Récupération du cookie JWT côté serveur
@@ -30,10 +30,10 @@ export default async function ConversationPage({ params }) {
   // Si la session est invalide ou expirée, invite à se reconnecter
   if (!user || !user.id) {
     return (
-      <div className="mt-20 text-center text-red-500">
-        Session expirée -{" "}
-        <a href="/login" className="underline text-blue-600">
-          Veuillez vous reconnecter
+      <div className="mt-20 text-center text-blue">
+        Vous n'êtes pas connecté -{" "}
+        <a href="/login" className="underline text-blue">
+          Veuillez vous connecter
         </a>
         .
       </div>

@@ -20,6 +20,15 @@ import com.atelierlocal.repository.EventCategoryRepo;
 import com.atelierlocal.security.SecurityService;
 import com.atelierlocal.repository.ArtisanCategoryRepo;
 
+/**
+ * Service métier pour gérer les demandes ("Askings").
+ * 
+ * Fournit des méthodes pour :
+ * - créer, mettre à jour et supprimer des demandes,
+ * - modifier le statut d'une demande,
+ * - récupérer des demandes par ID, client ou catégorie,
+ * - appliquer des contrôles d'accès via SecurityService.
+ */
 @Service
 public class AskingService {
     
@@ -29,6 +38,9 @@ public class AskingService {
     private final EventCategoryRepo eventCategoryRepo;
     private final SecurityService securityService;
 
+    /**
+     * Constructeur avec injection des dépendances.
+     */
     public AskingService(
                 AskingRepo askingRepo,
                 ArtisanCategoryRepo artisanCategoryRepo,
@@ -42,6 +54,14 @@ public class AskingService {
         this.securityService = securityService;
     }
 
+    /**
+     * Crée une nouvelle demande pour un client.
+     *
+     * @param dto données de la demande
+     * @param currentClient client courant
+     * @return DTO de réponse contenant la demande créée
+     * @throws IllegalArgumentException si des champs obligatoires sont manquants
+     */
     public AskingResponseDTO createAsking(AskingRequestDTO dto, Client currentClient) {
         securityService.checkClientOnly(currentClient);
 
@@ -54,6 +74,7 @@ public class AskingService {
         if (dto.getArtisanCategoryId() == null) {
             throw new IllegalArgumentException("Veuillez sélectionner la cétogorie d'artisan souhaitée.");
         }
+
         Client client = clientRepo.findById(dto.getClientId())
             .orElseThrow(() -> new IllegalArgumentException("Client introuvable."));
         
@@ -86,6 +107,9 @@ public class AskingService {
         return new AskingResponseDTO(newAsking);
     }
 
+    /**
+     * Modifie le statut d'une demande (DONE ou CANCELLED) si elle est encore PENDING.
+     */
     public AskingResponseDTO patchAskingStatus(UUID askingId, AskingStatus newStatus, Client currentClient) {
         Asking asking = askingRepo.findById(askingId)
             .orElseThrow(() -> new IllegalArgumentException("Demande non trouvée."));
@@ -107,6 +131,9 @@ public class AskingService {
         return new AskingResponseDTO(patchedAsking);
     }
 
+    /**
+     * Supprime une demande.
+     */
     public void deleteAsking(UUID askingId, Client currentClient) {
         Asking asking = askingRepo.findById(askingId)
             .orElseThrow(() -> new RuntimeException("Demande non trouvée."));
@@ -114,14 +141,17 @@ public class AskingService {
         securityService.checkClientOwnershipOrAdmin(currentClient, asking.getClient().getId());
     }
 
+    /**
+     * Met à jour le contenu, le titre ou la catégorie d'une demande.
+     */
     public AskingResponseDTO updateAsking(UUID askingId, AskingRequestDTO request, Client currentClient) {
         Asking asking = askingRepo.findById(askingId)
             .orElseThrow(() -> new RuntimeException("Demande non trouvée."));
 
         securityService.checkClientOwnershipOrAdmin(currentClient, asking.getClient().getId());
 
-        if (request.getContent() != null) { asking.setContent(request.getContent());}
-        if (request.getTitle() != null) { asking.setTitle(request.getTitle());}
+        if (request.getContent() != null) { asking.setContent(request.getContent()); }
+        if (request.getTitle() != null) { asking.setTitle(request.getTitle()); }
         if (request.getArtisanCategoryId() != null &&
         !request.getArtisanCategoryId().equals(asking.getArtisanCategory().getId())) {
             ArtisanCategory artisanCategory = artisanCategoryRepo.findById(request.getArtisanCategoryId())
@@ -134,12 +164,18 @@ public class AskingService {
         return new AskingResponseDTO(updatedAsking);
     }
 
+    /**
+     * Récupère une demande par son ID.
+     */
     public AskingResponseDTO getAskingById(UUID askingId) {
         Asking asking = askingRepo.findById(askingId)
             .orElseThrow(() -> new IllegalArgumentException("Demande non trouvée."));
         return new AskingResponseDTO(asking);
     }
 
+    /**
+     * Récupère toutes les demandes d'un client donné.
+     */
     public List<AskingResponseDTO> getAskingsByClient(UUID clientId, Client currentClient) {
         Client client = clientRepo.findById(clientId)
             .orElseThrow(() -> new IllegalArgumentException("Client non trouvé."));
@@ -153,6 +189,9 @@ public class AskingService {
             .collect(Collectors.toList());
     }
 
+    /**
+     * Récupère toutes les demandes (accessible seulement aux admins).
+     */
     public List<AskingResponseDTO> getAllAskings(User currentUser) {
         securityService.checkAdminOnly(currentUser);
 
@@ -163,6 +202,9 @@ public class AskingService {
             .collect(Collectors.toList());
     }
 
+    /**
+     * Récupère toutes les demandes d'une catégorie d'artisan donnée.
+     */
     public List<AskingResponseDTO> getAskingsByCategory(UUID categoryId, User currentUser) {
         // securityService.checkArtisanOrAdmin(currentUser);
 

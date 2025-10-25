@@ -16,9 +16,18 @@ import com.atelierlocal.repository.EventCategoryRepo;
 
 import jakarta.transaction.Transactional;
 
+/**
+ * Service pour la gestion des catégories d'événements.
+ * 
+ * Fournit des méthodes pour :
+ * - créer, mettre à jour et supprimer des catégories d'événements,
+ * - récupérer des catégories par ID ou toutes les catégories,
+ * - récupérer les catégories d'artisans associées à un événement.
+ */
 @Transactional
 @Service
 public class EventCategoryService {
+
     private final EventCategoryRepo eventCategoryRepo;
     private final ArtisanCategoryRepo artisanCategoryRepo;
 
@@ -27,15 +36,30 @@ public class EventCategoryService {
         this.artisanCategoryRepo = artisanCategoryRepo;
     }
 
+    /**
+     * Crée une nouvelle catégorie d'événement.
+     * 
+     * @param request DTO contenant les informations de la catégorie
+     * @return DTO de la catégorie créée
+     */
     public EventCategoryResponseDTO createEventCategory(EventCategoryRequestDTO request) {
         EventCategory category = new EventCategory();
         category.setName(request.getName());
+        // Récupère la liste des catégories d'artisans associées
         category.setArtisanCategoryList(fetchArtisanCategories(request.getArtisanCategoryIds()));
 
         EventCategory saved = eventCategoryRepo.save(category);
         return toResponseDTO(saved);
     }
 
+    /**
+     * Met à jour une catégorie d'événement existante.
+     * 
+     * @param id ID de la catégorie à mettre à jour
+     * @param request DTO contenant les nouvelles informations
+     * @return DTO de la catégorie mise à jour
+     * @throws IllegalArgumentException si la catégorie n'existe pas
+     */
     public EventCategoryResponseDTO updateEventCategory(UUID id, EventCategoryRequestDTO request) {
         EventCategory category = eventCategoryRepo.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Catégorie non trouvée"));
@@ -47,6 +71,12 @@ public class EventCategoryService {
         return toResponseDTO(updated);
     }
 
+    /**
+     * Supprime une catégorie d'événement.
+     * 
+     * @param id ID de la catégorie à supprimer
+     * @throws IllegalArgumentException si la catégorie n'existe pas
+     */
     public void deleteEventCategory(UUID id) {
         if (!eventCategoryRepo.existsById(id)) {
             throw new IllegalArgumentException("Catégorie non trouvée " + id);
@@ -54,18 +84,37 @@ public class EventCategoryService {
         eventCategoryRepo.deleteById(id);
     }
 
+    /**
+     * Récupère une catégorie d'événement par son ID.
+     * 
+     * @param id ID de la catégorie
+     * @return DTO de la catégorie
+     * @throws IllegalArgumentException si la catégorie n'existe pas
+     */
     public EventCategoryResponseDTO getEventCategoryById(UUID id) {
         EventCategory category = eventCategoryRepo.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Catégorie non trouvée: " + id));
         return toResponseDTO(category);
     }
 
+    /**
+     * Récupère toutes les catégories d'événements.
+     * 
+     * @return liste de DTO de toutes les catégories
+     */
     public List<EventCategoryResponseDTO> getAllEventCategories() {
         return eventCategoryRepo.findAll().stream()
             .map(this::toResponseDTO)
             .collect(Collectors.toList());
     }
 
+    /**
+     * Récupère les catégories d'artisans associées à une catégorie d'événement.
+     * 
+     * @param eventCategoryId ID de la catégorie d'événement
+     * @return liste de DTO des catégories d'artisans associées
+     * @throws IllegalArgumentException si la catégorie d'événement n'existe pas
+     */
     public List<ArtisanCategoryResponseDTO> getArtisanCategoriesByEvent(UUID eventCategoryId) {
         EventCategory category = eventCategoryRepo.findById(eventCategoryId)
             .orElseThrow(() -> new IllegalArgumentException("Catégorie non trouvée : " + eventCategoryId));
@@ -75,7 +124,14 @@ public class EventCategoryService {
             .collect(Collectors.toList());
     }
 
-    // Utilitaires
+    // --- Méthodes utilitaires ---
+
+    /**
+     * Récupère les catégories d'artisans à partir d'une liste d'IDs.
+     * 
+     * @param ids liste d'IDs des catégories d'artisans
+     * @return liste des catégories d'artisans correspondantes
+     */
     private List<ArtisanCategory> fetchArtisanCategories(List<UUID> ids) {
         if (ids == null || ids.isEmpty()) {
             return List.of();
@@ -83,6 +139,12 @@ public class EventCategoryService {
         return artisanCategoryRepo.findAllById(ids);
     }
 
+    /**
+     * Convertit une entité EventCategory en DTO.
+     * 
+     * @param category entité à convertir
+     * @return DTO correspondant
+     */
     private EventCategoryResponseDTO toResponseDTO(EventCategory category) {
             return new EventCategoryResponseDTO(category);
     }

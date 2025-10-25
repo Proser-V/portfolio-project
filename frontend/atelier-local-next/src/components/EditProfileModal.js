@@ -61,13 +61,35 @@ export default function EditProfileModal({ artisan, address, isOpen, onClose, on
     setError(null);
 
     try {
+      let payload = { ...formData }; // base du payload
+      // Géocodage de l'adresse avant mise à jour
+      if (formData.address) {
+        const geoRes = await fetch(`${getApiUrl()}/api/geocode`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ address: formData.address }),
+        });
+
+        const geoData = await geoRes.json();
+
+        if (!geoRes.ok || !geoData.latitude || !geoData.longitude) {
+          throw new Error("Impossible de géocoder cette adresse.");
+        }
+
+        // Ajout des coordonnées au payload
+        payload = {
+          ...formData,
+          latitude: geoData.latitude,
+          longitude: geoData.longitude,
+        };
+      }
       const res = await fetch(
         `${getApiUrl()}/api/artisans/${artisan.id}/update`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify(formData),
+          body: JSON.stringify(payload),
         }
       );
 
@@ -165,11 +187,11 @@ export default function EditProfileModal({ artisan, address, isOpen, onClose, on
           {/* Adresse */}
           <div>
             <label className="block text-blue font-semibold mb-2">
-              Addresse <span className="text-red-700">*</span>
+              Adresse <span className="text-red-700">*</span>
             </label>
             <input
               type="text"
-              name="siret"
+              name="address"
               value={formData.address}
               onChange={handleChange}
               required

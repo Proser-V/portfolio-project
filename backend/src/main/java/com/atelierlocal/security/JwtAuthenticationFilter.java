@@ -155,6 +155,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 || path.equals("/api/artisans/register")
                 || path.equals("/api/users/login")
                 || path.equals("/api/artisans/debug/categories")
+                || path.startsWith("/api/geocode")
                 || path.startsWith("/swagger-ui")
                 || path.startsWith("/v3/api/docs");
     }

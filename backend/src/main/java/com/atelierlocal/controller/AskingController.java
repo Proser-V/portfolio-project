@@ -36,18 +36,39 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+/**
+ * Contrôleur REST pour la gestion des demandes ("askings").
+ * Permet aux clients de créer, consulter, modifier et suivre leurs demandes.
+ * Les administrateurs ont un accès complet pour la gestion globale des demandes.
+ */
 @RestController
 @RequestMapping("/api/askings")
 @Tag(name = "Askings", description = "API pour la gestion des demandes (askings)")
 public class AskingController {
+
     private final AskingService askingService;
     private final AskingRepo askingRepo;
 
+    /**
+     * Constructeur avec injection du service et du repository des demandes.
+     */
     public AskingController(AskingService askingService, AskingRepo askingRepo) {
         this.askingService = askingService;
         this.askingRepo = askingRepo;
     }
 
+    // --------------------
+    // CRÉATION DE DEMANDES
+    // --------------------
+
+    /**
+     * Création d'une nouvelle demande.
+     * Accessible uniquement aux CLIENTS.
+     *
+     * @param request DTO contenant les informations de la demande
+     * @param currentClient client actuellement connecté
+     * @return ResponseEntity avec le DTO de la demande créée
+     */
     @PostMapping("/creation")
     @PreAuthorize("hasRole('CLIENT')")
     @Operation(summary = "Créer une demande", description = "Permet à un client de créer une nouvelle demande")
@@ -65,6 +86,17 @@ public class AskingController {
         return ResponseEntity.ok(newAsking);
     }
 
+    // --------------------
+    // CONSULTATION DE DEMANDES
+    // --------------------
+
+    /**
+     * Récupère toutes les demandes.
+     * Accessible uniquement aux ADMIN.
+     *
+     * @param currentClient client authentifié (pour audit ou contexte)
+     * @return ResponseEntity avec la liste des demandes
+     */
     @GetMapping("/")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Lister toutes les demandes", description = "Accessible uniquement aux administrateurs")
@@ -78,6 +110,13 @@ public class AskingController {
         return ResponseEntity.ok(allAskings);
     }
 
+    /**
+     * Récupère une demande spécifique par son ID.
+     * Lecture publique, aucune restriction de rôle.
+     *
+     * @param id UUID de la demande
+     * @return ResponseEntity avec le DTO de la demande
+     */
     @GetMapping("/{id}")
     @Operation(summary = "Récupérer une demande par ID", description = "Permet de récupérer une demande via son identifiant")
     @ApiResponses(value = {
@@ -89,6 +128,21 @@ public class AskingController {
         return ResponseEntity.ok(asking);
     }
 
+    // --------------------
+    // MODIFICATION DE DEMANDES
+    // --------------------
+
+    /**
+     * Mise à jour d'une demande.
+     * Les CLIENTS peuvent modifier leurs propres demandes.
+     * Les ADMIN peuvent modifier toutes les demandes.
+     *
+     * @param id UUID de la demande
+     * @param request DTO contenant les nouvelles informations
+     * @param currentClient client authentifié
+     * @return ResponseEntity avec le DTO mis à jour
+     * @throws AccessDeniedException si l'utilisateur n'a pas les droits
+     */
     @PutMapping("/{id}/update")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
     @Operation(summary = "Mettre à jour une demande", description = "Un client peut mettre à jour sa propre demande. Admins peuvent tout modifier.")
@@ -118,6 +172,14 @@ public class AskingController {
         return ResponseEntity.ok(updatedAsking);
     }
 
+    /**
+     * Suppression d'une demande.
+     * Accessible uniquement aux ADMIN.
+     *
+     * @param id UUID de la demande
+     * @param currentClient client authentifié (pour contexte)
+     * @return ResponseEntity sans contenu (204)
+     */
     @DeleteMapping("/{id}/delete")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Supprimer une demande", description = "Accessible uniquement aux administrateurs")
@@ -135,6 +197,19 @@ public class AskingController {
         return ResponseEntity.noContent().build();
     }
 
+    // --------------------
+    // MISE À JOUR DU STATUT
+    // --------------------
+
+    /**
+     * Mise à jour du statut d'une demande.
+     * Accessible au client propriétaire ou aux ADMIN.
+     *
+     * @param id UUID de la demande
+     * @param status nouveau statut de la demande
+     * @param currentClient client authentifié
+     * @return ResponseEntity avec le DTO mis à jour
+     */
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
     @Operation(summary = "Mettre à jour le statut d'une demande", description = "Client propriétaire ou admin peut changer le statut")

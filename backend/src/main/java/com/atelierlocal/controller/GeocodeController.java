@@ -18,15 +18,28 @@ import org.springframework.web.client.RestTemplate;
 
 import com.atelierlocal.dto.GeocodeRequest;
 
-
+/**
+ * Contrôleur REST pour le géocodage et géocodage inverse.
+ * Permet de convertir une adresse en coordonnées GPS et inversement.
+ */
 @RestController
 @RequestMapping("/api/geocode")
 public class GeocodeController {
 
+    // Clé API LocationIQ injectée depuis application.properties
     @Value("${locationiq.key}")
     private String apiKey;
 
-    // Adresse → Coordonnées
+    // --------------------
+    // ADRESSE → COORDONNÉES
+    // --------------------
+
+    /**
+     * Transforme une adresse en coordonnées GPS (latitude et longitude).
+     * 
+     * @param request objet contenant l'adresse à géocoder
+     * @return ResponseEntity contenant latitude et longitude ou message d'erreur
+     */
     @PostMapping
     public ResponseEntity<Map<String, Object>> geocode(@RequestBody GeocodeRequest request) {
         String address = request.getAddress();
@@ -57,7 +70,17 @@ public class GeocodeController {
         }
     }
 
-    // Coordonnées → Adresse
+    // --------------------
+    // COORDONNÉES → ADRESSE
+    // --------------------
+
+    /**
+     * Transforme des coordonnées GPS en adresse lisible.
+     * 
+     * @param latitude latitude GPS
+     * @param longitude longitude GPS
+     * @return ResponseEntity contenant l'adresse complète ou message d'erreur
+     */
     @GetMapping("/reverse")
     public ResponseEntity<Map<String, Object>> reverseGeocode(
             @RequestParam Double latitude,
@@ -98,6 +121,12 @@ public class GeocodeController {
         }
     }
 
+    /**
+     * Construit une adresse lisible à partir des champs retournés par LocationIQ.
+     * 
+     * @param address map contenant les éléments d'adresse
+     * @return adresse complète sous forme de chaîne
+     */
     private String buildAddress(Map<String, Object> address) {
         StringBuilder sb = new StringBuilder();
         

@@ -23,7 +23,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-
+/**
+ * Contrôleur REST pour la gestion de l'authentification des utilisateurs.
+ * Permet la connexion et la déconnexion via JWT.
+ */
 @RestController
 @RequestMapping("/api/users")
 @Tag(name = "Login", description = "API pour l'authentification des utilisateurs")
@@ -38,6 +41,17 @@ public class LoginController {
         this.userDetailsService = userDetailsService;
     }
 
+    // --------------------
+    // CONNEXION
+    // --------------------
+
+    /**
+     * Connexion d'un utilisateur avec email et mot de passe.
+     * En cas de succès, génère un JWT et le renvoie dans un cookie httpOnly.
+     *
+     * @param request objet contenant l'email et le mot de passe
+     * @return ResponseEntity avec message et cookie ou message d'erreur
+     */
     @PostMapping("/login")
     @Operation(summary = "Connexion d'un utilisateur", description = "Génère un JWT en cas de succès")
     @ApiResponses(value = {
@@ -52,15 +66,17 @@ public class LoginController {
                     .body(Map.of("error", "Email ou mot de passe incorrect"));
         }
 
+        // Récupère les détails de l'utilisateur et génère un token JWT
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
         String token = jwtService.generateToken(userDetails);
 
+        // Configure le cookie contenant le JWT
         ResponseCookie cookie = ResponseCookie.from("jwt", token)
-                .httpOnly(true)
-                .secure(false)
+                .httpOnly(true)         // Cookie inaccessible via JavaScript
+                .secure(false)          // Définir à true si HTTPS obligatoire
                 .path("/")
                 .sameSite("Lax")
-                .maxAge(7 * 24 * 60 * 60)
+                .maxAge(7 * 24 * 60 * 60) // 7 jours
                 .build();
 
         return ResponseEntity.ok()
@@ -68,6 +84,17 @@ public class LoginController {
                 .body(Map.of("message", "Connexion réussie"));
     }
 
+    // --------------------
+    // DÉCONNEXION
+    // --------------------
+
+    /**
+     * Déconnexion de l'utilisateur.
+     * Blackliste le JWT et nettoie le contexte de sécurité.
+     *
+     * @param token JWT récupéré depuis le cookie
+     * @return ResponseEntity vide (200 OK)
+     */
     @PostMapping("/logout")
     @Operation(summary = "Déconnexion de l'utilisateur", description = "Blackliste le JWT")
     @ApiResponses(value = {
@@ -78,6 +105,7 @@ public class LoginController {
         if (token != null) {
             jwtService.blacklistToken(token);
         }
+        // Efface le contexte de sécurité Spring
         SecurityContextHolder.clearContext();
         return ResponseEntity.ok().build();
     }

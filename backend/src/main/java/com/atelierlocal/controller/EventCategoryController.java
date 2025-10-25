@@ -25,16 +25,38 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+/**
+ * Contrôleur REST pour la gestion des catégories d'évènements.
+ * Permet la création, mise à jour, suppression et consultation des catégories,
+ * ainsi que la récupération des catégories d'artisans associées à chaque évènement.
+ */
 @RestController
 @RequestMapping("/api/event-categories")
 @Tag(name = "Event Categories", description = "API pour la gestion des catégories d'évènements")
 public class EventCategoryController {
+
     private final EventCategoryService eventCategoryService;
 
+    /**
+     * Constructeur avec injection du service EventCategoryService.
+     * 
+     * @param eventCategoryService service de gestion des catégories d'évènements
+     */
     public EventCategoryController(EventCategoryService eventCategoryService) {
         this.eventCategoryService = eventCategoryService;
     }
 
+    // --------------------
+    // CRÉATION
+    // --------------------
+
+    /**
+     * Création d'une nouvelle catégorie d'évènement.
+     * Accessible uniquement aux administrateurs.
+     * 
+     * @param request données de la catégorie à créer
+     * @return ResponseEntity contenant la catégorie créée
+     */
     @PostMapping("/creation")
     @Operation(summary = "Créer une catégorie d'évènement", description = "Accessible uniquement aux administrateurs")
     @PreAuthorize("hasRole('ADMIN')")
@@ -49,6 +71,16 @@ public class EventCategoryController {
         return ResponseEntity.ok(newEventCategory);
     }
 
+    // --------------------
+    // LECTURE
+    // --------------------
+
+    /**
+     * Récupère toutes les catégories d'évènements.
+     * Accessible uniquement aux administrateurs.
+     * 
+     * @return liste de toutes les catégories
+     */
     @GetMapping("/")
     @Operation(summary = "Lister toutes les catégories d'évènements", description = "Accessible uniquement aux administrateurs")
     @ApiResponses(value = {
@@ -61,6 +93,13 @@ public class EventCategoryController {
         return ResponseEntity.ok(allEventCategories);
     }
 
+    /**
+     * Récupère une catégorie d'évènement par son ID.
+     * Accessible uniquement aux administrateurs.
+     * 
+     * @param id identifiant de la catégorie
+     * @return catégorie correspondant à l'ID
+     */
     @GetMapping("/{id}")
     @Operation(summary = "Récupérer une catégorie par ID", description = "Accessible uniquement aux administrateurs")
     @ApiResponses(value = {
@@ -72,6 +111,13 @@ public class EventCategoryController {
         return ResponseEntity.ok(eventCategory);
     }
 
+    /**
+     * Récupère les catégories d'artisans associées à une catégorie d'évènement.
+     * Accessible uniquement aux administrateurs.
+     * 
+     * @param id identifiant de l'évènement
+     * @return liste des catégories d'artisans liées à l'évènement
+     */
     @GetMapping("/{id}/artisan-categories")
     @Operation(summary = "Lister les catégories d'artisans associées à un évènement", description = "Accessible uniquement aux administrateurs")
     @ApiResponses(value = {
@@ -83,6 +129,18 @@ public class EventCategoryController {
         return ResponseEntity.ok(artisanCategoriesByEvent);
     }
 
+    // --------------------
+    // MISE À JOUR
+    // --------------------
+
+    /**
+     * Mise à jour d'une catégorie d'évènement.
+     * Accessible uniquement aux administrateurs.
+     * 
+     * @param id identifiant de la catégorie
+     * @param request données à mettre à jour
+     * @return catégorie mise à jour
+     */
     @PutMapping("/{id}/update")
     @Operation(summary = "Mettre à jour une catégorie d'évènement", description = "Accessible uniquement aux administrateurs")
     @PreAuthorize("hasRole('ADMIN')")
@@ -100,6 +158,17 @@ public class EventCategoryController {
         return ResponseEntity.ok(updatedEventCategory);
     }
 
+    // --------------------
+    // SUPPRESSION
+    // --------------------
+
+    /**
+     * Suppression d'une catégorie d'évènement.
+     * Accessible uniquement aux administrateurs.
+     * 
+     * @param id identifiant de la catégorie à supprimer
+     * @return ResponseEntity vide
+     */
     @DeleteMapping("/{id}/delete")
     @Operation(summary = "Supprimer une catégorie d'évènement", description = "Accessible uniquement aux administrateurs")
     @PreAuthorize("hasRole('ADMIN')")

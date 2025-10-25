@@ -7,29 +7,69 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+/**
+ * DTO (Data Transfer Object) utilisé pour créer ou mettre à jour
+ * une demande (Asking) d'un client vers les artisans.
+ * 
+ * Ce DTO contient toutes les informations nécessaires pour créer une
+ * demande, avec des validations pour garantir l'intégrité des données.
+ */
 public class AskingRequestDTO {
-    // Attributs
+
+    // -------------------------------------------------------------------------
+    // ATTRIBUTS PRINCIPAUX
+    // -------------------------------------------------------------------------
+
+    /**
+     * Identifiant du client qui crée la demande.
+     * - Obligatoire
+     */
     @NotNull(message = "L'ID du client créateur est obligatoire.")
     private UUID clientId;
 
+    /**
+     * Titre de la demande.
+     * - Obligatoire
+     * - Longueur maximale : 50 caractères
+     */
     @NotBlank(message = "Titre obligatoire.")
     @Size(max = 50, message = "Le titre ne peut excèder 50 caractères.")
     private String title;
 
+    /**
+     * Contenu détaillé de la demande.
+     * - Obligatoire
+     * - Longueur maximale : 1000 caractères
+     */
     @NotBlank(message = "Objet de la demande obligatoire.")
     @Size(max = 1000, message = "La demande ne peut pas dépasser 1000 caractères.")
     private String content;
 
+    /**
+     * Identifiant de la catégorie d'artisan associée à la demande.
+     * - Obligatoire
+     */
     @NotBlank(message = "Une demande doit être liée à une catégorie d'artisan.")
     private UUID artisanCategoryId;
 
+    /**
+     * Identifiant optionnel de la catégorie d'événement associé à la demande
+     */
     private UUID eventCategoryId;
 
+    /**
+     * Date et heure de l'événement (optionnel)
+     */
     private LocalDateTime eventDate;
 
+    /**
+     * Localisation de l'événement (optionnel)
+     */
     private String eventLocalisation;
 
-    // Getters et setters
+    // -------------------------------------------------------------------------
+    // GETTERS ET SETTERS
+    // -------------------------------------------------------------------------
 
     public UUID getClientId() { return clientId; }
     public void setClientId(UUID clientId) { this.clientId = clientId; }

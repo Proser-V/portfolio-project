@@ -6,18 +6,77 @@ import java.util.UUID;
 import com.atelierlocal.model.Asking;
 import com.atelierlocal.model.AskingStatus;
 
+/**
+ * DTO (Data Transfer Object) utilisé pour renvoyer les informations d'une
+ * demande (Asking) côté client ou dans l'API.
+ * 
+ * Ce DTO contient toutes les informations pertinentes pour visualiser
+ * une demande, y compris :
+ * - les informations sur le client
+ * - les détails de la demande et de l'événement
+ * - le statut de la demande
+ * - la date de création
+ */
 public class AskingResponseDTO {
+
+    /**
+     * Identifiant unique de la demande
+     */
     private UUID id;
+
+    /**
+     * Identifiant du client ayant créé la demande
+     */
     private UUID clientId;
+
+    /**
+     * Titre de la demande
+     */
     private String title;
+
+    /**
+     * Contenu détaillé de la demande
+     */
     private String content;
+
+    /**
+     * Identifiant de la catégorie d'artisan associée à la demande
+     */
     private UUID artisanCategoryId;
+
+    /**
+     * Identifiant de la catégorie d'événement associée à la demande (optionnel)
+     */
     private UUID eventCategoryId;
+
+    /**
+     * Date et heure de l'événement (optionnel)
+     */
     private LocalDateTime eventDate;
+
+    /**
+     * Localisation de l'événement (optionnel)
+     */
     private String eventLocalisation;
+
+    /**
+     * Statut actuel de la demande (PENDING, DONE, CANCELLED)
+     */
     private AskingStatus status;
+
+    /**
+     * Date de création de la demande
+     */
     private LocalDateTime createdAt;
 
+    /**
+     * Constructeur à partir d'une entité Asking.
+     * 
+     * Ce constructeur initialise tous les champs du DTO à partir de
+     * l'entité persistée, avec gestion des champs optionnels.
+     * 
+     * @param asking l'entité Asking à transformer en DTO
+     */
     public AskingResponseDTO(Asking asking) {
         this.id = asking.getId();
         this.clientId = asking.getClient().getId();
@@ -31,7 +90,9 @@ public class AskingResponseDTO {
         this.createdAt = asking.getCreatedAt();
     }
 
-    // Getters et setters
+    // -------------------------------------------------------------------------
+    // GETTERS ET SETTERS
+    // -------------------------------------------------------------------------
 
     public UUID getId() { return id; }
 

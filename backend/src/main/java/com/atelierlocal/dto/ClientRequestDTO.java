@@ -13,42 +13,82 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+/**
+ * DTO (Data Transfer Object) utilisé pour la création ou la mise à jour
+ * d'un client via l'API.
+ * 
+ * Ce DTO contient toutes les informations nécessaires pour enregistrer
+ * un client, avec validation des champs pour garantir l'intégrité des données.
+ */
 public class ClientRequestDTO {
-    // Attributs
+
+    // -------------------------------------------------------------------------
+    // ATTRIBUTS
+    // -------------------------------------------------------------------------
+
+    /**
+     * Adresse email du client (obligatoire et valide)
+     */
     @NotBlank(message = "L'email est obligatoire")
     @Email(message = "L'email doit être valide")
     private String email;
 
+    /**
+     * Mot de passe du client (obligatoire)
+     */
     @NotBlank(message = "Le mot de passe est obligatoire")
     private String password;
 
+    /**
+     * Prénom du client (obligatoire, max 50 caractères)
+     */
     @NotBlank(message = "Le prénom est obligatoire")
     @Size(max = 50, message = "Le prénom ne peut pas dépasser 50 caractères.")
     private String firstName;
 
+    /**
+     * Nom de famille du client (obligatoire, max 50 caractères)
+     */
     @NotBlank(message = "Le nom est obligatoire")
     @Size(max = 50, message = "Le nom ne peut pas dépasser 50 caractères.")
     private String lastName;
 
+    /**
+     * Latitude de la localisation du client (obligatoire, valeur valide entre -90 et 90)
+     */
     @NotNull(message = "La latitude est obligatoire")
     @DecimalMin(value = "-90.0", message = "Latitude invalide")
     @DecimalMax(value = "90.0", message = "Latitude invalide")
     private Double latitude;
 
+    /**
+     * Longitude de la localisation du client (obligatoire, valeur valide entre -180 et 180)
+     */
     @NotNull(message = "La longitude est obligatoire")
     @DecimalMin(value = "-180.0", message = "Longitude invalide")
     @DecimalMax(value = "180.0", message = "Longitude invalide")
     private Double longitude;
 
+    /**
+     * Numéro de téléphone du client (optionnel, format français)
+     */
     @Pattern(regexp = "(|(\\+33|0)[1-9](\\d{2}){4})$", message = "Numéro invalide (format français requis)")
     private String phoneNumber;
 
+    /**
+     * Fichier avatar du client (optionnel, ignoré dans la sérialisation JSON)
+     */
     @JsonIgnore
     private MultipartFile avatar;
 
+    /**
+     * Rôle de l'utilisateur (CLIENT par défaut)
+     */
     private UserRole userRole;
 
-    // Getters et setters
+    // -------------------------------------------------------------------------
+    // GETTERS ET SETTERS
+    // -------------------------------------------------------------------------
 
     public String getFirstName() { return firstName; }
     public void setFirstName(String firstName) { this.firstName = firstName; }

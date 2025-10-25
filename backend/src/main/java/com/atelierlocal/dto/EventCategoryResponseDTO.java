@@ -5,14 +5,40 @@ import java.util.UUID;
 
 import com.atelierlocal.model.EventCategory;
 
+/**
+ * DTO de réponse pour une catégorie d'événement.
+ * 
+ * Ce DTO est utilisé pour exposer les informations d'une catégorie d'événement
+ * via l'API, y compris son identifiant, son nom et les catégories d'artisans
+ * associées.
+ */
 public class EventCategoryResponseDTO {
 
-    // Attributs
+    // -------------------------------------------------------------------------
+    // ATTRIBUTS
+    // -------------------------------------------------------------------------
 
+    /** Identifiant unique de la catégorie d'événement */
     private UUID id;
+
+    /** Nom de la catégorie d'événement */
     private String name;
+
+    /**
+     * Liste des identifiants des catégories d'artisans associées à cette catégorie
+     * d'événement. Permet de connaître les relations entre événements et artisans.
+     */
     private List<UUID> artisanCategoryIds;
 
+    // -------------------------------------------------------------------------
+    // CONSTRUCTEUR
+    // -------------------------------------------------------------------------
+
+    /**
+     * Constructeur à partir d'une entité EventCategory.
+     * 
+     * @param eventCategory l'entité EventCategory à convertir en DTO
+     */
     public EventCategoryResponseDTO(EventCategory eventCategory) {
         this.id = eventCategory.getId();
         this.name = eventCategory.getName();
@@ -26,7 +52,10 @@ public class EventCategoryResponseDTO {
         }
     }
 
-    // Getters et setters
+    // -------------------------------------------------------------------------
+    // GETTERS ET SETTERS
+    // -------------------------------------------------------------------------
+
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }
 

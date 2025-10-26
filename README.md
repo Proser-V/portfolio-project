@@ -49,13 +49,13 @@ By the end of this development phase, the functionnalities are:
 
 ## 🛠 How to Run
 
-1️⃣ Clone the repository:
+**Clone the repository:**
 
 ```bash
 git clone https://github.com/Proser-V/portfolio-project.git
 ```
 
-2️⃣ Run locally with Docker:
+**Run locally with Docker:**
 
 1. Make sure Docker is installed on your system  
    - [Download Docker Desktop](https://www.docker.com/products/docker-desktop/) (Windows / macOS)  
@@ -63,12 +63,14 @@ git clone https://github.com/Proser-V/portfolio-project.git
 
 2. Start Docker (Docker Desktop or Docker daemon)
 
-3. In the project root, build and run all containers:
+3. Ask to devs for the application.properties file and put it in portfolio-project/backend/src/main/resources/
+
+4. In the project root, build and run all containers:
 ```bash
 docker-compose up --build
 ```
 
-4️⃣ Access to the app:
+**Access to the app:**
 
 [Home page](http://localhost:3000/)
 

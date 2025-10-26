@@ -495,9 +495,9 @@ export default function RegistrationPage({ user }) {
                 {/* ───── Colonne droite : Informations entreprise ───── */}
                 <div className="flex flex-col items-center justify-center w-full lg:w-3/4 gap-4 mt-4">
                   {/* Ligne combinée Catégorie + Date de début d’activité */}
-                  <div className="flex flex-row items-center justify-center gap-2 w-[80%]">
+                  <div className="flex flex-row items-center justify-center gap-2 lg:w-[80%] w-full">
                     {/* Sélecteur de catégorie professionnelle */}
-                    <div className="flex flex-col w-1/2 items-center justify-center">
+                    <div className="flex flex-col w-full lg:w-1/2 items-center justify-center">
                       <span className="text-xs text-silver mb-1 italic">Quel est votre métier ?</span>
                       <select
                         name="categoryName"
@@ -515,7 +515,7 @@ export default function RegistrationPage({ user }) {
                     </div>
 
                     {/* Sélecteur de date de début d’activité */}
-                    <div className="flex flex-col w-1/2 items-center justify-center">
+                    <div className="flex flex-col w-full lg:w-1/2 items-center justify-center">
                       <span className="text-xs text-silver mb-1 italic">Depuis quand ?</span>
                       <input
                         type="date"

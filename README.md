@@ -70,8 +70,11 @@ For security reasons, the `application.properties` file is **not included in the
 
 To run the backend, you will need to:
 
-- Receive the `application.properties` file directly from the project owner (via email or other secure channel).  
-- Place it in the backend resources folder: /backend/src/main/resources/
+- Receive the `application.properties` file directly from the project owner (via email or other secure channel).
+- ```bash
+  mkdir -p backend/src/main/resources/
+  ```
+- Place the `application.properties` file in the backend resources folder: /backend/src/main/resources/
 - Once the file is in place, you can build and run the application (step 4).
 
 4. In the project root, build and run all containers:

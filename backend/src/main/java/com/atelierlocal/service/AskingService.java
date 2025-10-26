@@ -139,6 +139,7 @@ public class AskingService {
             .orElseThrow(() -> new RuntimeException("Demande non trouvée."));
 
         securityService.checkClientOwnershipOrAdmin(currentClient, asking.getClient().getId());
+        askingRepo.delete(asking);
     }
 
     /**

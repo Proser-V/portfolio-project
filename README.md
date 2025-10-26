@@ -63,7 +63,16 @@ git clone https://github.com/Proser-V/portfolio-project.git
 
 2. Start Docker (Docker Desktop or Docker daemon)
 
-3. Ask to devs for the application.properties file and put it in portfolio-project/backend/src/main/resources/
+3. Setup backend configuration
+
+The backend requires some secret values (JWT secret, database credentials, etc.).  
+For security reasons, the `application.properties` file is **not included in the repository**.
+
+To run the backend, you will need to:
+
+- Receive the `application.properties` file directly from the project owner (via email or other secure channel).  
+- Place it in the backend resources folder: /backend/src/main/resources/
+- Once the file is in place, you can build and run the application (step 4).
 
 4. In the project root, build and run all containers:
 ```bash

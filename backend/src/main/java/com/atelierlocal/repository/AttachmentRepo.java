@@ -1,9 +1,14 @@
 package com.atelierlocal.repository;
 
-import com.atelierlocal.model.Attachment;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import com.atelierlocal.model.Attachment;
 
 /**
  * Repository pour l'entité Attachment.
@@ -24,4 +29,9 @@ import java.util.UUID;
  */
 
 @Repository
-public interface AttachmentRepo extends JpaRepository<Attachment, UUID> {}
+public interface AttachmentRepo extends JpaRepository<Attachment, UUID> {
+    @Modifying
+    @Query("DELETE FROM Attachment a WHERE a.message.id IN " +
+           "(SELECT m.id FROM Message m WHERE m.sender.id = :userId OR m.receiver.id = :userId)")
+    void deleteByUserId(@Param("userId") UUID userId);
+}

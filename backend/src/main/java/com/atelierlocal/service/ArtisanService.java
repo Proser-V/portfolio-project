@@ -1,27 +1,29 @@
 package com.atelierlocal.service;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
-import com.atelierlocal.repository.ArtisanCategoryRepo;
-import com.atelierlocal.repository.ArtisanRepo;
-import com.atelierlocal.repository.AvatarRepo;
-import com.atelierlocal.security.SecurityService;
-
-import jakarta.persistence.EntityNotFoundException;
-
+import com.atelierlocal.dto.ArtisanRequestDTO;
+import com.atelierlocal.dto.ArtisanResponseDTO;
 import com.atelierlocal.model.Artisan;
 import com.atelierlocal.model.ArtisanCategory;
 import com.atelierlocal.model.Avatar;
 import com.atelierlocal.model.Client;
 import com.atelierlocal.model.User;
 import com.atelierlocal.model.UserRole;
-import com.atelierlocal.dto.ArtisanRequestDTO;
-import com.atelierlocal.dto.ArtisanResponseDTO;
+import com.atelierlocal.repository.ArtisanCategoryRepo;
+import com.atelierlocal.repository.ArtisanRepo;
+import com.atelierlocal.repository.AttachmentRepo;
+import com.atelierlocal.repository.AvatarRepo;
+import com.atelierlocal.repository.MessageRepo;
+import com.atelierlocal.security.SecurityService;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 
 /**
  * Service métier pour gérer les artisans.
@@ -38,6 +40,8 @@ public class ArtisanService {
 
     private final PasswordService passwordService;
     private final ArtisanRepo artisanRepo;
+    private final MessageRepo messageRepo;
+    private final AttachmentRepo attachmentRepo;
     private final AvatarService avatarService;
     private final AvatarRepo avatarRepo;
     private final ArtisanCategoryRepo artisanCategoryRepo;
@@ -49,6 +53,8 @@ public class ArtisanService {
     public ArtisanService(
                 PasswordService passwordService,
                 ArtisanRepo artisanRepo,
+                MessageRepo messageRepo,
+                AttachmentRepo attachmentRepo,
                 AvatarService avatarService,
                 AvatarRepo avatarRepo,
                 ArtisanCategoryRepo artisanCategoryRepo,
@@ -56,6 +62,8 @@ public class ArtisanService {
                 ) {
         this.passwordService = passwordService;
         this.artisanRepo = artisanRepo;
+        this.messageRepo = messageRepo;
+        this.attachmentRepo = attachmentRepo;
         this.avatarService = avatarService;
         this.avatarRepo = avatarRepo;
         this.artisanCategoryRepo = artisanCategoryRepo;
@@ -122,6 +130,7 @@ public class ArtisanService {
         return new ArtisanResponseDTO(savedArtisan);
     }
 
+    @Transactional
     /**
      * Supprime un artisan donné par son ID.
      * 
@@ -129,10 +138,14 @@ public class ArtisanService {
      * @param currentClient utilisateur courant pour vérification des droits admin
      * @throws EntityNotFoundException si l'artisan n'existe pas
      */
-    public void deleteArtisan(UUID atisanId, Client currentClient) {
+    public void deleteArtisan(UUID artisanId, Client currentClient) {
         securityService.checkAdminOnly(currentClient);
-        Artisan artisan = artisanRepo.findById(atisanId)
+        Artisan artisan = artisanRepo.findById(artisanId)
             .orElseThrow(() -> new EntityNotFoundException("Professionnel non trouvé."));
+
+        attachmentRepo.deleteByUserId(artisanId);
+
+        messageRepo.deleteByUserId(artisanId);
 
         artisanRepo.delete(artisan);
     }

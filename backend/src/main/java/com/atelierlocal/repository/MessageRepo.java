@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.atelierlocal.model.Message;
@@ -42,4 +45,8 @@ public interface MessageRepo extends JpaRepository<Message, UUID> {
     List<Message> findByReceiverAndIsReadFalse(User receiver);
 
     List<Message> findAllBySenderIdOrReceiverId(UUID senderId, UUID receiverId);
+
+    @Modifying
+    @Query("DELETE FROM Message m WHERE m.sender.id = :userId OR m.receiver.id = :userId")
+    void deleteByUserId(@Param("userId") UUID userId);
 }

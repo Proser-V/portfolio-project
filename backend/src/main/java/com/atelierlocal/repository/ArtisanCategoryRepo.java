@@ -13,12 +13,23 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * JpaRepository key inherited methods include:
- * - save(), saveAll(): persist or update entities
- * - findById(), findAll(), findAllById(): retrieve entities
- * - existsById(): check for existence
- * - delete(), deleteById(), deleteAll(): remove entities
- * - count(): count total number of records
+ * Repository pour l'entité ArtisanCategory.
+ * 
+ * Ce repository fournit des méthodes pour accéder et manipuler les catégories d'artisans.
+ * Il hérite de JpaRepository, ce qui lui permet d'utiliser toutes les méthodes CRUD standards :
+ *   - save(), saveAll(): persister ou mettre à jour des entités
+ *   - findById(), findAll(), findAllById(): récupérer des entités
+ *   - existsById(): vérifier l'existence d'une entité
+ *   - delete(), deleteById(), deleteAll(): supprimer des entités
+ *   - count(): compter le nombre total d'enregistrements
+ * 
+ * Méthodes personnalisées définies dans ce repository :
+ *   - findByNameIgnoreCase(String name) : récupère une catégorie par son nom, insensible à la casse et aux espaces superflus
+ *   - findByEventCategories(EventCategory eventCategory) : récupère toutes les catégories d'artisans associées à une catégorie d'événement donnée
+ * 
+ * Bonnes pratiques :
+ *   - Utiliser findByNameIgnoreCase pour éviter les doublons lors de l'ajout de nouvelles catégories
+ *   - findByEventCategories permet de filtrer les catégories liées à un type d'événement spécifique
  */
 
 @Repository

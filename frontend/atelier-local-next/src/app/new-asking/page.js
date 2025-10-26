@@ -2,34 +2,46 @@
 
 import { useEffect, useState } from "react";
 import RegistrationClientModal from "../../components/RegistrationClientModal";
-import { useUser } from "../../context/UserContext"
+import { useUser } from "../../context/UserContext";
 import getApiUrl from "@/lib/api";
 
+/**
+ * @component AskingsForm
+ * @description
+ * Composant principal permettant aux utilisateurs (clients ou visiteurs) de poster
+ * une ou plusieurs demandes à destination des artisans locaux.  
+ * Gère la sélection d’un type d’événement, la date, le lieu, les catégories d’artisans
+ * et les messages associés.  
+ * Si l’utilisateur n’est pas connecté, un modal d’inscription s’affiche avant l’envoi.
+ *
+ * @returns {JSX.Element} Formulaire complet de publication de demandes.
+ */
 export default function AskingsForm() {
-  const [eventCategories, setEventCategories] = useState([]);
-  const [allArtisanCategories, setAllArtisanCategories] = useState([]);
-  const [selectedEvent, setSelectedEvent] = useState("");
-  const [selectedArtisan, setSelectedArtisan] = useState("");
-  const [lieu, setLieu] = useState("");
-  const [date, setDate] = useState("");
-  const [askings, setAskings] = useState([]);
-  const [visibleCategories, setVisibleCategories] = useState([]);
-  const [showRegistrationModal, setShowRegistrationModal] = useState(false);
-  const user = useUser();
+  // --- États principaux du composant ---
+  const [eventCategories, setEventCategories] = useState([]); // Liste des catégories d’événements disponibles
+  const [allArtisanCategories, setAllArtisanCategories] = useState([]); // Liste complète des catégories d’artisans
+  const [selectedEvent, setSelectedEvent] = useState(""); // Événement sélectionné (optionnel)
+  const [selectedArtisan, setSelectedArtisan] = useState(""); // Catégorie d’artisan ajoutée manuellement
+  const [lieu, setLieu] = useState(""); // Localisation de l’événement
+  const [date, setDate] = useState(""); // Date de l’événement
+  const [askings, setAskings] = useState([]); // Tableau des demandes par catégorie d’artisan
+  const [visibleCategories, setVisibleCategories] = useState([]); // Catégories visibles à l’écran (liées à l’événement ou ajoutées)
+  const [showRegistrationModal, setShowRegistrationModal] = useState(false); // Contrôle du modal d’inscription
+  const user = useUser(); // Contexte utilisateur (connecté ou non)
 
-  // --- Fetch event categories ---
+  // --- Récupération initiale des catégories d’événements ---
   useEffect(() => {
     fetch(`${getApiUrl()}/api/event-categories/`)
       .then(async (res) => {
         if (!res.ok) throw new Error(`HTTP error ${res.status}`);
-        const text = await res.text(); // récupère la réponse brute
-        return text ? JSON.parse(text) : []; // si vide, retourne []
+        const text = await res.text(); // Récupère la réponse brute
+        return text ? JSON.parse(text) : []; // Gère les réponses vides proprement
       })
       .then(data => setEventCategories(data || []))
       .catch(err => console.error(err));
   }, []);
 
-  // --- Fetch artisan categories ---
+  // --- Récupération initiale des catégories d’artisans ---
   useEffect(() => {
     fetch(`${getApiUrl()}/api/artisan-category/`)
       .then(res => res.json())
@@ -37,19 +49,22 @@ export default function AskingsForm() {
       .catch(err => console.error(err));
   }, []);
 
-  // --- Quand un événement est sélectionné ---
+  // --- Mise à jour des catégories visibles lors de la sélection d’un événement ---
   useEffect(() => {
+    // Réinitialise si aucun événement sélectionné
     if (!selectedEvent) {
       setVisibleCategories([]);
       setAskings([]);
       return;
     }
 
+    // Récupère les catégories d’artisans liées à l’événement choisi
     fetch(`${getApiUrl()}/api/event-categories/${selectedEvent}/artisan-categories`)
       .then(res => res.json())
       .then(eventCats => {
         setVisibleCategories(eventCats);
-        // Initialisation des askings pour les catégories de l'événement
+
+        // Crée un état initial des demandes pour chaque catégorie de l’événement
         const initialAskings = eventCats.map(cat => ({
           title: "",
           content: "",
@@ -60,39 +75,59 @@ export default function AskingsForm() {
       .catch(err => console.error(err));
   }, [selectedEvent]);
 
-  // --- Ajout manuel d'une catégorie d'artisan ---
+  // --- Ajout manuel d’une catégorie d’artisan ---
   useEffect(() => {
     if (!selectedArtisan) return;
 
+    // Trouve la catégorie correspondante dans la liste globale
     const catObj = allArtisanCategories.find(c => String(c.id) === String(selectedArtisan));
     if (!catObj) return;
 
-    // Evite les doublons
+    // Évite d’ajouter deux fois la même catégorie
     if (askings.some(a => a.artisanCategoryId === catObj.id)) {
       setSelectedArtisan("");
       return;
     }
 
+    // Ajoute la catégorie dans les listes visibles et dans les demandes
     setVisibleCategories(prev => [...prev, catObj]);
     setAskings(prev => [
       ...prev,
       { title: "", content: "", artisanCategoryId: catObj.id }
     ]);
 
+    // Réinitialise le sélecteur
     setSelectedArtisan("");
   }, [selectedArtisan]);
 
+  /**
+   * @function handleRemoveCategory
+   * @description
+   * Supprime une catégorie d’artisan (et sa demande associée) de l’interface.
+   *
+   * @param {number} catId - Identifiant de la catégorie à retirer.
+   */
   const handleRemoveCategory = (catId) => {
     setVisibleCategories(prev => prev.filter(c => c.id !== catId));
     setAskings(prev => prev.filter(a => a.artisanCategoryId !== catId));
   };
 
+  /**
+   * @async
+   * @function handleSubmit
+   * @description
+   * Envoie l’ensemble des demandes saisies au backend.  
+   * Si l’utilisateur n’est pas connecté, affiche d’abord le modal d’inscription.  
+   * Chaque demande est envoyée individuellement via une requête POST.
+   */
   const handleSubmit = async () => {
+    // Vérifie la connexion utilisateur avant l’envoi
     if (!user) {
       setShowRegistrationModal(true);
       return;
     }
 
+    // Envoi séquentiel de chaque demande
     for (const asking of askings) {
       const payload = {
         clientId: user.id,
@@ -116,8 +151,10 @@ export default function AskingsForm() {
         console.error(err);
       }
     }
+
+    // Confirmation visuelle et redirection
     alert("Vos demandes ont été envoyées !");
-    window.location.href="/";
+    window.location.href = "/";
   };
 
   return (
@@ -131,7 +168,7 @@ export default function AskingsForm() {
         Une notification sera envoyée à chaque artisan concerné.
       </p>
 
-      {/* Type d'événement */}
+      {/* Sélection du type d’événement */}
       <div className="flex flex-col items-center">
         <label className="font-medium mb-2">
           Je prépare un événement (optionnel) :
@@ -148,7 +185,7 @@ export default function AskingsForm() {
         </select>
       </div>
 
-      {/* Date + Lieu */}
+      {/* Champs date et lieu (activés uniquement si un événement est choisi) */}
       <div className="flex flex-col md:flex-row justify-center items-center md:gap-4 gap-1">
         <label className="block md:mb-2 text-sm">Date :</label>
         <input
@@ -169,9 +206,10 @@ export default function AskingsForm() {
         />
       </div>
 
+      {/* Séparateur visuel */}
       <div className="w-[80%] h-px bg-silver my-4 mx-auto"></div>
 
-      {/* Sélecteur de catégorie */}
+      {/* Sélecteur manuel de catégorie d’artisan */}
       <div className="flex flex-row gap-4 items-center justify-center w-full">
         <label className="font-medium font-cabin mb-2">Vous cherchez :</label>
         <div className="flex gap-2">
@@ -188,7 +226,7 @@ export default function AskingsForm() {
         </div>
       </div>
 
-      {/* Liste des besoins */}
+      {/* Liste dynamique des besoins par catégorie */}
       <div className="w-full mt-4 items-center">
         <p className="font-cabin text-base text-center mb-3">
           Décrivez votre besoin pour chaque catégorie :
@@ -203,7 +241,7 @@ export default function AskingsForm() {
                 key={cat.id}
                 className="relative bg-white rounded-3xl shadow-md border-2 border-solid border-silver px-5"
               >
-                {/* En-tête */}
+                {/* En-tête avec nom de la catégorie et bouton de suppression */}
                 <div className="flex items-center justify-center relative h-10">
                   <h4 className="text-gold font-semibold text-center text-lg leading-tight">
                     {cat.name}
@@ -217,7 +255,7 @@ export default function AskingsForm() {
                   </button>
                 </div>
 
-                {/* Titre */}
+                {/* Champ titre de la demande */}
                 <input
                   type="text"
                   value={asking.title}
@@ -230,7 +268,7 @@ export default function AskingsForm() {
                   placeholder="Donnez un titre à votre demande..."
                 />
 
-                {/* Contenu */}
+                {/* Champ description détaillée */}
                 <textarea
                   value={asking.content}
                   onChange={e => {
@@ -250,7 +288,7 @@ export default function AskingsForm() {
         </div>
       </div>
 
-      {/* Bouton final */}
+      {/* Bouton de soumission */}
       <button
         type="submit"
         onClick={(e) => {
@@ -271,14 +309,14 @@ export default function AskingsForm() {
         Poster ma demande
       </button>
 
-      {/* Modal inscription */}
+      {/* Modal d’inscription (affiché si l’utilisateur n’est pas connecté) */}
       <RegistrationClientModal
         isOpen={showRegistrationModal}
         onClose={() => setShowRegistrationModal(false)}
         onSuccess={() => {
-          setUser({ id: "nouvelUtilisateur" }); // simulation user
+          setUser({ id: "nouvelUtilisateur" }); // Simulation d’un nouvel utilisateur
           setShowRegistrationModal(false);
-          handleSubmit(); // relance l'envoi
+          handleSubmit(); // Relance l’envoi après inscription
         }}
       />
     </div>

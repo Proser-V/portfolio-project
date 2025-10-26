@@ -10,7 +10,27 @@ import com.atelierlocal.model.Message;
 import com.atelierlocal.model.MessageStatus;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * DTO de réponse pour représenter un message échangé entre deux utilisateurs.
+ * 
+ * Ce DTO contient :
+ * - Les informations sur l'expéditeur et le destinataire (senderId, receiverId)
+ * - Le contenu textuel du message
+ * - L'état du message (MessageStatus)
+ * - Les éventuelles erreurs liées à l'envoi du message (messageError)
+ * - La liste des pièces jointes associées au message (attachments)
+ * - La date de création du message
+ * - Le statut de lecture du message
+ * - L'identifiant temporaire utilisé côté client (tempId)
+ * 
+ * Il fournit également un constructeur spécifique pour les messages d'erreur.
+ */
 public class MessageResponseDTO {
+    
+    // -------------------------------------------------------------------------
+    // ATTRIBUTS
+    // -------------------------------------------------------------------------
+    
     private UUID id;
     private UUID senderId;
     private UUID receiverId;
@@ -24,7 +44,14 @@ public class MessageResponseDTO {
     private Boolean isRead;
     private String tempId;
 
-    // Constructeur pour un message
+    // -------------------------------------------------------------------------
+    // CONSTRUCTEURS
+    // -------------------------------------------------------------------------
+
+    /**
+     * Constructeur principal pour initialiser le DTO à partir d'une entité Message.
+     * Effectue également le mapping des attachments vers AttachmentDTO.
+     */
     public MessageResponseDTO(Message message) {
         this.id = message.getId();
         this.senderId = message.getSender().getId();
@@ -35,7 +62,6 @@ public class MessageResponseDTO {
         this.createdAt = message.getCreatedAt();
         this.isRead = message.getRead();
         this.tempId = message.getTempId();
-        // Mapping des attachments vers AttachmentDTO
         this.attachments = message.getAttachments() != null
             ? message.getAttachments().stream()
                 .map(AttachmentDTO::new)
@@ -43,13 +69,22 @@ public class MessageResponseDTO {
             : null;
     }
 
-    // Constructeur pour un message d'erreur
+    /**
+     * Constructeur pour créer un DTO représentant un message ayant échoué.
+     * Initialise le statut du message à FAILED.
+     */
     public MessageResponseDTO(String errorMessage) {
         this.messageError = errorMessage;
         this.messageStatus = MessageStatus.FAILED;
     }
 
-    // Classe interne pour représenter les pièces jointes
+    // -------------------------------------------------------------------------
+    // CLASSE INTERNE POUR LES PIECES JOINTES
+    // -------------------------------------------------------------------------
+
+    /**
+     * DTO pour représenter une pièce jointe associée à un message.
+     */
     public static class AttachmentDTO {
         private UUID id;
         private String fileUrl;
@@ -72,7 +107,10 @@ public class MessageResponseDTO {
         public void setFileType(String fileType) { this.fileType = fileType; }
     }
 
-    // Getters et setters
+    // -------------------------------------------------------------------------
+    // GETTERS ET SETTERS
+    // -------------------------------------------------------------------------
+
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }
 

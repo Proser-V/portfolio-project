@@ -6,6 +6,11 @@ import ProfileActionButton from "@/components/ProfileActionButton";
 import ArtisanAvatarUploader from "@/components/ArtisanAvatarUploader";
 import getApiUrl from "@/lib/api";
 
+/**
+ * Récupère les informations d'un artisan via son ID.
+ * @param {string} artisanId - L'identifiant de l'artisan
+ * @returns {Promise<Object|null>} Les données de l'artisan ou null si non trouvé
+ */
 async function getArtisan(artisanId) {
   try {
     const res = await fetch(
@@ -20,6 +25,12 @@ async function getArtisan(artisanId) {
   }
 }
 
+/**
+ * Récupère l'adresse complète à partir de coordonnées GPS.
+ * @param {number} latitude - Latitude
+ * @param {number} longitude - Longitude
+ * @returns {Promise<string>} Adresse ou message par défaut en cas d'erreur
+ */
 async function getAddress(latitude, longitude) {
   if (!latitude || !longitude) return "Adresse non renseignée";
   
@@ -39,11 +50,19 @@ async function getAddress(latitude, longitude) {
   }
 }
 
+/**
+ * Page de profil d'un artisan.
+ * Affiche les informations personnelles, portfolio, et boutons d'action selon l'utilisateur connecté.
+ * @param {Object} params - Paramètres de la route
+ * @param {string} params.artisanId - ID de l'artisan à afficher
+ * @returns {JSX.Element} Composant React complet de la page profil artisan
+ */
 export default async function ArtisanProfilePage({ params }) {
   const { artisanId } = await params;
   const artisan = await getArtisan(artisanId);
   const user = await getUser();
 
+  // Si artisan introuvable, affiche un message et lien de retour
   if (!artisan) {
     return (
       <div className="mt-6 text-center">
@@ -55,11 +74,11 @@ export default async function ArtisanProfilePage({ params }) {
     );
   }
 
-  // Détermine si l'utilisateur est propriétaire de cette page ou admin
+  // Détermine si l'utilisateur connecté est le propriétaire ou admin
   const isOwner = user?.id === artisan.id && user?.role === "artisan";
   const isAdmin = user?.role === "admin";
 
-  // Calcul de l'expérience
+  // Calcul de l'expérience en années
   const experienceYears = artisan.activityStartDate
     ? new Date().getFullYear() - new Date(artisan.activityStartDate).getFullYear()
     : 0;
@@ -77,7 +96,7 @@ export default async function ArtisanProfilePage({ params }) {
 
       <div className="mt-6 flex flex-col items-center justify-center px-4 md:px-0 max-w-[1000px] mx-auto">
         <div className="w-full flex flex-col md:flex-row items-center md:items-start gap-4">
-          {/* Colonne gauche - Avatar et infos */}
+          {/* Colonne gauche - Avatar et informations de base */}
           <div className="flex flex-col w-[250px] items-center">
             <ArtisanAvatarUploader artisan={artisan} isOwner={isOwner} isAdmin={isAdmin}/>
             <h2 className="text-gold text-xl mb-0 font-cabin mt-2">{artisan.name}</h2>
@@ -86,9 +105,9 @@ export default async function ArtisanProfilePage({ params }) {
             </p>
           </div>
 
-          {/* Colonne droite - Carte principale */}
+          {/* Colonne droite - Informations détaillées */}
           <div className="relative flex flex-col bg-white border-gold border-2 border-solid w-full md:min-w-[700px] mb-6 overflow-hidden">
-            {/* Filigrane */}
+            {/* Filigrane du logo */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="relative w-[300px] h-[300px]">
                 <Image
@@ -106,7 +125,7 @@ export default async function ArtisanProfilePage({ params }) {
               <p className="text-gold md:text-lg">A PROPOS DE MOI</p>
             </div>
 
-            {/* Contenu */}
+            {/* Contenu principal */}
             <div className="relative z-10">
               <h3 className="text-blue ml-1 my-1">{artisan.categoryName}</h3>
               <p className="ml-1 mt-0 mb-4">
@@ -129,12 +148,12 @@ export default async function ArtisanProfilePage({ params }) {
               </p>
             </div>
 
-            {/* Bouton conditionnel : Contact OU Modifier */}
+            {/* Bouton d'action conditionnel : contacter ou modifier */}
             <ProfileActionButton artisan={artisan} isOwner={isOwner} isAdmin={isAdmin} address={address} />
           </div>
         </div>
 
-        {/* Portfolio avec gestion si propriétaire */}
+        {/* Portfolio de l'artisan */}
         <ArtisanPortfolio
           artisanId={artisan.id}
           initialPhotos={artisan.photoGallery}
@@ -145,7 +164,12 @@ export default async function ArtisanProfilePage({ params }) {
   );
 }
 
-// Métadonnées pour le SEO
+/**
+ * Génère les métadonnées SEO pour la page artisan.
+ * @param {Object} params - Paramètres de la route
+ * @param {string} params.artisanId - ID de l'artisan
+ * @returns {Promise<{title: string, description: string}>} Métadonnées SEO
+ */
 export async function generateMetadata({ params }) {
   const { artisanId } = await params;
 

@@ -1,13 +1,28 @@
 "use client";
+// Directive Next.js : ce composant est côté client car il utilise des hooks et state
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { countUnreadByUser, getUnreadMessages, markConversationAsReadLocally } from "@/lib/messageService";
 import { useUnreadMessages } from "./UnreadMessageProvider";
-import { useEffect } from "react";
 
+/**
+ * Liste des conversations pour le messenger.
+ *
+ * Permet :
+ * - Filtrage par nom
+ * - Tri par date (asc/desc)
+ * - Pagination
+ * - Gestion des messages non lus
+ *
+ * Props :
+ * @param {Array} initialConversations - Liste initiale de toutes les conversations
+ * @param {number} conversationsPerPage - Nombre de conversations par page (défaut : 10)
+ * @param {string|number} currentUserId - ID de l'utilisateur courant
+ * @param {Array} initialUnreadMessages - Liste initiale des messages non lus
+ */
 export default function MessengerList({
   initialConversations,
   conversationsPerPage = 10,
@@ -15,16 +30,23 @@ export default function MessengerList({
   initialUnreadMessages = []
 }) {
   const router = useRouter();
+
+  // États locaux pour recherche, tri et pagination
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("desc");
   const [currentPage, setCurrentPage] = useState(1);
 
-  // ✅ Hook global pour unread
+  // Hook global pour les messages non lus
   const { unreadMessages, refreshUnread, markConversationAsReadLocally } = useUnreadMessages();
 
+  // Comptage des messages non lus par utilisateur
   const unreadCounts = countUnreadByUser(unreadMessages, currentUserId);
 
-  // Filtrage et tri côté client
+  /**
+   * Filtrage et tri des conversations côté client
+   * - Filtre par nom si search non vide
+   * - Tri par dernière date (asc/desc)
+   */
   const filteredConversations = useMemo(() => {
     let convs = initialConversations.filter(conv => conv.lastTimestamp);
     if (search) {
@@ -40,6 +62,7 @@ export default function MessengerList({
     return convs;
   }, [initialConversations, search, sort]);
 
+  // Pagination
   const totalPages = Math.ceil(filteredConversations.length / conversationsPerPage);
   const startIndex = (currentPage - 1) * conversationsPerPage;
   const paginatedConversations = filteredConversations.slice(
@@ -47,13 +70,21 @@ export default function MessengerList({
     startIndex + conversationsPerPage
   );
 
+  // Gestion du changement de page
   const handlePageChange = (page) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  /**
+   * Gestion du clic sur une conversation :
+   * - Marque localement les messages comme lus
+   * - Si token JWT présent, marque les messages non lus côté serveur
+   * - Redirection vers la conversation
+   */
   async function handleConversationClick(conv) {
     markConversationAsReadLocally(conv.otherUserId);
+
     const jwtToken = document.cookie
       .split('; ')
       .find(row => row.startsWith('jwt='))
@@ -68,12 +99,12 @@ export default function MessengerList({
       msg => msg.senderId === conv.otherUserId && msg.receiverId === currentUserId
     );
 
-  if (unreadInConv.length > 0 && jwtToken) {
-    await Promise.all(unreadInConv.map(msg => markMessageAsRead(msg.id, jwtToken)));
-    refreshUnread();
-  }
+    if (unreadInConv.length > 0 && jwtToken) {
+      await Promise.all(unreadInConv.map(msg => markMessageAsRead(msg.id, jwtToken)));
+      refreshUnread();
+    }
 
-  router.push(`/messenger/${conv.otherUserId}`);
+    router.push(`/messenger/${conv.otherUserId}`);
   }
 
   return (
@@ -82,6 +113,7 @@ export default function MessengerList({
         {/* Barre de recherche et tri */}
         <p className="text-sm text-center mt-0">Filtrer vos messages par</p>
         <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-8">
+          {/* Recherche par nom */}
           <div className="flex items-center gap-2">
             <label className="text-blue text-sm">Nom :</label>
             <input
@@ -96,6 +128,7 @@ export default function MessengerList({
             />
           </div>
           
+          {/* Sélecteur de tri par date */}
           <div className="flex items-center gap-2">
             <label className="text-blue text-sm">Date :</label>
             <select
@@ -135,7 +168,7 @@ export default function MessengerList({
                   }`}
                 >
                   <div className="flex items-center h-28">
-                    {/* Avatar */}
+                    {/* Avatar de l'autre utilisateur */}
                     <div className="relative h-full aspect-square flex-shrink-0 overflow-hidden">
                       <Image
                         src={conv.otherUserAvatar || `/avatars/${conv.otherUserId}.jpg`}
@@ -146,7 +179,7 @@ export default function MessengerList({
                       />
                     </div>
 
-                    {/* Contenu */}
+                    {/* Contenu conversation */}
                     <div className="flex flex-col flex-1 min-w-0">
                       <div className="flex items-start">
                         <div className="flex-1 min-w-0 px-4">
@@ -176,7 +209,7 @@ export default function MessengerList({
                         </div>
                       </div>
 
-                      {/* Date et heure */}
+                      {/* Date et heure du dernier message */}
                       <div className={`text-xs md:pt-1 pr-4 text-right border-0 border-t-2 border-solid ${
                         hasUnread 
                           ? "border-gold text-blue" 
@@ -223,6 +256,7 @@ export default function MessengerList({
               ))}
             </div>
 
+            {/* Bouton page suivante */}
             <button className="bg-blue text-white px-6 py-2 rounded-full hover:bg-gold transition-colors duration-200 text-sm font-cabin flex items-center gap-2">
               Page suivante <span>▶</span>
             </button>

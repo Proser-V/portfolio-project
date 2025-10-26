@@ -35,17 +35,35 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+/**
+ * Contrôleur REST et WebSocket pour la messagerie de l'application.
+ * 
+ * Ce contrôleur gère :
+ * - L'envoi de messages (texte et fichiers)
+ * - La réception via WebSocket
+ * - La récupération de l'historique de conversation
+ * - La gestion des conversations et messages non lus
+ * - Le marquage des messages comme lus
+ * 
+ * Les accès sont sécurisés selon les rôles : ADMIN, CLIENT, ARTISAN.
+ */
 @RestController
 @RequestMapping("/api/messages")
 @Tag(name = "Messages", description = "API pour la messagerie")
 public class MessageController {
+
+    // Logger pour le suivi des événements et erreurs
     private static final Logger logger = LoggerFactory.getLogger(MessageController.class);
 
-    private final SimpMessagingTemplate messagingTemplate;
-    private final MessageService messageService;
-    private final ArtisanRepo artisanRepo;
-    private final ClientRepo clientRepo;
+    // Composants nécessaires au fonctionnement du contrôleur
+    private final SimpMessagingTemplate messagingTemplate; // Pour envoyer des messages via WebSocket
+    private final MessageService messageService;           // Service métier pour la gestion des messages
+    private final ArtisanRepo artisanRepo;                // Répertoire pour accéder aux artisans
+    private final ClientRepo clientRepo;                  // Répertoire pour accéder aux clients
 
+    /**
+     * Constructeur du contrôleur avec injection des dépendances.
+     */
     public MessageController(SimpMessagingTemplate messagingTemplate, MessageService messageService, 
                              ArtisanRepo artisanRepo, ClientRepo clientRepo) {
         this.messagingTemplate = messagingTemplate;
@@ -54,7 +72,17 @@ public class MessageController {
         this.clientRepo = clientRepo;
     }
 
-    // Vérifie si l’envoi est autorisé selon les rôles
+    /**
+     * Vérifie si l’envoi d’un message est autorisé selon les rôles des utilisateurs.
+     * 
+     * Règles :
+     * - Un artisan ne peut contacter que des clients ou des administrateurs.
+     * - Un client ne peut contacter que des artisans ou des administrateurs.
+     * 
+     * @param sender L'utilisateur qui envoie le message
+     * @param receiver L'utilisateur destinataire
+     * @throws IllegalArgumentException si l'envoi n'est pas autorisé
+     */
     private void checkMessageAuthorization(User sender, User receiver) {
         UserRole senderRole = sender.getUserRole();
         UserRole receiverRole = receiver.getUserRole();
@@ -71,7 +99,13 @@ public class MessageController {
         }
     }
 
-    // Récupérer l'utilisateur authentifié
+    /**
+     * Récupère l'utilisateur authentifié depuis le Principal fourni par Spring Security.
+     * 
+     * @param principal Objet représentant l'utilisateur authentifié
+     * @return L'objet User correspondant
+     * @throws IllegalArgumentException si l'utilisateur n'existe pas
+     */
     private User getAuthenticatedUser(Principal principal) {
         String email = principal.getName();
         return artisanRepo.findByEmail(email)
@@ -81,7 +115,19 @@ public class MessageController {
                 .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé: " + email)));
     }
 
-    // Endpoint REST pour messages avec fichiers
+    // -------------------------------------------------------------------------
+    // ENVOI DE MESSAGES AVEC FICHIERS (REST)
+    // -------------------------------------------------------------------------
+    
+    /**
+     * Endpoint REST pour envoyer un message avec une pièce jointe optionnelle.
+     * 
+     * @param receiverId UUID du destinataire
+     * @param content Contenu textuel du message (optionnel)
+     * @param file Fichier joint (optionnel)
+     * @param principal Utilisateur authentifié
+     * @return MessageResponseDTO contenant les informations du message envoyé
+     */
     @PostMapping(consumes = {"multipart/form-data"})
     @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT', 'ARTISAN')")
     @Operation(summary = "Envoie un message avec pièce jointe optionnelle")
@@ -97,20 +143,20 @@ public class MessageController {
             Principal principal
     ) {
         try {
-            // Récupérer l’utilisateur authentifié
+            // Récupération de l'utilisateur authentifié
             User authenticatedUser = getAuthenticatedUser(principal);
 
-            // Récupérer le destinataire
+            // Récupération du destinataire
             User receiverUser = artisanRepo.findById(receiverId)
                 .map(User.class::cast)
                 .orElseGet(() -> clientRepo.findById(receiverId)
                     .map(User.class::cast)
                     .orElseThrow(() -> new IllegalArgumentException("Destinataire non trouvé: " + receiverId)));
 
-            // Vérifier les autorisations
+            // Vérification des autorisations d'envoi
             checkMessageAuthorization(authenticatedUser, receiverUser);
 
-            // Créer le DTO
+            // Création du DTO pour le service
             MessageRequestDTO dto = new MessageRequestDTO();
             dto.setSenderId(authenticatedUser.getId());
             dto.setReceiverId(receiverId);
@@ -120,16 +166,15 @@ public class MessageController {
             logger.info("Envoi message REST de {} à {} avec fichier: {}", 
                 authenticatedUser.getId(), receiverId, file != null ? file.getOriginalFilename() : "aucun");
 
-            // Envoyer via le service
+            // Envoi du message via le service
             MessageResponseDTO response = messageService.sendMessage(dto);
 
-            // Diffuser via WebSocket aux deux parties
+            // Diffusion du message via WebSocket aux deux parties
             messagingTemplate.convertAndSendToUser(
                 receiverUser.getEmail(),
                 "/queue/messages",
                 response
             );
-
             messagingTemplate.convertAndSendToUser(
                 authenticatedUser.getEmail(),
                 "/queue/messages",
@@ -152,38 +197,53 @@ public class MessageController {
         }
     }
 
-    // WebSocket pour messages SANS fichiers (texte uniquement)
+    // -------------------------------------------------------------------------
+    // ENVOI DE MESSAGES TEXTE (WebSocket)
+    // -------------------------------------------------------------------------
+    
+    /**
+     * Traitement des messages texte reçus via WebSocket.
+     * 
+     * Ce endpoint ne gère pas les fichiers (uniquement le texte).
+     * Les messages sont envoyés aux deux utilisateurs via WebSocket.
+     * 
+     * @param message DTO contenant le message à envoyer
+     * @param principal Utilisateur authentifié
+     */
     @MessageMapping("/chat")
     public void processMessage(@Valid MessageRequestDTO message, Principal principal) {
         try {
             logger.info("Message reçu via WebSocket de: {}", principal.getName());
             
+            // Récupération de l'utilisateur authentifié
             User authenticatedUser = getAuthenticatedUser(principal);
             UUID authenticatedId = authenticatedUser.getId();
             
-            // Récupérer le destinataire
+            // Récupération du destinataire
             User receiverUser = artisanRepo.findById(message.getReceiverId())
                 .map(User.class::cast)
                 .orElseGet(() -> clientRepo.findById(message.getReceiverId())
                     .map(User.class::cast)
                     .orElseThrow(() -> new IllegalArgumentException("Destinataire non trouvé: " + message.getReceiverId())));
 
-            // Vérifier les autorisations
+            // Vérification des autorisations
             checkMessageAuthorization(authenticatedUser, receiverUser);
 
+            // Préparation du message pour le service
             message.setSenderId(authenticatedId);
             message.setFile(null); // Pas de fichier via WebSocket
 
             logger.info("Traitement message de {} à {}", message.getSenderId(), message.getReceiverId());
             
+            // Envoi du message via le service
             MessageResponseDTO response = messageService.sendMessage(message);
 
+            // Diffusion WebSocket aux deux utilisateurs
             messagingTemplate.convertAndSendToUser(
                 receiverUser.getEmail(),
                 "/queue/messages",
                 response
             );
-
             messagingTemplate.convertAndSendToUser(
                 authenticatedUser.getEmail(),
                 "/queue/messages",
@@ -219,6 +279,20 @@ public class MessageController {
         }
     }
 
+    // -------------------------------------------------------------------------
+    // HISTORIQUE DE CONVERSATION
+    // -------------------------------------------------------------------------
+    
+    /**
+     * Récupère l'historique de conversation entre deux utilisateurs.
+     * 
+     * Seul un des deux utilisateurs peut accéder à l'historique.
+     * 
+     * @param user1Id UUID du premier utilisateur
+     * @param user2Id UUID du second utilisateur
+     * @param principal Utilisateur authentifié
+     * @return Liste des messages de la conversation
+     */
     @GetMapping("/history")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT', 'ARTISAN')")
     @Operation(summary = "Récupère l'historique de conversation entre deux utilisateurs")
@@ -235,8 +309,9 @@ public class MessageController {
         User authenticatedUser = getAuthenticatedUser(principal);
         UUID authId = authenticatedUser.getId();
 
+        // Vérification que l'utilisateur authentifié est impliqué dans la conversation
         if (!(authId.equals(user1Id) || authId.equals(user2Id))) {
-            logger.warn("⚠️ Accès refusé: authId={} n'est ni user1Id={} ni user2Id={}", authId, user1Id, user2Id);
+            logger.warn("Accès refusé: authId={} n'est ni user1Id={} ni user2Id={}", authId, user1Id, user2Id);
             return ResponseEntity.status(403).build();
         }
 
@@ -250,6 +325,17 @@ public class MessageController {
         }
     }
 
+    // -------------------------------------------------------------------------
+    // LISTE DES CONVERSATIONS D'UN UTILISATEUR
+    // -------------------------------------------------------------------------
+    
+    /**
+     * Récupère la liste des conversations d'un utilisateur.
+     * 
+     * @param userId UUID de l'utilisateur
+     * @param principal Utilisateur authentifié
+     * @return Liste résumée des conversations
+     */
     @GetMapping("/conversations/{userId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT', 'ARTISAN')")
     @Operation(summary = "Récupère les conversations d'un utilisateur")
@@ -267,8 +353,9 @@ public class MessageController {
         UUID authId = authenticatedUser.getId();
         logger.info("Utilisateur authentifié: id={}, email={}", authId, authenticatedUser.getEmail());
 
+        // Vérification que l'utilisateur demande ses propres conversations
         if (!authId.equals(userId)) {
-            logger.warn("⚠️ Tentative d'accès aux conversations d'un autre utilisateur = auth={}, request={}", authId, userId);
+            logger.warn("Tentative d'accès aux conversations d'un autre utilisateur = auth={}, request={}", authId, userId);
             return ResponseEntity.status(403).build();
         }
 
@@ -285,6 +372,16 @@ public class MessageController {
         }
     }
 
+    // -------------------------------------------------------------------------
+    // MESSAGES NON LUS
+    // -------------------------------------------------------------------------
+    
+    /**
+     * Récupère les messages non lus de l'utilisateur authentifié.
+     * 
+     * @param principal Utilisateur authentifié
+     * @return Liste des messages non lus
+     */
     @GetMapping("/unread")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT', 'ARTISAN')")
     @Operation(summary = "Récupère les messages non lus de l'utilisateur authentifié")
@@ -310,6 +407,16 @@ public class MessageController {
         }
     }
 
+    // -------------------------------------------------------------------------
+    // MARQUAGE D'UN MESSAGE COMME LU
+    // -------------------------------------------------------------------------
+    
+    /**
+     * Marque un message comme lu et notifie l'utilisateur via WebSocket du nombre de messages non lus restants.
+     * 
+     * @param messageId UUID du message
+     * @param principal Utilisateur authentifié
+     */
     @PostMapping("/{messageId}/read")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT', 'ARTISAN')")
     @Operation(summary = "Marque un message comme lu")
@@ -322,6 +429,8 @@ public class MessageController {
         try {
             User authenticatedUser = getAuthenticatedUser(principal);
             messageService.markMessageAsRead(messageId, authenticatedUser);
+
+            // Envoi du compteur de messages non lus via WebSocket
             int unreadCount = messageService.getUnreadMessages(authenticatedUser).size();
             messagingTemplate.convertAndSendToUser(
                 authenticatedUser.getEmail(),

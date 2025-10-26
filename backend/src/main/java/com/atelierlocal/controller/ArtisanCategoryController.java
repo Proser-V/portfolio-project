@@ -29,15 +29,24 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+/**
+ * Contrôleur REST pour la gestion des catégories d'artisans.
+ * Fournit des endpoints pour la création, mise à jour, suppression et consultation
+ * des catégories ainsi que pour récupérer les artisans ou askings associés.
+ */
 @RestController
 @RequestMapping("/api/artisan-category")
-@Tag(name = "Artisan Categories", description = "Définition du controlleur des catégories d'artisans")
+@Tag(name = "Artisan Categories", description = "Définition du contrôleur des catégories d'artisans")
 public class ArtisanCategoryController {
     
     private final ArtisanCategoryService artisanCategoryService;
     private final ArtisanService artisanService;
     private final AskingService askingService;
 
+    /**
+     * Constructeur du contrôleur.
+     * Injection des services nécessaires pour gérer les catégories, artisans et askings.
+     */
     public ArtisanCategoryController(
         ArtisanCategoryService artisanCategoryService,
         ArtisanService artisanService,
@@ -52,9 +61,12 @@ public class ArtisanCategoryController {
     // CRÉATION / MISE À JOUR / SUPPRESSION
     // --------------------
 
-    /** 
-     * Création d'une nouvelle catégorie d'artisan
-     * Accessible uniquement aux ADMIN
+    /**
+     * Création d'une nouvelle catégorie d'artisan.
+     * Accessible uniquement aux utilisateurs avec le rôle ADMIN.
+     * 
+     * @param request DTO contenant les informations de la nouvelle catégorie
+     * @return ResponseEntity avec le DTO de la catégorie créée
      */
     @PostMapping("/creation")
     @PreAuthorize("hasRole('ADMIN')")
@@ -64,8 +76,12 @@ public class ArtisanCategoryController {
     }
 
     /**
-     * Mise à jour d'une catégorie
-     * Accessible uniquement aux ADMIN
+     * Mise à jour d'une catégorie existante.
+     * Accessible uniquement aux ADMIN.
+     * 
+     * @param id UUID de la catégorie à mettre à jour
+     * @param request DTO avec les nouvelles données
+     * @return ResponseEntity avec le DTO de la catégorie mise à jour
      */
     @PutMapping("/{id}/update")
     @PreAuthorize("hasRole('ADMIN')")
@@ -77,8 +93,11 @@ public class ArtisanCategoryController {
     }
 
     /**
-     * Suppression d'une catégorie
-     * Accessible uniquement aux ADMIN
+     * Suppression d'une catégorie.
+     * Accessible uniquement aux ADMIN.
+     * 
+     * @param id UUID de la catégorie à supprimer
+     * @return ResponseEntity sans contenu (204)
      */
     @DeleteMapping("/{id}/delete")
     @PreAuthorize("hasRole('ADMIN')")
@@ -88,12 +107,14 @@ public class ArtisanCategoryController {
     }
 
     // --------------------
-    // LECTURE
+    // LECTURE / CONSULTATION
     // --------------------
 
     /**
-     * Récupère toutes les catégories d'artisans
-     * Route publique : accessible à tout le monde
+     * Récupère toutes les catégories d'artisans.
+     * Route publique : accessible à tous.
+     * 
+     * @return ResponseEntity avec la liste des catégories
      */
     @GetMapping("/")
     public ResponseEntity<List<ArtisanCategoryResponseDTO>> getAllArtisanCategories() {
@@ -102,8 +123,11 @@ public class ArtisanCategoryController {
     }
 
     /**
-     * Récupère une catégorie par son ID
-     * Route publique : accessible à tout le monde
+     * Récupère une catégorie par son ID.
+     * Route publique : accessible à tous.
+     * 
+     * @param id UUID de la catégorie
+     * @return ResponseEntity avec le DTO de la catégorie
      */
     @GetMapping("/{id}")
     public ResponseEntity<ArtisanCategoryResponseDTO> getArtisanCategoryById(@PathVariable UUID id) {
@@ -112,8 +136,12 @@ public class ArtisanCategoryController {
     }
 
     /**
-     * Récupère tous les artisans d'une catégorie
-     * Route publique : accessible à tout le monde
+     * Récupère tous les artisans appartenant à une catégorie spécifique.
+     * Route publique : accessible à tous.
+     * 
+     * @param id UUID de la catégorie
+     * @param currentClient client actuellement authentifié (peut être null si non connecté)
+     * @return ResponseEntity avec la liste des artisans
      */
     @GetMapping("/{id}/artisans")
     public ResponseEntity<List<ArtisanResponseDTO>> getArtisansByCategory(
@@ -124,8 +152,12 @@ public class ArtisanCategoryController {
     }
 
     /**
-     * Récupère tous les askings liées à une catégorie
-     * Accessible à tous les utilisateurs
+     * Récupère tous les askings liés à une catégorie.
+     * Accessible à tous les utilisateurs.
+     * 
+     * @param id UUID de la catégorie
+     * @param currentUser utilisateur actuellement authentifié (peut être null si non connecté)
+     * @return ResponseEntity avec la liste des askings
      */
     @GetMapping("/{id}/askings")
     // @PreAuthorize("hasAnyRole('ARTISAN', 'ADMIN')")

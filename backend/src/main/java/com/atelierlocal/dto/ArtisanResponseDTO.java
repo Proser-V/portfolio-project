@@ -7,24 +7,107 @@ import java.util.UUID;
 import com.atelierlocal.model.Artisan;
 import com.atelierlocal.model.UserRole;
 
-
+/**
+ * DTO (Data Transfer Object) utilisé pour renvoyer les informations détaillées
+ * d'un artisan via les endpoints REST.
+ * 
+ * Ce DTO contient toutes les données visibles côté client, y compris :
+ * - les informations personnelles et professionnelles
+ * - les coordonnées géographiques
+ * - les informations de catégorie et d'activité
+ * - le nombre de recommandations et la galerie de photos
+ * - le rôle de l'utilisateur
+ */
 public class ArtisanResponseDTO {
+
+    /**
+     * Identifiant unique de l'artisan
+     */
     private UUID id;
+
+    /**
+     * Nom de l'artisan
+     */
     private String name;
+
+    /**
+     * Email de l'artisan
+     */
     private String email;
+
+    /**
+     * Biographie ou description de l'artisan
+     */
     private String bio;
+
+    /**
+     * Numéro de téléphone de l'artisan
+     */
     private String phoneNumber;
+
+    /**
+     * Numéro SIRET de l'artisan
+     */
     private String siret;
+
+    /**
+     * Avatar de l'artisan (photo de profil)
+     */
     private AvatarDTO avatar;
+
+    /**
+     * Latitude de l'emplacement de l'artisan
+     */
     private Double latitude;
+
+    /**
+     * Longitude de l'emplacement de l'artisan
+     */
     private Double longitude;
+
+    /**
+     * Identifiant de la catégorie de l'artisan
+     */
     private UUID categoryId;
+
+    /**
+     * Nom de la catégorie de l'artisan
+     */
     private String categoryName;
+
+    /**
+     * Date de début d'activité de l'artisan
+     */
     private LocalDate activityStartDate;
+
+    /**
+     * Nombre de recommandations reçues par l'artisan
+     */
     private int recommendationsCount;
+
+    /**
+     * Galerie de photos téléchargées par l'artisan
+     */
     private List<UploadedPhotoResponseDTO> photoGallery;
+
+    /**
+     * Rôle de l'utilisateur (ARTISAN)
+     */
     private UserRole role;
 
+    /**
+     * Constructeur à partir d'un objet Artisan.
+     * 
+     * Ce constructeur initialise tous les champs du DTO en extrayant les
+     * informations pertinentes de l'entité Artisan, y compris :
+     * - avatar transformé en DTO
+     * - catégorie et ID
+     * - galerie de photos transformée en DTOs
+     * - nombre de recommandations
+     * - rôle
+     * 
+     * @param artisan l'entité Artisan à transformer en DTO
+     */
     public ArtisanResponseDTO(Artisan artisan) {
         this.id = artisan.getId();
         this.name = artisan.getName();
@@ -45,7 +128,9 @@ public class ArtisanResponseDTO {
         this.role = artisan.getUserRole();
     }
 
-    // Getters et setters
+    // -------------------------------------------------------------------------
+    // GETTERS ET SETTERS
+    // -------------------------------------------------------------------------
 
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }

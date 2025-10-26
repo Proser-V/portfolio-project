@@ -5,22 +5,83 @@ import java.util.UUID;
 import com.atelierlocal.model.Client;
 import com.atelierlocal.model.UserRole;
 
+/**
+ * DTO (Data Transfer Object) utilisé pour exposer les informations d'un client
+ * via l'API. 
+ * 
+ * Ce DTO contient les informations essentielles d'un client, y compris
+ * sa localisation, son avatar, son rôle et son statut actif.
+ */
 public class ClientResponseDTO {
 
-    // Attributs
+    // -------------------------------------------------------------------------
+    // ATTRIBUTS
+    // -------------------------------------------------------------------------
 
+    /**
+     * Identifiant unique du client
+     */
     private UUID id;
+
+    /**
+     * Adresse email du client
+     */
     private String email;
+
+    /**
+     * Prénom du client
+     */
     private String firstName;
+
+    /**
+     * Nom de famille du client
+     */
     private String lastName;
+
+    /**
+     * Avatar du client (optionnel)
+     */
     private AvatarDTO avatar;
+
+    /**
+     * Latitude de la localisation du client
+     */
     private Double latitude;
+
+    /**
+     * Longitude de la localisation du client
+     */
     private Double longitude;
+
+    /**
+     * Numéro de téléphone du client (optionnel)
+     */
     private String phoneNumber;
+
+    /**
+     * Nombre de recommandations reçues par le client
+     */
     private int recommendationsCount;
+
+    /**
+     * Rôle de l'utilisateur (CLIENT, ADMIN, etc.)
+     */
     public UserRole role;
+
+    /**
+     * Statut actif du client
+     */
     private Boolean isActive;
 
+    // -------------------------------------------------------------------------
+    // CONSTRUCTEUR
+    // -------------------------------------------------------------------------
+
+    /**
+     * Constructeur pour créer un DTO à partir d'un objet Client.
+     * 
+     * @param client l'entité Client à transformer en DTO
+     */
     public ClientResponseDTO(Client client) {
         this.id = client.getId();
         this.email = client.getEmail();
@@ -35,7 +96,9 @@ public class ClientResponseDTO {
         this.isActive = client.getActive();
     }
 
-    // Getters et setters
+    // -------------------------------------------------------------------------
+    // GETTERS ET SETTERS
+    // -------------------------------------------------------------------------
 
     public UUID getId() { return id; }
 

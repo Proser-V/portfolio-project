@@ -19,47 +19,106 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
+/**
+ * Entité représentant un message échangé entre utilisateurs.
+ * 
+ * Cette classe permet de stocker les informations d'un message :
+ * - expéditeur et destinataire
+ * - contenu texte
+ * - pièces jointes associées
+ * - statut de lecture
+ * - erreurs éventuelles
+ * - statut du message
+ * - dates de création et mise à jour automatiques
+ * - identifiant temporaire (pour gestion front-end)
+ */
 @Entity
 public class Message {
 
-    // Attributs
+    // -------------------------------------------------------------------------
+    // ATTRIBUTS
+    // -------------------------------------------------------------------------
+
+    /**
+     * Identifiant unique du message.
+     * Généré automatiquement et non modifiable.
+     */
     @Id
     @GeneratedValue
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
+    /**
+     * Utilisateur expéditeur du message.
+     * Relation ManyToOne vers User, obligatoire.
+     */
     @ManyToOne(optional = false)
     @JoinColumn(name = "sender_id", nullable = false)
     private User sender;
 
+    /**
+     * Utilisateur destinataire du message.
+     * Relation ManyToOne vers User, obligatoire.
+     */
     @ManyToOne(optional = false)
     @JoinColumn(name = "receiver_id", nullable = false)
     private User receiver;
 
+    /**
+     * Contenu texte du message.
+     */
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    /**
+     * Liste des pièces jointes associées au message.
+     * Relation OneToMany vers Attachment, cascade sur toutes les opérations.
+     */
     @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Attachment> attachments = new ArrayList<>();
 
+    /**
+     * Indique si le message a été lu par le destinataire.
+     */
     @Column(nullable = false)
     private boolean isRead = false;
 
+    /**
+     * Champ pour stocker une éventuelle erreur liée au message.
+     */
     private String messageError;
 
+    /**
+     * Statut du message (ex : SENT, DELIVERED, READ).
+     * Enumération stockée en tant que chaîne.
+     */
     @Enumerated(EnumType.STRING)
     private MessageStatus messageStatus = MessageStatus.SENT;
 
+    /**
+     * Date et heure de création du message.
+     * Remplie automatiquement lors de l'insertion.
+     */
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
+    /**
+     * Date et heure de la dernière mise à jour du message.
+     * Mise à jour automatiquement à chaque modification.
+     */
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    /**
+     * Identifiant temporaire pour la gestion front-end ou synchronisation.
+     */
     private String tempId;
 
-    // Getters + Setters
+    // -------------------------------------------------------------------------
+    // GETTERS ET SETTERS
+    // -------------------------------------------------------------------------
+
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }
 

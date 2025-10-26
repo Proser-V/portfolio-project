@@ -32,6 +32,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+/**
+ * Contrôleur REST pour la gestion des clients.
+ * Permet la création, mise à jour, suppression et consultation des clients,
+ * ainsi que la récupération des demandes (askings) associées.
+ */
 @RestController
 @RequestMapping("/api/clients")
 @Tag(name = "Clients", description = "API pour la gestion des clients")
@@ -40,12 +45,29 @@ public class ClientController {
     private final ClientService clientService;
     private final AskingService askingService;
 
+    /**
+     * Constructeur avec injection des services nécessaires.
+     * 
+     * @param clientService service de gestion des clients
+     * @param askingService service de gestion des demandes (askings)
+     */
     public ClientController(ClientService clientService, AskingService askingService) {
         this.clientService = clientService;
         this.askingService = askingService;
     }
 
-    // Création d'un nouveau client (accessible à tous)
+    // --------------------
+    // ENREGISTREMENT
+    // --------------------
+
+    /**
+     * Enregistrement d'un nouveau client.
+     * Accessible à tous.
+     * 
+     * @param request données du client
+     * @param avatar image optionnelle de l'avatar
+     * @return ResponseEntity contenant les informations du client créé
+     */
     @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Enregistrement d'un nouveau client", description = "Création d'un nouveau client via les données entrées")
     @ApiResponses(value = {
@@ -62,6 +84,10 @@ public class ClientController {
         return ResponseEntity.status(201).body(clientDto);
     }
 
+    /**
+     * Création d'un administrateur par un admin existant.
+     * Accessible uniquement aux ADMIN.
+     */
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/admin/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Création d'un nouvel administrateur", description = "Création d'un admin")
@@ -76,9 +102,16 @@ public class ClientController {
             request.setAvatar(avatar);
             ClientResponseDTO clientDto = clientService.createAdmin(request);
             return ResponseEntity.status(201).body(clientDto);
-        }
+    }
 
-    // Récupération du client connecté (ARTISAN/CLIENT/ADMIN selon contexte)
+    // --------------------
+    // PROFIL ET CONSULTATION
+    // --------------------
+
+    /**
+     * Récupération du profil du client connecté.
+     * Accessible aux CLIENT et ADMIN.
+     */
     @GetMapping("/me")
     @PreAuthorize("hasAnyRole('CLIENT', 'ADMIN')")
     public ResponseEntity<ClientResponseDTO> getCurrentUser(@AuthenticationPrincipal Client currentClient) {
@@ -86,7 +119,10 @@ public class ClientController {
         return ResponseEntity.ok(clientDTO);
     }
 
-    // Liste de tous les clients (ADMIN uniquement)
+    /**
+     * Liste de tous les clients.
+     * Accessible uniquement aux ADMIN.
+     */
     @GetMapping("/")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ClientResponseDTO>> getAllClients(@AuthenticationPrincipal Client currentClient) {
@@ -94,7 +130,10 @@ public class ClientController {
         return ResponseEntity.ok(allClients);
     }
 
-    // Détails d'un client par ID (ADMIN ou client lui-même)
+    /**
+     * Détails d'un client par son ID.
+     * Accessible au client lui-même ou aux ADMIN.
+     */
     @GetMapping("/{id}")
     // @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
     public ResponseEntity<ClientResponseDTO> getClientByID(@PathVariable UUID id) {
@@ -102,7 +141,10 @@ public class ClientController {
         return ResponseEntity.ok(client);
     }
 
-    // Récupération des demandes d'un client
+    /**
+     * Récupération des demandes (askings) d'un client.
+     * Accessible au client lui-même ou aux ADMIN.
+     */
     @GetMapping("/{id}/askings")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
     public ResponseEntity<List<AskingResponseDTO>> getAskingsByClient(@PathVariable UUID id, @AuthenticationPrincipal Client currentClient) {
@@ -110,7 +152,14 @@ public class ClientController {
         return ResponseEntity.ok(askingsByClient);
     }
 
-    // Mise à jour d'un client (ADMIN ou client lui-même)
+    // --------------------
+    // MISE À JOUR
+    // --------------------
+
+    /**
+     * Mise à jour des informations d'un client.
+     * Accessible au client lui-même ou aux ADMIN.
+     */
     @PutMapping("/{id}/update")
     @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
     public ResponseEntity<ClientResponseDTO> updateClient(@Valid @PathVariable UUID id,
@@ -120,7 +169,14 @@ public class ClientController {
         return ResponseEntity.ok(updatedClient);
     }
 
-    // Suppression d'un client (ADMIN uniquement)
+    // --------------------
+    // SUPPRESSION
+    // --------------------
+
+    /**
+     * Suppression d'un client.
+     * Accessible uniquement aux ADMIN.
+     */
     @DeleteMapping("/{id}/delete")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteClient(@PathVariable UUID id, @AuthenticationPrincipal Client currentClient) {
@@ -128,6 +184,14 @@ public class ClientController {
         return ResponseEntity.noContent().build();
     }
 
+    // --------------------
+    // MODÉRATION
+    // --------------------
+
+    /**
+     * Modération (ban) d'un client.
+     * Accessible uniquement aux ADMIN.
+     */
     @PatchMapping("/{id}/moderate")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ClientResponseDTO> moderateClient(@PathVariable UUID id, @AuthenticationPrincipal Client currentClient) {

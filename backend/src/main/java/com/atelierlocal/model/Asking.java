@@ -18,55 +18,99 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 
-
+/**
+ * Entité représentant une demande (Asking) effectuée par un client.
+ * 
+ * Une demande est liée à un client, à une catégorie d'artisan, et éventuellement à une
+ * catégorie d'événement. Elle contient des informations sur le titre, le contenu, la localisation,
+ * la date de l'événement, et l'état de la demande.
+ */
 @Entity
 @Table(name = "askings")
 public class Asking {
-    // Atributs
 
+    // -------------------------------------------------------------------------
+    // ATTRIBUTS
+    // -------------------------------------------------------------------------
+
+    /**
+     * Identifiant unique de la demande.
+     */
     @Id
     @GeneratedValue
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
+    /**
+     * Titre de la demande (max 50 caractères).
+     */
     @Size(max = 50, message = "Le titre ne peut excéder 50 caractères.")
     @Column(nullable = false, length = 50)
     private String title;
 
+    /**
+     * Contenu détaillé de la demande (max 1000 caractères).
+     */
     @Size(max = 1000, message = "La demande ne peux excéder 1000 caractères.")
     @Column(nullable = false, length = 1000)
     private String content;
 
+    /**
+     * Catégorie d'événement associée à la demande (optionnelle).
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_category_id", nullable = true)
     private EventCategory eventCategory;
 
+    /**
+     * Localisation de l'événement ou de la demande (nom de la ville, max 100 caractères).
+     */
     @Size(max = 100, message = "Le nom de la ville ne peut excéder 100 caractères.")
     @Column(length = 100)
     private String eventLocalisation;
 
+    /**
+     * Date et heure prévue pour l'événement (optionnelle).
+     */
     @Column
     private LocalDateTime eventDate;
 
+    /**
+     * Client ayant créé la demande.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id")
     private Client client;
 
+    /**
+     * Catégorie d'artisan ciblée par la demande.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "artisan_category_id", nullable = false)
     private ArtisanCategory artisanCategory;
 
+    /**
+     * Statut actuel de la demande (enum AskingStatus).
+     */
     @Enumerated(EnumType.STRING)
     private AskingStatus status;
 
+    /**
+     * Date et heure de création de la demande. Remplie automatiquement à la création.
+     */
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
+    /**
+     * Date et heure de dernière mise à jour de la demande. Remplie automatiquement à chaque modification.
+     */
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    // Getters et setters
+    // -------------------------------------------------------------------------
+    // GETTERS ET SETTERS
+    // -------------------------------------------------------------------------
 
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }

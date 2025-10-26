@@ -26,7 +26,9 @@ import com.atelierlocal.model.Client;
 import com.atelierlocal.model.User;
 import com.atelierlocal.repository.ArtisanCategoryRepo;
 import com.atelierlocal.repository.ArtisanRepo;
+import com.atelierlocal.repository.AttachmentRepo;
 import com.atelierlocal.repository.AvatarRepo;
+import com.atelierlocal.repository.MessageRepo;
 import com.atelierlocal.security.SecurityService;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -44,6 +46,12 @@ class ArtisanServiceTest {
 
     @Mock
     private AvatarRepo avatarRepo;
+
+    @Mock
+    private MessageRepo messageRepo;
+
+    @Mock
+    private AttachmentRepo attachmentRepo;
 
     @Mock
     private ArtisanCategoryRepo artisanCategoryRepo;

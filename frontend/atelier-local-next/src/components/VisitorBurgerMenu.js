@@ -83,6 +83,7 @@ export default function VisitorBurgerMenu() {
             className="absolute left-0 right-0 top-full w-full bg-blue text-gold flex flex-col text-center shadow-lg md:hidden border-t border-gold z-40 overflow-hidden"
           >
             {/* Liens du menu mobile, fermeture automatique au clic */}
+            {/*
             <Link
               href="/new-asking"
               onClick={() => setIsOpen(false)}
@@ -90,6 +91,7 @@ export default function VisitorBurgerMenu() {
             >
               Demande de prestation
             </Link>
+            */}
 
             <Link
               href="/artisans"

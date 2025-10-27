@@ -178,7 +178,7 @@ export default function RegistrationPage({ user }) {
         URL.revokeObjectURL(clientData.avatarPreview);
       }
 
-      router.push("/");
+      router.push("/login");
     } catch (err) {
       console.error("Erreur réseau :", err);
       setError("Serveur inaccessible. Vérifiez votre connexion.");

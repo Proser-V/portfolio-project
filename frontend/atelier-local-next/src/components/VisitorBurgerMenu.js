@@ -29,12 +29,14 @@ export default function VisitorBurgerMenu() {
     <>
       {/* Navigation Desktop (visible à partir de md) */}
       <nav className="hidden md:flex flex-row items-stretch text-sm h-full">
+        {/*
         <Link
           href="/new-asking"
           className="flex items-center justify-center px-4 py-2 text-gold hover:underline whitespace-nowrap"
         >
           Demande de prestation
         </Link>
+        */}
 
         <Link
           href="/artisans"

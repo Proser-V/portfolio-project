@@ -11,6 +11,7 @@ import { getUser } from "@/lib/getUser";
 import { UnreadMessagesProvider } from "@/components/UnreadMessageProvider";
 import HeaderByRole from "@/components/HeaderByRole";
 import getApiUrl from "@/lib/api";
+import { ToastProvider } from "@/context/ToastContext";
 
 // Force le rendu dynamique de la page pour éviter la mise en cache côté serveur
 export const dynamic = "force-dynamic";
@@ -91,31 +92,34 @@ export default async function RootLayout({ children }) {
           currentUserId={user?.id}
           initialUnreadMessages={unreadMessages}
         >
-          {/* Affiche le header approprié en fonction du rôle de l'utilisateur */}
-          <HeaderByRole user={user} />
+          <ToastProvider key="global-toast-provider">
+            {/* Affiche le header approprié en fonction du rôle de l'utilisateur */}
+            <HeaderByRole user={user} />
 
-          {/* Image de fond filigrane fixée derrière le contenu */}
-          <div className="fixed inset-0 flex items-center justify-center -z-10 overflow-hidden">
-            <Image
-              src="/filigrane.png"
-              alt="filigrane"
-              width={400}
-              height={400}
-              className="object-contain opacity-5 max-w-[80vw] max-h-[80vh]"
-            />
-          </div>
+            {/* Image de fond filigrane fixée derrière le contenu */}
+            <div className="fixed inset-0 flex items-center justify-center -z-10 overflow-hidden">
+              <Image
+                src="/filigrane.png"
+                alt="filigrane"
+                width={400}
+                height={400}
+                className="object-contain opacity-5 max-w-[80vw] max-h-[80vh]"
+              />
+            </div>
 
-          {/* Conteneur principal du contenu de la page */}
-          <main className="flex-grow w-full flex justify-center items-start mb-8">
-            {/* Fournit le contexte utilisateur aux composants enfants */}
-            <UserProviderWrapper user={user}>
-              {React.Children.map(children, (child) =>
-                React.isValidElement(child)
-                  ? React.cloneElement(child, { user }) // Passe l’objet utilisateur à chaque enfant valide
-                  : child
-              )}
-            </UserProviderWrapper>
-          </main>
+            {/* Conteneur principal du contenu de la page */}
+            
+            <main className="flex-grow w-full flex justify-center items-start mb-8">
+              {/* Fournit le contexte utilisateur aux composants enfants */}
+              <UserProviderWrapper user={user}>
+                {React.Children.map(children, (child) =>
+                  React.isValidElement(child)
+                    ? React.cloneElement(child, { user }) // Passe l’objet utilisateur à chaque enfant valide
+                    : child
+                )}
+              </UserProviderWrapper>
+            </main>
+          </ToastProvider>
         </UnreadMessagesProvider>
 
         {/* Pied de page visible sur toutes les pages */}

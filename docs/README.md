@@ -1,1 +1,0 @@
-Landing page for "L'Atelier Local"

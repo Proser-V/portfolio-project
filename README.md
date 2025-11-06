@@ -55,7 +55,19 @@ By the end of this development phase, the functionnalities are:
 git clone https://github.com/Proser-V/portfolio-project.git
 ```
 
-**Run locally with Docker:**
+**Acces to the landing page:**
+
+```bash
+cd docs/
+
+npm install
+
+npm run dev
+```
+
+[Landing page](http://localhost:8080/) (localhost:8080)
+
+**Run the app locally with Docker:**
 
 1. Make sure Docker is installed on your system  
    - [Download Docker Desktop](https://www.docker.com/products/docker-desktop/) (Windows / macOS)  
@@ -84,10 +96,10 @@ docker-compose up --build
 
 **Access to the app:**
 
-[Home page](http://localhost:3000/)
+[Home page](http://localhost:3000/) (localhost:3000)
 
 The backend API is also available for testing at:
-[Swagger](http://localhost:8080/swagger-ui/index.html)
+[Swagger](http://localhost:8080/swagger-ui/index.html) (localhost:8080)
 
 ## 📄 License
 

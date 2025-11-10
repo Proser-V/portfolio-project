@@ -13,7 +13,7 @@ COPY src ./src
 RUN mvn clean package
 
 # ---- Stage 2 : Runtime ----
-FROM openjdk:21-jdk-slim
+FROM eclipse-temurin:21-jdk-jammy
 WORKDIR /app
 
 # Copy only the final JAR

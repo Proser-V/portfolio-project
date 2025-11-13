@@ -49,13 +49,25 @@ By the end of this development phase, the functionnalities are:
 
 ## 🛠 How to Run
 
-1️⃣ Clone the repository:
+**Clone the repository:**
 
 ```bash
 git clone https://github.com/Proser-V/portfolio-project.git
 ```
 
-2️⃣ Run locally with Docker:
+**Acces to the landing page:**
+
+```bash
+cd docs/
+
+npm install
+
+npm run dev
+```
+
+[Landing page](http://localhost:8080/) (localhost:8080)
+
+**Run the app locally with Docker:**
 
 1. Make sure Docker is installed on your system  
    - [Download Docker Desktop](https://www.docker.com/products/docker-desktop/) (Windows / macOS)  
@@ -63,17 +75,31 @@ git clone https://github.com/Proser-V/portfolio-project.git
 
 2. Start Docker (Docker Desktop or Docker daemon)
 
-3. In the project root, build and run all containers:
+3. Setup backend configuration
+
+The backend requires some secret values (JWT secret, database credentials, etc.).  
+For security reasons, the `application.properties` file is **not included in the repository**.
+
+To run the backend, you will need to:
+
+- Receive the `application.properties` file directly from the project owner (via email or other secure channel).
+- ```bash
+  mkdir -p backend/src/main/resources/
+  ```
+- Place the `application.properties` file in the backend resources folder: /backend/src/main/resources/
+- Once the file is in place, you can build and run the application (step 4).
+
+4. In the project root, build and run all containers:
 ```bash
 docker-compose up --build
 ```
 
-4️⃣ Access to the app:
+**Access to the app:**
 
-[Home page](http://localhost:3000/)
+[Home page](http://localhost:3000/) (localhost:3000)
 
 The backend API is also available for testing at:
-[Swagger](http://localhost:8080/swagger-ui/index.html)
+[Swagger](http://localhost:8080/swagger-ui/index.html) (localhost:8080)
 
 ## 📄 License
 

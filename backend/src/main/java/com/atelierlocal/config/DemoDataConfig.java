@@ -106,7 +106,7 @@ public class DemoDataConfig {
             mariage.setArtisanCategoryList(List.of(photographe, traiteur, fleuriste, patissier));
 
             EventCategory baptême = new EventCategory();
-            baptême.setName("Mariage");
+            baptême.setName("Baptême");
             baptême.setArtisanCategoryList(List.of(photographe, traiteur, fleuriste));
 
             EventCategory kermesse = new EventCategory();

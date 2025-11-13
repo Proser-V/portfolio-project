@@ -23,7 +23,7 @@ export default function LoginPage({ user }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    
+  
     // --- Hook Next.js pour gérer la navigation ---
     const router = useRouter();
 
@@ -66,7 +66,6 @@ export default function LoginPage({ user }) {
 
             // --- Réinitialisation des erreurs et redirection ---
             setError("");
-            console.log("Login success");
             window.location.href = "/"; // Redirection après connexion réussie
         } catch (err) {
             // --- Gestion des erreurs réseau ---

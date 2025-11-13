@@ -20,6 +20,7 @@ import getApiUrl from "@/lib/api";
  */
 export default function RegistrationPage({ user }) {
   const router = useRouter();
+  const [success, setSuccess] = useState("");
 
   // Rôle actif (client par défaut)
   const [role, setRole] = useState("client");
@@ -165,12 +166,11 @@ export default function RegistrationPage({ user }) {
 
       // Succès
       const result = await response.json();
-      console.log("Client créé avec succès:", result);
 
       if (avatarFile && result.avatar) {
         console.log("Avatar enregistré:", result.avatar);
       } else if (avatarFile && !result.avatar) {
-        console.warn("⚠️ Avatar non enregistré côté backend");
+        console.warn("Avatar non enregistré côté backend");
       }
 
       // Nettoyage de l’URL de prévisualisation
@@ -178,7 +178,8 @@ export default function RegistrationPage({ user }) {
         URL.revokeObjectURL(clientData.avatarPreview);
       }
 
-      router.push("/");
+      window.alert("Compte créé avec succès !");
+      router.push("/login");
     } catch (err) {
       console.error("Erreur réseau :", err);
       setError("Serveur inaccessible. Vérifiez votre connexion.");
@@ -245,8 +246,8 @@ export default function RegistrationPage({ user }) {
       }
 
       setArtisanData((prev) => ({ ...prev, avatarFile: null, avatarPreview: null }));
-      console.log("Compte artisan créé avec succès");
-      router.push("/");
+      window.alert("Compte créé avec succès !");
+      router.push("/login");
     } catch (err) {
       console.error("Erreur réseau :", err);
       setError("Serveur inaccessible. Vérifiez votre connexion.");
@@ -308,9 +309,11 @@ export default function RegistrationPage({ user }) {
         </button>
       </div>
 
-      {/* Message d’erreur global du formulaire (affiché si nécessaire) */}
+      {/* Message d’erreur et de succès global du formulaire (affiché si nécessaire) */}
       {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-
+      {success && (
+        <p className="text-gold font-semibold mt-2">{success}</p>
+      )}
       {/* Zone contenant l’animation des formulaires (client / artisan) */}
       <div className="relative flex w-full lg:w-screen items-center justify-center overflow-x-hidden overflow-y-auto py-2">
         <AnimatePresence mode="wait">
@@ -495,9 +498,9 @@ export default function RegistrationPage({ user }) {
                 {/* ───── Colonne droite : Informations entreprise ───── */}
                 <div className="flex flex-col items-center justify-center w-full lg:w-3/4 gap-4 mt-4">
                   {/* Ligne combinée Catégorie + Date de début d’activité */}
-                  <div className="flex flex-row items-center justify-center gap-2 w-[80%]">
+                  <div className="flex flex-row items-center justify-center gap-2 lg:w-[80%] w-full">
                     {/* Sélecteur de catégorie professionnelle */}
-                    <div className="flex flex-col w-1/2 items-center justify-center">
+                    <div className="flex flex-col w-full lg:w-1/2 items-center justify-center">
                       <span className="text-xs text-silver mb-1 italic">Quel est votre métier ?</span>
                       <select
                         name="categoryName"
@@ -515,7 +518,7 @@ export default function RegistrationPage({ user }) {
                     </div>
 
                     {/* Sélecteur de date de début d’activité */}
-                    <div className="flex flex-col w-1/2 items-center justify-center">
+                    <div className="flex flex-col w-full lg:w-1/2 items-center justify-center">
                       <span className="text-xs text-silver mb-1 italic">Depuis quand ?</span>
                       <input
                         type="date"

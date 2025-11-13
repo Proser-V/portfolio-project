@@ -311,14 +311,13 @@ export default function AskingsForm() {
 
       {/* Modal d’inscription (affiché si l’utilisateur n’est pas connecté) */}
       <RegistrationClientModal
-        isOpen={showRegistrationModal}
-        onClose={() => setShowRegistrationModal(false)}
-        onSuccess={() => {
-          setUser({ id: "nouvelUtilisateur" }); // Simulation d’un nouvel utilisateur
-          setShowRegistrationModal(false);
-          handleSubmit(); // Relance l’envoi après inscription
-        }}
-      />
+      isOpen={showRegistrationModal}
+      onClose={() => setShowRegistrationModal(false)}
+      onSuccess={(newUser) => {
+        setShowRegistrationModal(false);
+        handleSubmit();
+  }}
+/>
     </div>
   );
 }

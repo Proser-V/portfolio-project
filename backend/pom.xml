@@ -55,6 +55,12 @@
         <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
+                <!-- Spring starter -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
         <!-- Web socket -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -384,6 +384,7 @@ export default function RegistrationPage({ user }) {
                     maxLength={50}
                   />
                   <input
+                    type="email"
                     name="email"
                     value={clientData.email}
                     onChange={handleClientChange}
@@ -540,6 +541,7 @@ export default function RegistrationPage({ user }) {
                     maxLength={50}
                   />
                   <input
+                    type="email"
                     name="email"
                     value={artisanData.email}
                     onChange={handleArtisanChange}

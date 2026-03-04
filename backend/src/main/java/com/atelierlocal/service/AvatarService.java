@@ -21,7 +21,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 @Service
 public class AvatarService {
     private final S3Client s3Client;
-    private final String bucketName = "atelierlocal-bucket1";
+    private final String bucketName = "atelierlocal-bucket2";
 
     public AvatarService(S3Client s3Client) {
         this.s3Client = s3Client;

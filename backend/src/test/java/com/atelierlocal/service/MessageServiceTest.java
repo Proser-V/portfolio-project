@@ -7,14 +7,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +30,13 @@ import org.springframework.web.multipart.MultipartFile;
 import com.atelierlocal.dto.ConversationSummaryDTO;
 import com.atelierlocal.dto.MessageRequestDTO;
 import com.atelierlocal.dto.MessageResponseDTO;
-import com.atelierlocal.model.*;
+import com.atelierlocal.model.Artisan;
+import com.atelierlocal.model.Attachment;
+import com.atelierlocal.model.Client;
+import com.atelierlocal.model.Message;
+import com.atelierlocal.model.MessageStatus;
+import com.atelierlocal.model.S3Properties;
+import com.atelierlocal.model.UserRole;
 import com.atelierlocal.repository.ArtisanRepo;
 import com.atelierlocal.repository.AttachmentRepo;
 import com.atelierlocal.repository.ClientRepo;
@@ -140,7 +154,7 @@ class MessageServiceTest {
         when(file.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[]{1, 2, 3}));
 
         when(s3Properties.getBucketName()).thenReturn("my-bucket");
-        when(s3Properties.getRegion()).thenReturn("eu-west-1");
+        when(s3Properties.getRegion()).thenReturn("eu-west-3");
 
         Message savedMessage = new Message();
         savedMessage.setId(UUID.randomUUID());
@@ -150,7 +164,7 @@ class MessageServiceTest {
         savedMessage.setMessageStatus(MessageStatus.SENT);
 
         Attachment attachment = new Attachment();
-        attachment.setFileUrl(String.format("https://my-bucket.s3.eu-west-1.amazonaws.com/messages/%s_%s", 
+        attachment.setFileUrl(String.format("https://my-bucket.s3.eu-west-3.amazonaws.com/messages/%s_%s", 
             UUID.randomUUID(), fileName));
         attachment.setFileType("image/png");
         attachment.setMessage(savedMessage);
@@ -173,7 +187,7 @@ class MessageServiceTest {
         assertEquals(1, response.getAttachments().size());
 
         String actualUrl = response.getAttachments().get(0).getFileUrl();
-        String expectedUrlPattern = String.format("https://my-bucket.s3.eu-west-1.amazonaws.com/messages/.*_%s", fileName);
+        String expectedUrlPattern = String.format("https://my-bucket.s3.eu-west-3.amazonaws.com/messages/.*_%s", fileName);
         assertTrue(actualUrl.matches(expectedUrlPattern));
 
         verify(messageRepo, times(1)).save(any(Message.class));

@@ -86,22 +86,6 @@ public class ClientService {
         client.setLatitude(dto.getLatitude());
         client.setLongitude(dto.getLongitude());
 
-        // Gestion de l'avatar : upload si fourni, sinon placeholder par défaut
-        Avatar avatar = null;
-        if (dto.getAvatar() != null) {
-            String avatarUrl = avatarService.uploadAvatar(dto.getAvatar(), null);
-            avatar = new Avatar();
-            avatar.setAvatarUrl(avatarUrl);
-            avatar.setExtension(avatarService.getFileExtension(dto.getAvatar()));
-            avatar.setUser(client);
-        } else {
-            avatar = new Avatar();
-            avatar.setAvatarUrl("https://d1gmao6ee1284v.cloudfront.net/avatar-placeholder.png");
-            avatar.setExtension("png");
-            avatar.setUser(client);
-        }
-        client.setAvatar(avatar);
-
         // Hashage du mot de passe
         String hashed = passwordService.hashPassword(dto.getPassword());
         client.setHashedPassword(hashed);
@@ -109,6 +93,22 @@ public class ClientService {
         client.setUserRole(UserRole.CLIENT);
         client.setActive(true);
         client.setPhoneNumber(dto.getPhoneNumber());
+
+                // Gestion de l'avatar : upload si fourni, sinon placeholder par défaut
+                Avatar avatar = null;
+                if (dto.getAvatar() != null) {
+                    String avatarUrl = avatarService.uploadAvatar(dto.getAvatar(), client.getId());
+                    avatar = new Avatar();
+                    avatar.setAvatarUrl(avatarUrl);
+                    avatar.setExtension(avatarService.getFileExtension(dto.getAvatar()));
+                    avatar.setUser(client);
+                } else {
+                    avatar = new Avatar();
+                    avatar.setAvatarUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/avatar_placeholder.png");
+                    avatar.setExtension("png");
+                    avatar.setUser(client);
+                }
+                client.setAvatar(avatar);
 
         Client savedClient = clientRepo.save(client);
         return new ClientResponseDTO(savedClient);
@@ -159,7 +159,7 @@ public class ClientService {
             avatar.setUser(client);
         } else {
             avatar = new Avatar();
-            avatar.setAvatarUrl("https://d1gmao6ee1284v.cloudfront.net/avatar-placeholder.png");
+            avatar.setAvatarUrl("https://atelierlocal-bucket1.s3.eu-west-3.amazonaws.com/avatar_placeholder.png");
             avatar.setExtension("png");
             avatar.setUser(client);
         }

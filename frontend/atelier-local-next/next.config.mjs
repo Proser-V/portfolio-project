@@ -9,7 +9,7 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
-                hostname: 'atelierlocal-bucket1.s3.eu-west-3.amazonaws.com',
+                hostname: 'atelierlocal-bucket2.s3.eu-west-3.amazonaws.com',
                 pathname: '/**',
             },
         ],

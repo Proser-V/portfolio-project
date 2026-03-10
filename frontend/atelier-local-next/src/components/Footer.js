@@ -19,6 +19,7 @@ export default function Footer() {
         <a href="/contact" className="hover:underline">Contact</a>
         <a href="/links" className="hover:underline">Liens utiles</a>
         <a href="/legal" className="hover:underline">Mentions légales</a>
+        <a href="/privacy" className="hover:underline">Politique de confidentialité</a>
       </div>
 
       {/* Texte copyright et crédits */}

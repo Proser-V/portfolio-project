@@ -411,11 +411,34 @@ export default function RegistrationPage({ user }) {
                     name="phoneNumber"
                     value={clientData.phoneNumber}
                     onChange={handleClientChange}
-                    placeholder="Téléphone (optionnel)"
+                    placeholder="Téléphone"
                     className="input"
                     maxLength={12}
                   />
                 </div>
+              </div>
+
+              {/* Acceptation des données personnelles */}
+              <div className="flex justify-center w-full mt-4">
+                <label className="flex items-start gap-2 text-sm font-cabin text-gray-700">
+                  <input
+                    type="checkbox"
+                    name="acceptData"
+                    required
+                    className="w-4 h-4 mt-0.5 shrink-0"
+                  />
+                  <span>
+                    J'accepte que mes données soient utilisées pour la création de mon compte et la mise en relation avec les artisans utilisateurs de ce site, conformément à notre{" "}
+                    <a
+                      href="/privacy"
+                      className="text-blue underline"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      politique de confidentialité
+                    </a>.
+                  </span>
+                </label>
               </div>
 
               {/* Bouton de validation du formulaire client */}
@@ -576,7 +599,7 @@ export default function RegistrationPage({ user }) {
                     name="phoneNumber"
                     value={artisanData.phoneNumber}
                     onChange={handleArtisanChange}
-                    placeholder="Votre numéro de téléphone (optionnel)"
+                    placeholder="Votre numéro de téléphone"
                     className="input"
                     maxLength={12}
                   />
@@ -594,6 +617,29 @@ export default function RegistrationPage({ user }) {
                     <p className="absolute -bottom-8 right-8 text-xs text-silver lg:hidden block">
                       {artisanData.bio.length}/500
                     </p>
+                  </div>
+
+                  {/* Acceptation des données personnelles */}
+                  <div className="flex justify-center w-full mt-4">
+                    <label className="flex items-start gap-2 text-sm font-cabin text-gray-700">
+                      <input
+                        type="checkbox"
+                        name="acceptData"
+                        required
+                        className="w-4 h-4 mt-0.5 shrink-0"
+                      />
+                      <span>
+                        J'accepte que mes données soient utilisées pour la création de mon compte et la mise en relation avec les visiteurs de ce site, conformément à notre{" "}
+                        <a
+                          href="/privacy"
+                          className="text-blue underline"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          politique de confidentialité
+                        </a>.
+                      </span>
+                    </label>
                   </div>
 
                   {/* Bouton de validation du formulaire artisan */}

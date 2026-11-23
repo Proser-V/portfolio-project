@@ -10,11 +10,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
 
 import com.atelierlocal.model.Avatar;
 import com.atelierlocal.model.User;
 import com.atelierlocal.repository.UserRepo;
 import com.atelierlocal.service.AvatarService;
+import com.atelierlocal.security.SecurityService;
 
 /**
  * Contrôleur REST pour la gestion des avatars des utilisateurs.
@@ -26,6 +29,7 @@ public class AvatarController {
 
     private final AvatarService avatarService;
     private final UserRepo userRepo;
+    private final SecurityService securityService;
 
     /**
      * Constructeur avec injection des services nécessaires.
@@ -52,9 +56,13 @@ public class AvatarController {
     @PostMapping("/upload")
     public ResponseEntity<Map<String, String>> uploadAvatar(
         @RequestParam MultipartFile file,
-        @RequestParam UUID userId
+        @RequestParam UUID userId,
+        @AuthenticationPrincipal User currentUser
     ) {
         try {
+            // Vérification des permissions
+            securityService.checkUserOwnershipOrAdmin(currentUser, userId);
+
             // Upload du fichier via le service Avatar
             String url = avatarService.uploadAvatar(file, userId);
 

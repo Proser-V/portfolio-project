@@ -201,7 +201,7 @@ public class ClientService {
      * @return DTO du client mis à jour
      */
     public ClientResponseDTO updateClient(UUID clientId, ClientRequestDTO request, Client currentClient) {
-        securityService.checkClientOrAdmin(currentClient);
+        securityService.checkClientOwnershiprOrAdmin(currentClient, clientId);
         Client client = clientRepo.findById(clientId)
             .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé."));
         
